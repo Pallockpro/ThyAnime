@@ -7,58 +7,76 @@
     <link rel="icon" type="image/gif" href="https://media1.tenor.com/m/2thZuhJSwFsAAAAC/wolf-girl-howling.gif">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --bg:#07070f;--surface:#0e0e1c;--surface2:#131325;--surface3:#191930;--surface4:#20203a;
-            --text:#f0f0fa;--text2:#9090b0;--text3:#4a4a6a;
-            --accent:#e8621a;--accent2:#ff8c42;--accent-dim:rgba(232,98,26,0.13);--accent-glow:rgba(232,98,26,0.32);
-            --teal:#0fa8a0;--teal-dim:rgba(15,168,160,0.12);
-            --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.1);
-            --radius:18px;--radius-sm:13px;--radius-xs:9px;
-            --ease:cubic-bezier(0.4,0,0.2,1);--t:0.2s;
-            --font:'Syne',system-ui,sans-serif;--font-body:'Manrope',system-ui,sans-serif;
+            --bg:#05050f;
+            --surface:#0c0c1e;
+            --surface2:#111128;
+            --surface3:#181836;
+            --surface4:#1e1e42;
+            --text:#eeeeff;
+            --text2:#8888bb;
+            --text3:#44447a;
+            --accent:#7c3aed;
+            --accent2:#a855f7;
+            --accent3:#c084fc;
+            --accent-dim:rgba(124,58,237,0.15);
+            --accent-glow:rgba(124,58,237,0.4);
+            --cyan:#06b6d4;
+            --cyan-dim:rgba(6,182,212,0.12);
+            --pink:#ec4899;
+            --pink-dim:rgba(236,72,153,0.12);
+            --border:rgba(255,255,255,0.055);
+            --border2:rgba(255,255,255,0.1);
+            --radius:18px;
+            --radius-sm:13px;
+            --radius-xs:9px;
+            --ease:cubic-bezier(0.4,0,0.2,1);
+            --t:0.2s;
+            --font:'Outfit',system-ui,sans-serif;
+            --font-body:'DM Sans',system-ui,sans-serif;
         }
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
         html{scroll-behavior:smooth;}
         body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
         body::before{content:'';position:fixed;inset:0;background:
-            radial-gradient(ellipse 90% 55% at 5% -5%,rgba(232,98,26,0.07) 0%,transparent 55%),
-            radial-gradient(ellipse 60% 40% at 95% 90%,rgba(15,168,160,0.05) 0%,transparent 55%),
-            radial-gradient(ellipse 50% 60% at 50% 50%,rgba(100,60,200,0.03) 0%,transparent 60%);
+            radial-gradient(ellipse 80% 50% at 10% -10%,rgba(124,58,237,0.09) 0%,transparent 55%),
+            radial-gradient(ellipse 60% 40% at 90% 95%,rgba(6,182,212,0.06) 0%,transparent 55%),
+            radial-gradient(ellipse 40% 40% at 50% 40%,rgba(236,72,153,0.03) 0%,transparent 60%);
             pointer-events:none;z-index:0;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:transparent;}
         ::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:10px;}
 
         /* ── ANNOUNCEMENT BANNER ── */
-        #announcementBanner{display:none;align-items:center;justify-content:center;gap:12px;padding:10px 24px;background:linear-gradient(135deg,rgba(232,98,26,0.14),rgba(232,98,26,0.06));border-bottom:1px solid rgba(232,98,26,0.28);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.86rem;letter-spacing:0.01em;position:fixed;top:0;left:0;right:0;z-index:3000;backdrop-filter:blur(12px);animation:bannerIn 0.3s var(--ease);}
+        #announcementBanner{display:none;align-items:center;justify-content:center;gap:12px;padding:10px 24px;background:linear-gradient(135deg,rgba(124,58,237,0.18),rgba(124,58,237,0.07));border-bottom:1px solid rgba(124,58,237,0.35);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.86rem;letter-spacing:0.01em;position:fixed;top:0;left:0;right:0;z-index:3000;backdrop-filter:blur(12px);animation:bannerIn 0.3s var(--ease);}
         @keyframes bannerIn{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
         #announcementBanner span{flex:1;text-align:center;line-height:1.4;}
         #bannerCloseBtn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text2);cursor:pointer;padding:4px 9px;font-size:0.82rem;font-weight:700;line-height:1;transition:all 0.15s var(--ease);flex-shrink:0;}
-        #bannerCloseBtn:hover{background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(232,98,26,0.5);}
+        #bannerCloseBtn:hover{background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(124,58,237,0.5);}
 
         /* ── MAINTENANCE ── */
-        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:9999;background:#07070f;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:24px;text-align:center;font-family:var(--font);overflow:hidden;}
+        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:9999;background:#05050f;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:24px;text-align:center;font-family:var(--font);overflow:hidden;}
         #maintenanceOverlay.visible{display:flex;}
-        .maint-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 10%,rgba(232,98,26,0.13) 0%,transparent 55%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(15,168,160,0.08) 0%,transparent 55%);pointer-events:none;}
+        .maint-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 10%,rgba(124,58,237,0.15) 0%,transparent 55%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(6,182,212,0.08) 0%,transparent 55%);pointer-events:none;}
         .maint-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-        .maint-ring{position:absolute;border-radius:50%;border:1px solid rgba(232,98,26,0.08);animation:ringPulse 4s ease-in-out infinite;}
+        .maint-ring{position:absolute;border-radius:50%;border:1px solid rgba(124,58,237,0.1);animation:ringPulse 4s ease-in-out infinite;}
         .maint-ring:nth-child(1){width:300px;height:300px;}
-        .maint-ring:nth-child(2){width:520px;height:520px;animation-delay:0.9s;border-color:rgba(232,98,26,0.05);}
-        .maint-ring:nth-child(3){width:740px;height:740px;animation-delay:1.8s;border-color:rgba(232,98,26,0.03);}
+        .maint-ring:nth-child(2){width:520px;height:520px;animation-delay:0.9s;border-color:rgba(124,58,237,0.06);}
+        .maint-ring:nth-child(3){width:740px;height:740px;animation-delay:1.8s;border-color:rgba(124,58,237,0.03);}
         @keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.05);opacity:1}}
         .maint-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:22px;max-width:480px;width:100%;}
         .maint-logo-wrap{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:4px;}
-        .maint-logo{width:92px;height:92px;border-radius:26px;object-fit:cover;display:block;position:relative;z-index:2;box-shadow:0 0 0 2px rgba(232,98,26,0.5),0 0 40px rgba(232,98,26,0.35),0 20px 60px rgba(0,0,0,0.7);}
-        .maint-logo-glow{position:absolute;inset:-24px;border-radius:50%;background:radial-gradient(circle,rgba(232,98,26,0.22) 0%,transparent 70%);animation:glowPulse 2.6s ease-in-out infinite;z-index:1;}
+        .maint-logo{width:92px;height:92px;border-radius:26px;object-fit:cover;display:block;position:relative;z-index:2;box-shadow:0 0 0 2px rgba(124,58,237,0.5),0 0 40px rgba(124,58,237,0.35),0 20px 60px rgba(0,0,0,0.7);}
+        .maint-logo-glow{position:absolute;inset:-24px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.25) 0%,transparent 70%);animation:glowPulse 2.6s ease-in-out infinite;z-index:1;}
         @keyframes glowPulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.18);opacity:1}}
-        .maint-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(232,98,26,0.1);border:1px solid rgba(232,98,26,0.28);border-radius:999px;font-size:0.71rem;font-weight:700;color:var(--accent2);letter-spacing:0.09em;text-transform:uppercase;}
+        .maint-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:999px;font-size:0.71rem;font-weight:700;color:var(--accent3);letter-spacing:0.09em;text-transform:uppercase;}
         .maint-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:badgeBlink 1.3s ease-in-out infinite;}
         @keyframes badgeBlink{0%,100%{opacity:1}50%{opacity:0.2}}
-        .maint-heading{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-0.04em;line-height:1.05;background:linear-gradient(135deg,#fff 25%,var(--accent2) 65%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .maint-heading{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-0.04em;line-height:1.05;background:linear-gradient(135deg,#fff 25%,var(--accent3) 65%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
         .maint-divider{width:52px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.7;}
         .maint-message{color:var(--text2);font-size:1rem;line-height:1.75;font-family:var(--font-body);max-width:380px;}
         .maint-cards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
@@ -67,116 +85,116 @@
         .maint-footer strong{color:var(--text2);font-weight:600;}
 
         /* ── NAV ── */
-        .nav{position:sticky;top:0;z-index:200;background:rgba(7,7,15,0.9);backdrop-filter:blur(28px) saturate(1.4);border-bottom:1px solid var(--border);}
-        .nav-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:16px;height:62px;padding:0 24px;}
+        .nav{position:sticky;top:0;z-index:200;background:rgba(5,5,15,0.92);backdrop-filter:blur(28px) saturate(1.6);border-bottom:1px solid var(--border);}
+        .nav-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:16px;height:62px;padding:0 28px;}
         .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font);font-weight:800;font-size:1.28rem;letter-spacing:-0.02em;color:#fff;cursor:pointer;text-decoration:none;flex-shrink:0;user-select:none;}
-        .nav-logo-icon{width:35px;height:35px;border-radius:11px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(232,98,26,0.6),0 4px 18px rgba(232,98,26,0.35);}
+        .nav-logo-icon{width:35px;height:35px;border-radius:11px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(124,58,237,0.7),0 4px 18px rgba(124,58,237,0.4);}
         .nav-logo-icon img{width:100%;height:100%;object-fit:cover;}
-        .nav-logo span{background:linear-gradient(130deg,#fff 35%,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-        .nav-search{position:relative;flex:1;max-width:380px;margin-left:8px;}
-        .nav-search input{width:100%;padding:9px 16px 9px 40px;border-radius:11px;border:1px solid var(--border2);background:rgba(255,255,255,0.05);color:var(--text);font-size:0.84rem;outline:none;transition:all var(--t) var(--ease);font-family:var(--font-body);}
+        .nav-logo span{background:linear-gradient(130deg,#fff 30%,var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .nav-search{position:relative;flex:1;max-width:400px;margin-left:8px;}
+        .nav-search input{width:100%;padding:9px 16px 9px 42px;border-radius:12px;border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:var(--text);font-size:0.84rem;outline:none;transition:all var(--t) var(--ease);font-family:var(--font-body);}
         .nav-search input::placeholder{color:var(--text3);}
-        .nav-search input:focus{border-color:rgba(232,98,26,0.55);background:rgba(232,98,26,0.07);box-shadow:0 0 0 3px rgba(232,98,26,0.1);}
-        .nav-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:0.82rem;color:var(--text3);pointer-events:none;}
-        .search-dropdown{position:absolute;top:calc(100% + 9px);left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);max-height:430px;overflow-y:auto;z-index:300;box-shadow:0 28px 70px rgba(0,0,0,0.75);display:none;}
+        .nav-search input:focus{border-color:rgba(124,58,237,0.6);background:rgba(124,58,237,0.07);box-shadow:0 0 0 3px rgba(124,58,237,0.12);}
+        .nav-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:0.82rem;color:var(--text3);pointer-events:none;}
+        .search-dropdown{position:absolute;top:calc(100% + 9px);left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);max-height:430px;overflow-y:auto;z-index:300;box-shadow:0 28px 70px rgba(0,0,0,0.8);display:none;}
         .search-dropdown.active{display:block;animation:dropIn 0.16s var(--ease);}
         @keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
         .search-result-item{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background var(--t);border-bottom:1px solid var(--border);}
         .search-result-item:last-child{border-bottom:none;}
-        .search-result-item:hover{background:rgba(255,255,255,0.04);}
+        .search-result-item:hover{background:rgba(124,58,237,0.08);}
         .search-result-img{width:38px;height:54px;border-radius:7px;object-fit:cover;flex-shrink:0;background:var(--surface3);}
         .search-result-info{flex:1;min-width:0;}
         .search-result-title{font-family:var(--font);font-weight:700;font-size:0.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .search-result-meta{font-size:0.69rem;color:var(--text3);margin-top:2px;}
-        .search-result-resume{font-size:0.64rem;color:var(--accent2);margin-top:3px;display:flex;align-items:center;gap:4px;}
+        .search-result-resume{font-size:0.64rem;color:var(--cyan);margin-top:3px;display:flex;align-items:center;gap:4px;}
         .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
-        .live-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;background:rgba(232,98,26,0.08);border:1px solid rgba(232,98,26,0.2);border-radius:999px;font-family:var(--font);font-size:0.71rem;font-weight:600;color:var(--text2);white-space:nowrap;}
+        .live-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.22);border-radius:999px;font-family:var(--font);font-size:0.71rem;font-weight:600;color:var(--text2);white-space:nowrap;}
         .live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 7px rgba(34,197,94,0.9);position:relative;}
         .live-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(34,197,94,0.25);animation:ping 1.6s cubic-bezier(0,0,0.2,1) infinite;}
         @keyframes ping{0%{transform:scale(1);opacity:0.8}80%{transform:scale(2.2);opacity:0}100%{transform:scale(2.2);opacity:0}}
         .live-count-val{color:var(--text);font-weight:800;}
 
         /* ── GENRE BAR ── */
-        .genre-bar{background:rgba(7,7,15,0.88);border-bottom:1px solid var(--border);position:sticky;top:62px;z-index:150;backdrop-filter:blur(20px);}
-        .genre-bar-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:4px;padding:8px 24px;overflow-x:auto;}
+        .genre-bar{background:rgba(5,5,15,0.9);border-bottom:1px solid var(--border);position:sticky;top:62px;z-index:150;backdrop-filter:blur(20px);}
+        .genre-bar-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:3px;padding:7px 28px;overflow-x:auto;}
         .genre-bar-inner::-webkit-scrollbar{height:0;}
-        .genre-btn{padding:5px 15px;border-radius:999px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.76rem;white-space:nowrap;transition:all var(--t) var(--ease);}
+        .genre-btn{padding:5px 14px;border-radius:999px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.75rem;white-space:nowrap;transition:all var(--t) var(--ease);}
         .genre-btn:hover{color:var(--text);background:rgba(255,255,255,0.06);}
-        .genre-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
+        .genre-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
 
         /* ── TAB BAR ── */
         .tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
-        .tab-btn{padding:10px 22px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:700;font-size:0.86rem;letter-spacing:0.02em;transition:all var(--t) var(--ease);border-bottom:2px solid transparent;margin-bottom:-1px;}
+        .tab-btn{padding:10px 22px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:700;font-size:0.86rem;letter-spacing:0.01em;transition:all var(--t) var(--ease);border-bottom:2px solid transparent;margin-bottom:-1px;}
         .tab-btn:hover{color:var(--text2);}
-        .tab-btn.active{color:var(--accent2);border-bottom-color:var(--accent);}
+        .tab-btn.active{color:var(--accent3);border-bottom-color:var(--accent);}
 
         /* ── LAYOUT ── */
-        .app{max-width:1440px;margin:0 auto;padding:0 24px 80px;position:relative;z-index:1;}
+        .app{max-width:1440px;margin:0 auto;padding:0 28px 80px;position:relative;z-index:1;}
         .home-page{display:flex;gap:26px;}
         .home-page.hidden{display:none;}
         .main-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:0;}
-        .sidebar-col{width:248px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;padding-top:22px;}
+        .sidebar-col{width:252px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;padding-top:22px;}
 
         /* ── HERO ── */
-        .hero-section{position:relative;overflow:hidden;aspect-ratio:21/8;min-height:270px;cursor:default;margin:0 -24px;border-bottom:1px solid var(--border);}
-        .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.1);}
-        .hero-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(7,7,15,0.97) 0%,rgba(7,7,15,0.7) 38%,rgba(7,7,15,0.12) 68%),linear-gradient(to top,rgba(7,7,15,0.9) 0%,transparent 42%);}
-        .hero-content{position:relative;z-index:2;padding:34px 30px;display:flex;flex-direction:column;gap:10px;height:100%;justify-content:flex-end;max-width:540px;}
+        .hero-section{position:relative;overflow:hidden;aspect-ratio:21/8;min-height:270px;cursor:default;margin:0 -28px;border-bottom:1px solid var(--border);}
+        .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.2) brightness(0.9);}
+        .hero-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(5,5,15,0.97) 0%,rgba(5,5,15,0.72) 38%,rgba(5,5,15,0.1) 68%),linear-gradient(to top,rgba(5,5,15,0.92) 0%,transparent 45%);}
+        .hero-content{position:relative;z-index:2;padding:34px 32px;display:flex;flex-direction:column;gap:10px;height:100%;justify-content:flex-end;max-width:560px;}
         .hero-badges{display:flex;gap:6px;flex-wrap:wrap;}
-        .hero-badge-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:5px;font-family:var(--font);font-weight:700;font-size:0.67rem;text-transform:uppercase;letter-spacing:0.07em;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.08);}
-        .hero-badge-pill.type{background:rgba(232,98,26,0.22);border-color:rgba(232,98,26,0.45);color:var(--accent2);}
-        .hero-title{font-family:var(--font);font-size:2.5rem;font-weight:800;letter-spacing:-0.04em;line-height:1.04;}
+        .hero-badge-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:5px;font-family:var(--font);font-weight:700;font-size:0.67rem;text-transform:uppercase;letter-spacing:0.07em;border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.72);background:rgba(255,255,255,0.07);}
+        .hero-badge-pill.type{background:rgba(124,58,237,0.22);border-color:rgba(124,58,237,0.5);color:var(--accent3);}
+        .hero-title{font-family:var(--font);font-size:2.6rem;font-weight:800;letter-spacing:-0.04em;line-height:1.04;}
         .hero-genres{display:flex;gap:6px;flex-wrap:wrap;}
-        .hero-genre-tag{padding:3px 10px;border-radius:5px;font-size:0.69rem;font-weight:600;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.65);font-family:var(--font);}
-        .hero-desc{font-size:0.81rem;color:rgba(255,255,255,0.6);line-height:1.65;max-width:430px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-        .hero-actions{display:flex;gap:10px;margin-top:4px;}
-        .hero-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:9px;font-family:var(--font);font-weight:700;font-size:0.84rem;cursor:pointer;border:none;transition:all var(--t) var(--ease);}
-        .hero-btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 22px var(--accent-glow);}
-        .hero-btn.primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 7px 30px rgba(232,98,26,0.55);}
-        .hero-btn.secondary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);}
-        .hero-btn.secondary:hover{background:rgba(255,255,255,0.16);transform:translateY(-1px);}
+        .hero-genre-tag{padding:3px 10px;border-radius:5px;font-size:0.69rem;font-weight:600;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.62);font-family:var(--font);}
+        .hero-desc{font-size:0.81rem;color:rgba(255,255,255,0.58);line-height:1.68;max-width:440px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        .hero-actions{display:flex;gap:10px;margin-top:6px;}
+        .hero-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;font-family:var(--font);font-weight:700;font-size:0.84rem;cursor:pointer;border:none;transition:all var(--t) var(--ease);}
+        .hero-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 22px var(--accent-glow);}
+        .hero-btn.primary:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 7px 30px rgba(124,58,237,0.6);}
+        .hero-btn.secondary{background:rgba(255,255,255,0.09);color:#fff;border:1px solid rgba(255,255,255,0.18);}
+        .hero-btn.secondary:hover{background:rgba(255,255,255,0.15);transform:translateY(-1px);}
 
         /* ── SECTIONS ── */
         .section-wrap{padding:22px 0;}
         .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
         .section-title{font-family:var(--font);font-size:1rem;font-weight:700;letter-spacing:-0.01em;color:var(--text);display:flex;align-items:center;gap:8px;}
         .section-clear-btn{font-size:0.72rem;color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:500;background:none;border:none;transition:color var(--t);padding:4px 8px;border-radius:6px;}
-        .section-clear-btn:hover{color:var(--accent2);background:rgba(232,98,26,0.08);}
+        .section-clear-btn:hover{color:var(--accent3);background:rgba(124,58,237,0.1);}
 
         /* ── HISTORY ROW ── */
         .history-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;}
         .history-row::-webkit-scrollbar{height:3px;}
         .history-row::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:10px;}
         .history-card{flex:0 0 195px;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;position:relative;transition:transform 0.22s var(--ease),box-shadow 0.22s var(--ease),border-color 0.22s;border:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;}
-        .history-card:hover{transform:translateY(-5px) scale(1.02);border-color:rgba(232,98,26,0.5);box-shadow:0 14px 36px rgba(0,0,0,0.6),0 0 20px rgba(232,98,26,0.12);}
+        .history-card:hover{transform:translateY(-5px) scale(1.02);border-color:rgba(124,58,237,0.55);box-shadow:0 14px 36px rgba(0,0,0,0.6),0 0 22px rgba(124,58,237,0.14);}
         .history-card-thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--surface3);flex-shrink:0;}
         .history-card-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.35s var(--ease);}
         .history-card:hover .history-card-thumb img{transform:scale(1.06);}
-        .history-card-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,7,15,0.75) 0%,transparent 55%);}
-        .history-ep-badge{position:absolute;top:7px;left:7px;background:var(--accent);color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:3px 7px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+        .history-card-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,15,0.75) 0%,transparent 55%);}
+        .history-ep-badge{position:absolute;top:7px;left:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:3px 7px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);}
         .history-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;}
-        .history-play-btn span{width:36px;height:36px;border-radius:50%;background:rgba(232,98,26,0.9);display:flex;align-items:center;justify-content:center;font-size:0.85rem;box-shadow:0 4px 18px rgba(232,98,26,0.55);}
+        .history-play-btn span{width:36px;height:36px;border-radius:50%;background:rgba(124,58,237,0.9);display:flex;align-items:center;justify-content:center;font-size:0.85rem;box-shadow:0 4px 18px rgba(124,58,237,0.55);}
         .history-card:hover .history-play-btn{opacity:1;}
         .history-card-body{padding:8px 10px 6px;display:flex;flex-direction:column;gap:3px;flex:1;}
         .history-card-title{font-family:var(--font);font-size:0.75rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--text);}
         .history-card-meta{font-size:0.64rem;color:var(--text3);display:flex;align-items:center;gap:5px;}
-        .history-progress-bar{height:2px;background:rgba(255,255,255,0.07);border-radius:2px;margin:4px 10px 8px;}
-        .history-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.3s;}
+        .history-progress-bar{height:2px;background:rgba(255,255,255,0.06);border-radius:2px;margin:4px 10px 8px;}
+        .history-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:2px;transition:width 0.3s;}
 
         /* ── ANIME GRID ── */
-        .anime-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:14px;}
+        .anime-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:14px;}
 
         /* ── ANIME CARD ── */
         .anime-card{border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:transform 0.25s var(--ease),box-shadow 0.25s var(--ease),border-color 0.25s;background:var(--surface);border:1px solid var(--border);position:relative;display:flex;flex-direction:column;}
-        .anime-card:hover{transform:translateY(-6px) scale(1.025);border-color:rgba(232,98,26,0.55);box-shadow:0 18px 44px rgba(0,0,0,0.65),0 0 26px rgba(232,98,26,0.13);z-index:5;}
+        .anime-card:hover{transform:translateY(-6px) scale(1.025);border-color:rgba(124,58,237,0.6);box-shadow:0 18px 44px rgba(0,0,0,0.65),0 0 28px rgba(124,58,237,0.14);z-index:5;}
         .anime-card-img-wrap{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--surface3);}
         .anime-card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s var(--ease);}
         .anime-card:hover .anime-card-img-wrap img{transform:scale(1.06);}
-        .anime-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,7,15,0.82) 0%,transparent 52%);opacity:0;transition:opacity var(--t);}
+        .anime-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,15,0.85) 0%,transparent 52%);opacity:0;transition:opacity var(--t);}
         .anime-card:hover .anime-card-overlay{opacity:1;}
-        .anime-card-badge{position:absolute;top:6px;left:6px;background:rgba(232,98,26,0.92);backdrop-filter:blur(6px);color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:2px 6px;border-radius:5px;z-index:2;}
+        .anime-card-badge{position:absolute;top:6px;left:6px;background:linear-gradient(135deg,rgba(124,58,237,0.95),rgba(168,85,247,0.95));backdrop-filter:blur(6px);color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:2px 7px;border-radius:5px;z-index:2;}
         .anime-card-ep-badge{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);color:rgba(255,255,255,0.82);font-weight:600;font-size:0.59rem;padding:2px 6px;border-radius:5px;z-index:2;}
-        .anime-card-info{padding:8px 9px 10px;display:flex;flex-direction:column;gap:3px;flex:1;}
+        .anime-card-info{padding:8px 10px 10px;display:flex;flex-direction:column;gap:3px;flex:1;}
         .anime-card-title{font-family:var(--font);font-weight:600;font-size:0.74rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
         .anime-card-sub{font-size:0.64rem;color:var(--text3);margin-top:1px;}
         .skeleton{background:linear-gradient(135deg,var(--surface2),var(--surface3));border-radius:var(--radius-xs);animation:shimmer 2s ease infinite;border:1px solid var(--border);}
@@ -184,15 +202,15 @@
 
         /* ── HOME SIDEBAR ── */
         .sidebar-col .sidebar-widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
-        .sidebar-widget-header{padding:12px 14px;border-bottom:1px solid var(--border);font-family:var(--font);font-weight:700;font-size:0.76rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent2);display:flex;align-items:center;gap:6px;}
+        .sidebar-widget-header{padding:12px 14px;border-bottom:1px solid var(--border);font-family:var(--font);font-weight:700;font-size:0.76rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--cyan);display:flex;align-items:center;gap:6px;}
         .top-airing-list{display:flex;flex-direction:column;}
         .top-airing-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t);}
         .top-airing-item:last-child{border-bottom:none;}
-        .top-airing-item:hover{background:rgba(255,255,255,0.03);}
+        .top-airing-item:hover{background:rgba(124,58,237,0.06);}
         .top-airing-rank{font-family:var(--font);font-weight:800;font-size:0.7rem;color:var(--text3);width:16px;flex-shrink:0;text-align:center;}
         .top-airing-rank.gold{color:#f59e0b;}
         .top-airing-rank.silver{color:#94a3b8;}
-        .top-airing-rank.bronze{color:#cd7c3a;}
+        .top-airing-rank.bronze{color:#b87333;}
         .top-airing-thumb{width:36px;height:50px;border-radius:5px;object-fit:cover;flex-shrink:0;background:var(--surface3);}
         .top-airing-info{flex:1;min-width:0;}
         .top-airing-name{font-family:var(--font);font-weight:600;font-size:0.73rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -204,19 +222,19 @@
         .browse-page{display:none;flex-direction:column;gap:20px;padding-top:22px;}
         .browse-page.active{display:flex;}
         .watch-top-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:22px;}
-        .back-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.055);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.81rem;transition:all var(--t) var(--ease);}
-        .back-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(232,98,26,0.45);}
+        .back-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.81rem;transition:all var(--t) var(--ease);}
+        .back-btn:hover{background:rgba(255,255,255,0.09);border-color:rgba(124,58,237,0.5);}
         .watch-title-bar{font-family:var(--font);font-weight:700;font-size:1rem;letter-spacing:-0.02em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 200px);}
         .watch-layout{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start;}
         @media(max-width:960px){.watch-layout{grid-template-columns:1fr;}}
 
         /* ── PLAYER ── */
-        .player-card{background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,0.07);box-shadow:0 10px 50px rgba(0,0,0,0.7);}
+        .player-card{background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(124,58,237,0.15);box-shadow:0 10px 50px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.04);}
         .player-wrapper{position:relative;width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:#000;isolation:isolate;}
         .player-wrapper iframe{width:100%;height:100%;border:none;position:absolute;top:0;left:0;z-index:1;}
-        .player-watermark{position:absolute;bottom:12px;right:12px;z-index:3;display:flex;align-items:center;gap:7px;background:rgba(7,7,15,0.6);backdrop-filter:blur(14px);border:1px solid rgba(232,98,26,0.35);border-radius:999px;padding:4px 12px 4px 5px;pointer-events:none;user-select:none;transition:opacity 0.5s;opacity:0.85;}
-        .player-wrapper:hover .player-watermark{opacity:0.2;}
-        .player-watermark img{width:22px;height:22px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 8px rgba(232,98,26,0.7);}
+        .player-watermark{position:absolute;bottom:12px;right:12px;z-index:3;display:flex;align-items:center;gap:7px;background:rgba(5,5,15,0.65);backdrop-filter:blur(14px);border:1px solid rgba(124,58,237,0.4);border-radius:999px;padding:4px 12px 4px 5px;pointer-events:none;user-select:none;transition:opacity 0.5s;opacity:0.85;}
+        .player-wrapper:hover .player-watermark{opacity:0.18;}
+        .player-watermark img{width:22px;height:22px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 8px rgba(124,58,237,0.7);}
         .player-watermark span{font-family:var(--font);font-size:0.67rem;font-weight:700;color:#fff;letter-spacing:0.06em;white-space:nowrap;}
         .player-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--text3);text-align:center;padding:48px 32px;width:100%;min-height:200px;z-index:2;position:relative;}
         .player-placeholder .big-icon{font-size:3.5rem;opacity:0.35;animation:floatY 3s ease-in-out infinite;}
@@ -230,27 +248,43 @@
 
         /* ── PROGRESS TRACK ── */
         .player-progress-track{height:3px;background:rgba(255,255,255,0.06);position:relative;}
-        .player-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:0 2px 2px 0;transition:width 1s linear;pointer-events:none;}
+        .player-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:0 2px 2px 0;transition:width 1s linear;pointer-events:none;}
         .player-progress-label{font-family:var(--font);font-size:0.67rem;color:var(--text3);padding:5px 14px 7px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);}
-        .player-progress-label .resume-note{font-size:0.62rem;color:var(--accent2);}
+        .player-progress-label .resume-note{font-size:0.62rem;color:var(--cyan);}
+
+        /* ── LAST WATCHED BANNER ── */
+        #lastWatchedBanner{position:absolute;bottom:0;left:0;right:0;z-index:10;display:none;align-items:center;gap:12px;padding:11px 16px;background:linear-gradient(135deg,rgba(5,5,15,0.96),rgba(18,18,55,0.96));backdrop-filter:blur(16px);border-top:1px solid rgba(124,58,237,0.4);animation:lwSlideUp 0.35s var(--ease);}
+        #lastWatchedBanner.visible{display:flex;}
+        @keyframes lwSlideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+        .lw-icon{font-size:1.4rem;flex-shrink:0;}
+        .lw-text{flex:1;min-width:0;}
+        .lw-title{font-family:var(--font);font-weight:700;font-size:0.82rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .lw-sub{font-size:0.71rem;color:var(--text2);margin-top:2px;}
+        .lw-sub strong{color:var(--cyan);font-weight:600;}
+        .lw-progress-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+        .lw-pct{font-family:var(--font);font-weight:800;font-size:1rem;color:var(--accent3);}
+        .lw-bar{width:80px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;}
+        .lw-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:2px;transition:width 0.4s var(--ease);}
+        .lw-dismiss{flex-shrink:0;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text2);cursor:pointer;padding:4px 9px;font-size:0.78rem;font-weight:700;transition:all 0.15s;font-family:var(--font);}
+        .lw-dismiss:hover{background:rgba(124,58,237,0.18);border-color:rgba(124,58,237,0.5);color:#fff;}
 
         /* ── RESUME MODAL ── */
-        #resumeModal{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);animation:fadeIn 0.2s var(--ease);}
+        #resumeModal{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);animation:fadeIn 0.2s var(--ease);}
         #resumeModal.hidden{display:none;}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .resume-card{background:var(--surface2);border:1px solid rgba(232,98,26,0.28);border-radius:var(--radius);padding:30px 34px;display:flex;flex-direction:column;gap:16px;max-width:440px;width:90%;box-shadow:0 36px 90px rgba(0,0,0,0.85),0 0 44px rgba(232,98,26,0.12);animation:slideUp 0.22s var(--ease);}
+        .resume-card{background:var(--surface2);border:1px solid rgba(124,58,237,0.3);border-radius:var(--radius);padding:30px 34px;display:flex;flex-direction:column;gap:16px;max-width:440px;width:90%;box-shadow:0 36px 90px rgba(0,0,0,0.85),0 0 48px rgba(124,58,237,0.14);animation:slideUp 0.22s var(--ease);}
         @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
         .resume-icon{font-size:2rem;line-height:1;}
         .resume-card h3{font-family:var(--font);font-weight:800;font-size:1.12rem;letter-spacing:-0.03em;}
         .resume-card p{font-size:0.84rem;color:var(--text2);line-height:1.6;font-family:var(--font-body);}
-        .resume-card p strong{color:var(--accent2);font-weight:700;}
+        .resume-card p strong{color:var(--accent3);font-weight:700;}
         .resume-support-note{font-size:0.71rem;color:var(--text3);font-family:var(--font);padding:8px 11px;background:rgba(255,255,255,0.04);border-radius:7px;border-left:2px solid var(--accent);line-height:1.5;}
         .resume-support-note.good{border-left-color:#22c55e;color:#86efac;}
         .resume-support-note.warn{border-left-color:#f59e0b;color:#fcd34d;}
         .resume-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
         .resume-btn{flex:1;padding:11px 18px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);font-weight:700;font-size:0.82rem;transition:all var(--t) var(--ease);}
-        .resume-btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 18px var(--accent-glow);}
-        .resume-btn.primary:hover{background:var(--accent2);transform:translateY(-1px);}
+        .resume-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 18px var(--accent-glow);}
+        .resume-btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px);}
         .resume-btn.secondary{background:rgba(255,255,255,0.06);color:var(--text2);border:1px solid var(--border2);}
         .resume-btn.secondary:hover{background:rgba(255,255,255,0.1);color:var(--text);}
 
@@ -260,16 +294,16 @@
         .shortcut-row{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:0.75rem;font-family:var(--font);}
         .shortcut-key{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:2px 7px;font-weight:700;font-size:0.69rem;color:var(--text2);}
         .shortcut-label{color:var(--text3);}
-        .shortcuts-title{font-family:var(--font);font-weight:700;font-size:0.71rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--accent2);margin-bottom:4px;}
+        .shortcuts-title{font-family:var(--font);font-weight:700;font-size:0.71rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--accent3);margin-bottom:4px;}
         #shortcutsBtn{position:fixed;bottom:24px;right:24px;z-index:601;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;padding:8px 14px;font-family:var(--font);font-size:0.71rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all var(--t);display:none;align-items:center;gap:6px;}
-        #shortcutsBtn:hover{border-color:rgba(232,98,26,0.45);color:var(--text);}
+        #shortcutsBtn:hover{border-color:rgba(124,58,237,0.5);color:var(--text);}
         #shortcutsBtn.visible{display:flex;}
 
         /* ── CONTROLS ROW ── */
         .controls-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 0;}
         .provider-dropdown-wrap{position:relative;min-width:190px;}
         .provider-dropdown-btn{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.79rem;transition:all var(--t) var(--ease);width:100%;justify-content:space-between;}
-        .provider-dropdown-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(232,98,26,0.45);}
+        .provider-dropdown-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(124,58,237,0.5);}
         .prov-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
         .arrow{font-size:0.64rem;transition:transform 0.2s;color:var(--text3);}
         .provider-dropdown-wrap.open .arrow{transform:rotate(180deg);}
@@ -277,12 +311,12 @@
         .provider-dropdown-wrap.open .provider-dropdown-menu{display:block;animation:dropIn 0.14s var(--ease);}
         .provider-option{display:flex;align-items:center;gap:9px;padding:10px 13px;cursor:pointer;transition:background var(--t);font-family:var(--font);font-weight:500;font-size:0.77rem;border-bottom:1px solid var(--border);color:var(--text2);}
         .provider-option:last-child{border-bottom:none;}
-        .provider-option:hover{background:rgba(255,255,255,0.05);color:var(--text);}
-        .provider-option.selected{background:var(--accent-dim);color:var(--accent2);}
+        .provider-option:hover{background:rgba(124,58,237,0.07);color:var(--text);}
+        .provider-option.selected{background:var(--accent-dim);color:var(--accent3);}
         .prov-desc{font-size:0.64rem;color:var(--text3);margin-left:auto;white-space:nowrap;}
-        .audio-toggle{display:flex;gap:3px;padding:3px;background:rgba(255,255,255,0.05);border-radius:10px;border:1px solid var(--border2);}
+        .audio-toggle{display:flex;gap:3px;padding:3px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid var(--border2);}
         .audio-btn{padding:6px 13px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.75rem;transition:all var(--t) var(--ease);background:transparent;color:var(--text3);}
-        .audio-btn.active{background:var(--accent);color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
+        .audio-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
         .audio-btn:hover:not(.active){color:var(--text);}
 
         /* ── EPISODE GRIDS ── */
@@ -291,22 +325,22 @@
         .episode-grid{display:flex;flex-wrap:wrap;gap:5px;max-height:196px;overflow-y:auto;padding:2px;}
         .episode-grid::-webkit-scrollbar{width:3px;}
         .episode-btn{width:38px;height:38px;border-radius:var(--radius-xs);border:1px solid var(--border2);background:rgba(255,255,255,0.04);color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.72rem;transition:all var(--t) var(--ease);flex-shrink:0;position:relative;overflow:hidden;}
-        .episode-btn:hover{border-color:rgba(232,98,26,0.55);color:var(--text);background:rgba(232,98,26,0.09);}
-        .episode-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
-        .episode-btn.in-progress{border-color:rgba(232,98,26,0.38);color:var(--text2);}
-        .episode-btn.in-progress::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);opacity:0.65;}
+        .episode-btn:hover{border-color:rgba(124,58,237,0.6);color:var(--text);background:rgba(124,58,237,0.1);}
+        .episode-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:var(--accent);color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
+        .episode-btn.in-progress{border-color:rgba(124,58,237,0.4);color:var(--text2);}
+        .episode-btn.in-progress::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan));opacity:0.7;}
         .episode-btn.completed{border-color:rgba(34,197,94,0.3);color:var(--text3);}
         .episode-btn.completed::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:#22c55e;opacity:0.55;}
         .s5-ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:265px;overflow-y:auto;padding:2px;margin-top:2px;}
         .s5-ep-card{background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all var(--t) var(--ease);}
-        .s5-ep-card:hover{border-color:rgba(232,98,26,0.55);transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,0.45);}
+        .s5-ep-card:hover{border-color:rgba(124,58,237,0.6);transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,0.45);}
         .s5-ep-card.active{border-color:var(--accent);box-shadow:0 0 18px var(--accent-glow);}
         .s5-ep-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--surface3);}
         .s5-ep-thumb-placeholder{width:100%;aspect-ratio:16/9;background:var(--surface3);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:1.2rem;}
         .s5-ep-label{padding:5px 7px;font-family:var(--font);font-size:0.68rem;font-weight:600;color:var(--text);}
         .s5-ep-label small{display:block;color:var(--text3);font-weight:400;font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
         .s5-ep-progress{height:2px;background:rgba(255,255,255,0.07);}
-        .s5-ep-progress-fill{height:100%;background:var(--accent);transition:width 0.3s;}
+        .s5-ep-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));transition:width 0.3s;}
 
         /* ── WATCH SIDEBAR ── */
         .anime-sidebar{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:13px;position:sticky;top:108px;box-shadow:0 5px 28px rgba(0,0,0,0.35);}
@@ -318,18 +352,18 @@
         .sidebar-tag.star{background:rgba(255,193,7,0.12);color:#ffc107;}
         .sidebar-desc{font-size:0.76rem;color:var(--text2);line-height:1.7;max-height:120px;overflow-y:auto;}
         .sidebar-genres{display:flex;flex-wrap:wrap;gap:4px;}
-        .sidebar-genre{padding:3px 9px;border-radius:999px;font-size:0.64rem;font-weight:500;background:rgba(232,98,26,0.1);color:rgba(232,98,26,0.92);font-family:var(--font);}
+        .sidebar-genre{padding:3px 9px;border-radius:999px;font-size:0.64rem;font-weight:500;background:rgba(124,58,237,0.12);color:rgba(168,85,247,0.92);font-family:var(--font);}
         .related-seasons{display:flex;flex-direction:column;gap:5px;}
         .related-seasons .rel-label{font-family:var(--font);font-size:0.67rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:700;}
         .related-season-item{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 11px;cursor:pointer;transition:background var(--t);display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);}
-        .related-season-item:hover{background:rgba(255,255,255,0.07);border-color:rgba(232,98,26,0.32);}
+        .related-season-item:hover{background:rgba(124,58,237,0.08);border-color:rgba(124,58,237,0.32);}
         .related-season-item span{font-family:var(--font);font-size:0.75rem;font-weight:600;}
         .related-season-item .rel-meta{font-size:0.64rem;color:var(--text3);white-space:nowrap;}
 
         /* ── BROWSE ── */
         .pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:26px;}
         .pagination button{padding:9px 18px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,0.05);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.79rem;cursor:pointer;transition:all var(--t) var(--ease);}
-        .pagination button:hover:not(:disabled){background:rgba(255,255,255,0.09);border-color:rgba(232,98,26,0.45);}
+        .pagination button:hover:not(:disabled){background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.5);}
         .pagination button:disabled{opacity:0.3;cursor:default;}
         .pagination .page-indicator{font-family:var(--font);font-weight:600;color:var(--text2);font-size:0.79rem;}
 
@@ -339,15 +373,23 @@
         @keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         .footer{text-align:center;padding:24px;color:var(--text3);font-size:0.71rem;border-top:1px solid var(--border);margin-top:40px;font-family:var(--font);}
 
-        @media(max-width:900px){.sidebar-col{display:none;}.home-page{flex-direction:column;}.hero-title{font-size:1.65rem;}}
+        /* ── RESPONSIVE ── */
+        @media(max-width:900px){
+            .sidebar-col{display:none;}
+            .home-page{flex-direction:column;}
+            .hero-title{font-size:1.7rem;}
+        }
         @media(max-width:600px){
             .nav-inner{height:54px;padding:0 14px;gap:8px;}
             .nav-logo{font-size:1rem;}
             .nav-logo-icon{width:28px;height:28px;}
             .app{padding:0 14px 60px;}
+            .hero-section{margin:0 -14px;}
             .anime-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
             .history-card{flex:0 0 160px;}
             .watch-title-bar{max-width:calc(100% - 120px);}
+            .controls-row{gap:8px;}
+            .provider-dropdown-wrap{min-width:160px;}
         }
     </style>
 </head>
@@ -511,6 +553,19 @@
                         </div>
                         <iframe id="playerIframe" style="display:none;"
                             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>
+                        <!-- Last Watched Banner — shown for 6 seconds over the player -->
+                        <div id="lastWatchedBanner">
+                            <span class="lw-icon">⏱</span>
+                            <div class="lw-text">
+                                <div class="lw-title" id="lwTitle">—</div>
+                                <div class="lw-sub" id="lwSub">Last watched at <strong id="lwTime">—</strong></div>
+                            </div>
+                            <div class="lw-progress-wrap">
+                                <div class="lw-pct" id="lwPct">—</div>
+                                <div class="lw-bar"><div class="lw-bar-fill" id="lwBarFill" style="width:0%"></div></div>
+                            </div>
+                            <button class="lw-dismiss" onclick="hideLWBanner()">✕</button>
+                        </div>
                     </div>
                     <div id="progressTrackWrap" style="display:none;">
                         <div class="player-progress-track">
@@ -667,23 +722,17 @@
     }
 
     // ── PROVIDERS ───────────────────────────────────────────────────────────
-    // resumeSupport:
-    //   'url-t'     → append ?t=SEC to iframe URL (player reads it on load)
-    //   'url-start' → append &start=SEC
-    //   'postmsg'   → postMessage seek after iframe loads
-    //   'external'  → opens new tab, no resume
-    //   'none'      → wall-clock display only
     const PROVIDERS = [
         { id:'animeplay', name:'Server 1', icon:'⚡', color:'#7c3aed', description:'Fast & reliable',
           getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`,
           supportsAudio:true, external:false, resumeSupport:'url-t' },
-        { id:'megaplay',  name:'Server 2', icon:'🌊', color:'#0284c7', description:'Full HiAnime library',
+        { id:'megaplay',  name:'Server 2', icon:'🌊', color:'#0ea5e9', description:'Full HiAnime library',
           getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`,
           supportsAudio:true, external:false, resumeSupport:'url-t' },
-        { id:'filmu',     name:'Server 3', icon:'🎬', color:'#e11d48', description:'Multi-server HLS',
+        { id:'filmu',     name:'Server 3', icon:'🎬', color:'#ec4899', description:'Multi-server HLS',
           getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`,
           supportsAudio:false, external:false, resumeSupport:'url-start' },
-        { id:'miruro',    name:'Server 4', icon:'🪄', color:'#059669', description:'High quality — new tab',
+        { id:'miruro',    name:'Server 4', icon:'🪄', color:'#10b981', description:'High quality — new tab',
           getUrl:(id,s,ep)=>`https://www.miruro.tv/watch/${id}/-/${ep}`,
           supportsAudio:false, external:true,  resumeSupport:'external' },
         { id:'server5',   name:'Server 5', icon:'🌐', color:'#f97316', description:'Direct embed',
@@ -699,12 +748,6 @@
         if (h>0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
         return `${m}:${String(sec).padStart(2,'0')}`;
     }
-
-    /**
-     * Build the final stream URL, appending the resume timestamp if the
-     * provider supports it via URL param.  This is THE mechanism that actually
-     * makes providers seek on load — the iframe receives ?t=SEC and jumps there.
-     */
     function buildStreamUrl(prov, anime, ep, audio, resumeAtSec) {
         let url = prov.getUrl(anime.id, anime.season, ep, audio);
         const t = Math.floor(resumeAtSec || 0);
@@ -716,7 +759,6 @@
         }
         return url;
     }
-
     function showToast(msg, icon='✅') {
         const t = document.createElement('div'); t.className='toast';
         t.innerHTML = `${icon} ${escapeHTML(msg)}`;
@@ -729,6 +771,49 @@
             (pw.requestFullscreen||pw.webkitRequestFullscreen||function(){}).call(pw);
         } else { (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }
     };
+
+    // ── LAST WATCHED BANNER ──────────────────────────────────────────────────
+    const lwBanner  = document.getElementById('lastWatchedBanner');
+    const lwTitle   = document.getElementById('lwTitle');
+    const lwSub     = document.getElementById('lwSub');
+    const lwTime    = document.getElementById('lwTime');
+    const lwPct     = document.getElementById('lwPct');
+    const lwBarFill = document.getElementById('lwBarFill');
+    let _lwTimer    = null;
+
+    window.hideLWBanner = () => {
+        lwBanner.classList.remove('visible');
+        if (_lwTimer) { clearTimeout(_lwTimer); _lwTimer = null; }
+    };
+
+    /**
+     * Show the "last watched" info banner overlaid on the player for 6 seconds.
+     * Works for every server — it's purely informational (read from localStorage),
+     * so no cross-origin iframe access is needed at all.
+     */
+    function showLastWatchedBanner(animeTitle, epNum, timeSec, durationSec) {
+        if (!timeSec || timeSec < 5) return;
+        const pct = durationSec > 0 ? Math.min(Math.round((timeSec / durationSec) * 100), 100) : null;
+
+        lwTitle.textContent = `${animeTitle} — Episode ${epNum}`;
+        lwTime.textContent  = fmtTime(timeSec);
+        if (pct !== null) {
+            lwPct.textContent       = pct + '%';
+            lwBarFill.style.width   = pct + '%';
+            lwSub.innerHTML = `Last watched at <strong id="lwTime">${fmtTime(timeSec)}</strong>`;
+        } else {
+            lwPct.textContent     = '';
+            lwBarFill.style.width = '0%';
+        }
+
+        lwBanner.classList.add('visible');
+
+        if (_lwTimer) clearTimeout(_lwTimer);
+        _lwTimer = setTimeout(() => {
+            lwBanner.classList.remove('visible');
+            _lwTimer = null;
+        }, 6000);
+    }
 
     // ── STATE ────────────────────────────────────────────────────────────────
     let state = {
@@ -744,7 +829,6 @@
     };
 
     // ── PERSISTENCE ──────────────────────────────────────────────────────────
-    // epProgress shape: { [epNum]: { time, duration, ts } }
     try { const s=localStorage.getItem('thyAnime_history'); if(s) state.watchHistory=JSON.parse(s); } catch(e){}
     function saveHistory() { try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(e){} }
     function getHistoryEntry(id) { return state.watchHistory.find(h=>h.id===id)||null; }
@@ -765,9 +849,6 @@
     }
 
     // ── PROGRESS TRACKING ────────────────────────────────────────────────────
-    // We use wall-clock tracking as a fallback because most providers block
-    // cross-origin postMessage/iframe API access. The real resume relies on
-    // the URL param (?t= / &start=) which the provider player reads natively.
     let _startWall = null, _startSec = 0, _saveTimer = null;
     const progressTrackWrap  = document.getElementById('progressTrackWrap');
     const progressFill       = document.getElementById('progressFill');
@@ -780,7 +861,6 @@
         _startWall = Date.now();
         _startSec  = Math.max(0, startAtSec);
         state.currentTime = _startSec;
-        // Default durations: movie ~90min, episode ~24min
         if (!state.duration || state.duration < 10)
             state.duration = state.selectedAnime?.format === 'MOVIE' ? 5400 : 1440;
         progressTrackWrap.style.display = 'block';
@@ -789,7 +869,6 @@
             const elapsed = (Date.now() - _startWall) / 1000;
             state.currentTime = Math.min(_startSec + elapsed, state.duration);
             updateProgressUI();
-            // Save every ~8 seconds
             if (state.selectedAnime && Math.round(elapsed) % 8 === 0) {
                 saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
             }
@@ -798,7 +877,6 @@
 
     function stopProgressTracking() {
         if (_saveTimer) { clearInterval(_saveTimer); _saveTimer = null; }
-        // Final save
         if (state.selectedAnime && state.currentTime > 5)
             saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
         _startWall = null;
@@ -811,7 +889,7 @@
         progressDurLabel.textContent   = state.duration > 0 ? fmtTime(state.duration) : '—';
     }
 
-    // Receive real timing data from provider players that do emit postMessage
+    // Listen for real timing postMessages from players that support it
     window.addEventListener('message', e => {
         try {
             const d = e.data;
@@ -822,7 +900,6 @@
                 state.currentTime = parseFloat(time);
                 if (duration !== null && !isNaN(duration) && parseFloat(duration) > 0)
                     state.duration = parseFloat(duration);
-                // Re-anchor the wall-clock tracker so it doesn't drift
                 if (_startWall) { _startWall = Date.now(); _startSec = state.currentTime; }
                 updateProgressUI();
                 if (state.selectedAnime)
@@ -832,34 +909,32 @@
     });
 
     // ── RESUME MODAL ─────────────────────────────────────────────────────────
-    const resumeModal      = document.getElementById('resumeModal');
-    const resumeModalText  = document.getElementById('resumeModalText');
-    const resumeSupportNote= document.getElementById('resumeSupportNote');
-    const resumeYesBtn     = document.getElementById('resumeYesBtn');
-    const resumeNoBtn      = document.getElementById('resumeNoBtn');
+    const resumeModal       = document.getElementById('resumeModal');
+    const resumeModalText   = document.getElementById('resumeModalText');
+    const resumeSupportNote = document.getElementById('resumeSupportNote');
+    const resumeYesBtn      = document.getElementById('resumeYesBtn');
+    const resumeNoBtn       = document.getElementById('resumeNoBtn');
 
     function showResumeModal(episode, time, duration, onResume, onFresh) {
         const pct = duration > 0 ? Math.round((time / duration) * 100) : null;
         resumeModalText.innerHTML =
             `Continue <strong>Episode ${episode}</strong> from <strong>${fmtTime(time)}</strong>${pct !== null ? ` (${pct}% watched)` : ''}.`;
-
         const prov = state.selectedProvider;
         let noteClass = 'warn', noteText = '';
         if (prov.resumeSupport === 'url-t' || prov.resumeSupport === 'url-start') {
             noteClass = 'good';
-            noteText  = `✓ ${prov.name} supports auto-seek — will jump straight to ${fmtTime(time)}`;
+            noteText  = `✓ ${prov.name} supports auto-seek — will jump to ${fmtTime(time)}`;
         } else if (prov.resumeSupport === 'postmsg') {
             noteClass = 'warn';
-            noteText  = `⚡ ${prov.name} will attempt to seek after loading (results may vary)`;
+            noteText  = `⚡ ${prov.name} will attempt to seek after loading`;
         } else if (prov.resumeSupport === 'external') {
             noteClass = 'warn';
             noteText  = `↗ ${prov.name} opens in a new tab — resume is manual`;
         } else {
-            noteText = `⏱ Progress is tracked locally; ${prov.name} may not seek automatically`;
+            noteText = `⏱ Progress tracked locally; ${prov.name} may not seek automatically`;
         }
         resumeSupportNote.className = `resume-support-note ${noteClass}`;
         resumeSupportNote.textContent = noteText;
-
         resumeModal.classList.remove('hidden');
         resumeYesBtn.onclick = () => { resumeModal.classList.add('hidden'); onResume(); };
         resumeNoBtn.onclick  = () => { resumeModal.classList.add('hidden'); onFresh(); };
@@ -909,7 +984,7 @@
     async function fetchById(id) { const d=await alQuery(`query($id:Int){Media(id:$id){${MF}}}`,{id}); return d.Media?fmtAnime(d.Media):null; }
 
     // ── SERVER 5 ─────────────────────────────────────────────────────────────
-    const S5 = 'https://spelling-faceted-husked.ngrok-free.dev';
+    const S5  = 'https://spelling-faceted-husked.ngrok-free.dev';
     const S5H = {headers:{'ngrok-skip-browser-warning':'1'}};
     async function s5Search(t)   { const r=await fetch(`${S5}/search?q=${encodeURIComponent(t)}`,S5H); if(!r.ok)throw new Error(`HTTP ${r.status}`); return r.json(); }
     async function s5Eps(sess)   { const r=await fetch(`${S5}/episodes?session=${encodeURIComponent(sess)}`,S5H); if(!r.ok)throw new Error(`HTTP ${r.status}`); return r.json(); }
@@ -931,43 +1006,44 @@
     // ── DOM ──────────────────────────────────────────────────────────────────
     const $  = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
-    const searchInput    = $('#searchInput');
-    const searchDropdown = $('#searchDropdown');
-    const homePage       = $('#homePage');
-    const watchPage      = $('#watchPage');
-    const browsePage_el  = $('#browsePage');
+    const searchInput       = $('#searchInput');
+    const searchDropdown    = $('#searchDropdown');
+    const homePage          = $('#homePage');
+    const watchPage         = $('#watchPage');
+    const browsePage_el     = $('#browsePage');
     const playerPlaceholder = $('#playerPlaceholder');
-    const playerIframe   = $('#playerIframe');
-    const playerWrapper  = $('#playerWrapper');
-    const episodeSection = $('#episodeSection');
-    const episodeGrid    = $('#episodeGrid');
-    const s5EpSection    = $('#s5EpisodeSection');
-    const s5EpGrid       = $('#s5EpisodeGrid');
-    const audioToggle    = $('#audioToggleWrap');
-    const provWrap       = $('#providerDropdownWrap');
-    const provMenu       = $('#providerDropdownMenu');
-    const provDot        = $('#provDot');
-    const provLabel      = $('#provLabel');
-    const historyRow     = $('#historyRow');
-    const continueSection= $('#continueWatchingSection');
-    const browseGrid     = $('#browseGrid');
-    const browsePagination = $('#browsePagination');
-    const sidebarRelations = $('#sidebarRelations');
-    const topAiringList  = $('#topAiringList');
-    const newestGrid     = $('#newestGrid');
-    const popularGrid    = $('#popularGrid');
-    const topRatedGrid   = $('#topRatedGrid');
-    const heroBg         = $('#heroBg');
-    const heroTitle      = $('#heroTitle');
-    const heroGenres     = $('#heroGenres');
-    const heroBadges     = $('#heroBadges');
-    const heroDesc       = $('#heroDesc');
-    const shortcutsBtn   = $('#shortcutsBtn');
-    const shortcutsPanel = $('#shortcutsPanel');
+    const playerIframe      = $('#playerIframe');
+    const playerWrapper     = $('#playerWrapper');
+    const episodeSection    = $('#episodeSection');
+    const episodeGrid       = $('#episodeGrid');
+    const s5EpSection       = $('#s5EpisodeSection');
+    const s5EpGrid          = $('#s5EpisodeGrid');
+    const audioToggle       = $('#audioToggleWrap');
+    const provWrap          = $('#providerDropdownWrap');
+    const provMenu          = $('#providerDropdownMenu');
+    const provDot           = $('#provDot');
+    const provLabel         = $('#provLabel');
+    const historyRow        = $('#historyRow');
+    const continueSection   = $('#continueWatchingSection');
+    const browseGrid        = $('#browseGrid');
+    const browsePagination  = $('#browsePagination');
+    const sidebarRelations  = $('#sidebarRelations');
+    const topAiringList     = $('#topAiringList');
+    const newestGrid        = $('#newestGrid');
+    const popularGrid       = $('#popularGrid');
+    const topRatedGrid      = $('#topRatedGrid');
+    const heroBg            = $('#heroBg');
+    const heroTitle         = $('#heroTitle');
+    const heroGenres        = $('#heroGenres');
+    const heroBadges        = $('#heroBadges');
+    const heroDesc          = $('#heroDesc');
+    const shortcutsBtn      = $('#shortcutsBtn');
+    const shortcutsPanel    = $('#shortcutsPanel');
 
     // ── PLAYER STATES ─────────────────────────────────────────────────────────
     function showPlayerLoading(msg, sub='') {
         stopProgressTracking();
+        hideLWBanner();
         progressTrackWrap.style.display = 'none';
         playerIframe.style.display = 'none';
         playerIframe.src = '';
@@ -976,6 +1052,7 @@
     }
     function showPlayerError(msg) {
         stopProgressTracking();
+        hideLWBanner();
         progressTrackWrap.style.display = 'none';
         playerIframe.style.display = 'none';
         playerIframe.src = '';
@@ -984,6 +1061,7 @@
     }
     function showPlayerIdle() {
         stopProgressTracking();
+        hideLWBanner();
         progressTrackWrap.style.display = 'none';
         playerIframe.style.display = 'none';
         playerIframe.src = '';
@@ -992,15 +1070,6 @@
     }
 
     // ── LOAD STREAM ───────────────────────────────────────────────────────────
-    /**
-     * Main stream loader.
-     * resumeAtSec: how many seconds into the episode to resume.
-     *   - For url-t/url-start providers this is baked into the URL → provider player
-     *     actually seeks there natively when the iframe loads.
-     *   - For postmsg providers we also try a postMessage seek after iframe loads.
-     *   - In all cases we start our wall-clock tracker from resumeAtSec so the
-     *     displayed timer reflects the right position.
-     */
     async function loadStream(resumeAtSec = 0) {
         if (!state.selectedAnime || !state.selectedProvider) return;
         const prov  = state.selectedProvider;
@@ -1008,6 +1077,7 @@
         const ep    = state.selectedEpisode;
 
         stopProgressTracking();
+        hideLWBanner();
         playerIframe.style.display = 'none';
         playerIframe.src = '';
 
@@ -1024,34 +1094,41 @@
             return;
         }
 
-        // Build URL with resume param embedded (the real seek mechanism)
         const url = buildStreamUrl(prov, anime, ep, state.selectedAudio, resumeAtSec);
 
         playerIframe.removeAttribute('sandbox');
         playerIframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
         playerPlaceholder.style.display = 'none';
         playerIframe.style.display = 'block';
-
-        // Clear onload before setting src to avoid stale handlers
         playerIframe.onload = null;
         playerIframe.src = url;
 
-        // After the iframe loads, start tracker from resumeAtSec and attempt postMessage seek
         playerIframe.onload = () => {
             startProgressTracking(resumeAtSec);
+            // Show the last-watched info banner (purely informational, no seek needed)
+            const prog = getEpProgress(anime.id, ep);
+            if (prog && prog.time > 5) {
+                showLastWatchedBanner(anime.title, ep, prog.time, prog.duration);
+            }
             if (prov.resumeSupport === 'postmsg' && resumeAtSec >= 3) {
                 _trySendSeek(resumeAtSec);
             }
         };
 
-        // Also start tracking immediately in case onload fires before we attach
-        // (some browsers fire it synchronously for cached pages)
+        // Start tracking immediately too (handles cached-load browsers)
         startProgressTracking(resumeAtSec);
+
+        // Show the last-watched banner right away (before iframe loads)
+        const progImmediate = getEpProgress(anime.id, ep);
+        if (progImmediate && progImmediate.time > 5) {
+            showLastWatchedBanner(anime.title, ep, progImmediate.time, progImmediate.duration);
+        }
     }
 
     async function loadS5Stream(anime, epNum, resumeAtSec = 0) {
         if (state.server5.isLoading) return;
         state.server5.isLoading = true;
+        hideLWBanner();
         try {
             const cached = state.server5.cacheKey === anime.title
                 && state.server5.animeSession
@@ -1080,9 +1157,19 @@
 
             playerIframe.onload = () => {
                 startProgressTracking(resumeAtSec);
+                const prog = getEpProgress(anime.id, epNum);
+                if (prog && prog.time > 5) {
+                    showLastWatchedBanner(anime.title, epNum, prog.time, prog.duration);
+                }
                 if (resumeAtSec >= 3) _trySendSeek(resumeAtSec);
             };
             startProgressTracking(resumeAtSec);
+
+            // Show banner immediately too
+            const progImmediate = getEpProgress(anime.id, epNum);
+            if (progImmediate && progImmediate.time > 5) {
+                showLastWatchedBanner(anime.title, epNum, progImmediate.time, progImmediate.duration);
+            }
 
             // Prefetch next episode
             const nxt = episodes.find(e => String(e.number) === String(epNum + 1)) || episodes[epNum];
@@ -1099,7 +1186,7 @@
         }
     }
 
-    /** Attempt postMessage seek — try multiple formats used by different players */
+    /** postMessage seek — tries multiple formats used by different players */
     function _trySendSeek(sec) {
         const t = Math.floor(sec);
         const tries = [
@@ -1108,7 +1195,6 @@
             {event:'seek', time:t},
             {action:'seek', time:t},
         ];
-        // Try immediately and again after a delay (player may not be ready)
         [500, 1500, 3000].forEach(delay => {
             setTimeout(() => {
                 tries.forEach(msg => {
@@ -1138,7 +1224,7 @@
                 <div class="s5-ep-label">
                     Episode ${num}
                     ${label ? `<small>${escapeHTML(label)}</small>` : ''}
-                    ${pct > 0 && pct < 92 ? `<small style="color:var(--accent2);">⏱ ${pct}% watched</small>` : ''}
+                    ${pct > 0 && pct < 92 ? `<small style="color:var(--accent3);">⏱ ${pct}% watched</small>` : ''}
                     ${pct >= 92 ? `<small style="color:#22c55e;">✓ Watched</small>` : ''}
                 </div>
                 <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
@@ -1264,7 +1350,7 @@
                     <div class="history-card-title">${escapeHTML(h.title)}</div>
                     <div class="history-card-meta">
                         ${h.format ? `<span>${escapeHTML(h.format)}</span>` : ''}
-                        ${pct > 0 ? `<span style="color:var(--accent2);">${Math.round(pct)}%</span>` : ''}
+                        ${pct > 0 ? `<span style="color:var(--accent3);">${Math.round(pct)}%</span>` : ''}
                     </div>
                 </div>
                 <div class="history-progress-bar">
@@ -1284,7 +1370,6 @@
         state.selectedProvider = PROVIDERS.find(p => !p.external) || PROVIDERS[0];
         state.selectedAudio    = 'sub';
 
-        // Restore last provider + audio from history
         const hist = getHistoryEntry(animeData.id);
         if (hist?.lastProvider) {
             const lp = PROVIDERS.find(p => p.id === hist.lastProvider);
@@ -1292,7 +1377,6 @@
         }
         if (hist?.lastAudio) state.selectedAudio = hist.lastAudio;
 
-        // Decide which episode to start on
         const startEp = forceEpisode !== null ? forceEpisode : (hist?.episode || 1);
         state.selectedEpisode = startEp;
         state.currentTime = 0;
@@ -1309,16 +1393,12 @@
         showToast(`${animeData.title}`, '🎌');
         loadAnimeRelations(animeData.id);
 
-        // Check if we should offer to resume
         const prog = getEpProgress(animeData.id, startEp);
         if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) {
-            // Show resume modal — user picks whether to resume or start fresh
             showResumeModal(
-                startEp,
-                prog.time,
-                prog.duration,
-                () => loadStream(prog.time),   // Resume: load with seek
-                () => loadStream(0)             // Fresh: load from start
+                startEp, prog.time, prog.duration,
+                () => loadStream(prog.time),
+                () => loadStream(0)
             );
         } else {
             loadStream(0);
@@ -1440,6 +1520,7 @@
     // ── PAGES ─────────────────────────────────────────────────────────────────
     window.goHome = () => {
         stopProgressTracking();
+        hideLWBanner();
         homePage.classList.remove('hidden');
         watchPage.classList.remove('active');
         browsePage_el.classList.remove('active');
@@ -1556,7 +1637,6 @@
                     if (changed) {
                         if (prov.id !== 'server5') state.server5.isLoading = false;
                         syncEpisodeUI();
-                        // When switching providers, offer resume if there's progress
                         const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
                         if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) {
                             showResumeModal(state.selectedEpisode, prog.time, prog.duration,
@@ -1597,7 +1677,6 @@
         const idx = state.watchHistory.findIndex(h => h.id === state.selectedAnime?.id);
         if (idx >= 0) { state.watchHistory[idx].lastAudio = audio; saveHistory(); }
         updateAudioToggle();
-        // Reload with current progress so resume param is embedded
         const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
         loadStream(prog && prog.time > 10 ? prog.time : 0);
     };
@@ -1613,8 +1692,9 @@
         const onWatch = watchPage.classList.contains('active');
         if (e.key === '/' && !e.ctrlKey) { e.preventDefault(); searchInput.focus(); return; }
         if (e.key === 'Escape') {
+            if (!resumeModal.classList.contains('hidden')) { resumeModal.classList.add('hidden'); return; }
             if (onWatch) goHome();
-            else { searchDropdown.classList.remove('active'); searchInput.blur(); resumeModal.classList.add('hidden'); }
+            else { searchDropdown.classList.remove('active'); searchInput.blur(); }
             return;
         }
         if (!onWatch) return;
@@ -1651,7 +1731,6 @@
                 state.selectedEpisode--;
                 updateHistory(state.selectedAnime, state.selectedEpisode);
                 syncEpisodeUI();
-                // Offer resume if that episode has progress
                 const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
                 if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) {
                     showResumeModal(state.selectedEpisode, prog.time, prog.duration,
@@ -1717,7 +1796,6 @@
         if (document.visibilityState === 'hidden') {
             stopProgressTracking();
         } else if (watchPage.classList.contains('active') && playerIframe.src && playerIframe.src !== 'about:blank') {
-            // Resume wall-clock from where we left off
             startProgressTracking(state.currentTime);
         }
     });
