@@ -1320,7 +1320,7 @@
     async function fetchById(id) { const d=await alQuery(`query($id:Int){Media(id:$id){${MF}}}`,{id}); return d.Media?fmtAnime(d.Media):null; }
 
     // ── SERVER 5 ──────────────────────────────────────────────────────────────
-    const S5='https://spelling-faceted-husked.ngrok-free.dev';
+    const S5='https://overlying-plausible-lilac.ngrok-free.dev';
     const S5H={headers:{'ngrok-skip-browser-warning':'1'}};
     async function s5Search(t){const r=await fetch(`${S5}/search?q=${encodeURIComponent(t)}`,S5H);if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}
     async function s5Eps(sess){const r=await fetch(`${S5}/episodes?session=${encodeURIComponent(sess)}`,S5H);if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}
