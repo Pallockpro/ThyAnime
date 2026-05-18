@@ -193,7 +193,6 @@
 
         /* ── ANIME GRID ── */
         .anime-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:14px;}
-        /* Manga grid uses same layout but wider cards */
         .manga-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;}
 
         /* ── ANIME CARD ── */
@@ -452,7 +451,6 @@
         .manga-page-img{
             width:100%;height:auto;display:block;border-radius:6px;
             background:var(--surface3);
-            /* lazy: image is revealed as it enters viewport */
         }
         .manga-page-img.loading{
             min-height:200px;
@@ -545,10 +543,8 @@
         .mfs-scroll::-webkit-scrollbar{width:3px;}
         .mfs-scroll::-webkit-scrollbar-thumb{background:rgba(236,72,153,0.3);border-radius:10px;}
         .mfs-page-img{
-            max-width:100%;width:auto;max-height:none;
+            max-width:100%;width:100%;object-fit:contain;
             display:block;
-            /* fit to viewport width */
-            width:100%;object-fit:contain;
         }
 
         /* Fullscreen bottom bar */
@@ -1010,11 +1006,10 @@
     }
 
     // ── MANGADEX API ──────────────────────────────────────────────────────────
-    // MangaDex v5 with CORS proxy for browser access
     const MD_BASE = 'https://api.mangadex.org';
     const MD_PROXY = u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`;
     const MD_PROXY2 = u => `https://corsproxy.io/?${encodeURIComponent(u)}`;
-    const MD_IMG_PROXY = 'https://uploads.mangadex.org'; // direct CDN — no proxy needed
+    const MD_IMG_PROXY = 'https://uploads.mangadex.org';
 
     async function mdFetch(path, params = {}) {
         const url = new URL(MD_BASE + path);
@@ -1023,11 +1018,7 @@
             else url.searchParams.set(k, v);
         });
         const raw = url.toString();
-        const proxies = [
-            raw,
-            MD_PROXY(raw),
-            MD_PROXY2(raw),
-        ];
+        const proxies = [ raw, MD_PROXY(raw), MD_PROXY2(raw) ];
         for (const pu of proxies) {
             try {
                 const r = await fetch(pu, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(12000) });
@@ -1038,65 +1029,26 @@
         throw new Error('MangaDex API unreachable');
     }
 
-    // Search manga
     async function mdSearchManga(query) {
-        const d = await mdFetch('/manga', {
-            title: query,
-            limit: 10,
-            includes: ['cover_art'],
-            contentRating: ['safe','suggestive'],
-            order: { relevance: 'desc' }
-        });
+        const d = await mdFetch('/manga', { title: query, limit: 10, includes: ['cover_art'], contentRating: ['safe','suggestive'], order: { relevance: 'desc' } });
         return d.data || [];
     }
-
-    // Popular manga
     async function mdPopularManga() {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            includes: ['cover_art'],
-            contentRating: ['safe','suggestive'],
-            order: { followedCount: 'desc' },
-            status: ['ongoing','completed']
-        });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], order: { followedCount: 'desc' }, status: ['ongoing','completed'] });
         return d.data || [];
     }
-
-    // Latest updated manga
     async function mdLatestManga() {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            includes: ['cover_art'],
-            contentRating: ['safe','suggestive'],
-            order: { latestUploadedChapter: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], order: { latestUploadedChapter: 'desc' } });
         return d.data || [];
     }
-
-    // Top rated manga
     async function mdTopRatedManga() {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            includes: ['cover_art'],
-            contentRating: ['safe','suggestive'],
-            order: { rating: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], order: { rating: 'desc' } });
         return d.data || [];
     }
-
-    // Manga by genre
     async function mdMangaByGenre(tagId) {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            includes: ['cover_art'],
-            contentRating: ['safe','suggestive'],
-            includedTags: [tagId],
-            order: { followedCount: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], includedTags: [tagId], order: { followedCount: 'desc' } });
         return d.data || [];
     }
-
-    // Get all tags (for genre bar)
     let _mdTagsCache = null;
     async function mdGetTags() {
         if (_mdTagsCache) return _mdTagsCache;
@@ -1106,49 +1058,26 @@
             return _mdTagsCache;
         } catch(_) { return []; }
     }
-
-    // Get chapters for a manga — parallelized for speed
     async function mdGetChapters(mangaId) {
-        // First call to get total
-        const first = await mdFetch('/chapter', {
-            manga: mangaId,
-            translatedLanguage: ['en'],
-            limit: 100,
-            order: { chapter: 'asc' },
-            includes: ['scanlation_group']
-        });
+        const first = await mdFetch('/chapter', { manga: mangaId, translatedLanguage: ['en'], limit: 100, order: { chapter: 'asc' }, includes: ['scanlation_group'] });
         const total = first.total || 0;
         const firstData = first.data || [];
         if (total <= 100) return firstData;
-
-        // Parallel fetches for remaining pages
         const pages = Math.ceil(total / 100);
         const promises = [];
         for (let i = 1; i < pages; i++) {
-            promises.push(mdFetch('/chapter', {
-                manga: mangaId,
-                translatedLanguage: ['en'],
-                limit: 100,
-                offset: i * 100,
-                order: { chapter: 'asc' },
-                includes: ['scanlation_group']
-            }).then(d => d.data || []).catch(() => []));
+            promises.push(mdFetch('/chapter', { manga: mangaId, translatedLanguage: ['en'], limit: 100, offset: i * 100, order: { chapter: 'asc' }, includes: ['scanlation_group'] }).then(d => d.data || []).catch(() => []));
         }
         const rest = await Promise.all(promises);
         return [...firstData, ...rest.flat()];
     }
-
-    // Get chapter pages (at-home server)
     async function mdGetPages(chapterId) {
         const d = await mdFetch(`/at-home/server/${chapterId}`);
         if (!d.baseUrl || !d.chapter) throw new Error('No page data');
         const { baseUrl, chapter } = d;
         const { hash, data: pages } = chapter;
-        // Use data-saver for speed (smaller images, loads faster)
         return pages.map(fn => `${baseUrl}/data-saver/${hash}/${fn}`);
     }
-
-    // Extract cover from manga data
     function mdGetCover(manga, size = 256) {
         const rel = (manga.relationships || []).find(r => r.type === 'cover_art');
         if (!rel?.attributes?.fileName) return '';
@@ -1156,7 +1085,6 @@
         const fn = rel.attributes.fileName;
         return `${MD_IMG_PROXY}/covers/${id}/${fn}.${size}.jpg`;
     }
-
     function fmtManga(m) {
         if (!m) return null;
         const attrs = m.attributes || {};
@@ -1164,19 +1092,19 @@
         const desc  = attrs.description?.en || Object.values(attrs.description || {})[0] || '';
         const tags  = (attrs.tags || []).map(t => t.attributes?.name?.en).filter(Boolean);
         return {
-            id:          m.id,
+            id: m.id,
             title,
-            coverImage:  mdGetCover(m, 256),
-            cover512:    mdGetCover(m, 512),
-            episodes:    0,
-            chapters:    attrs.lastChapter || '?',
+            coverImage: mdGetCover(m, 256),
+            cover512:   mdGetCover(m, 512),
+            episodes: 0,
+            chapters: attrs.lastChapter || '?',
             description: desc.replace(/<[^>]*>/g, '').slice(0, 600),
-            genres:      tags,
-            averageScore:null,
-            format:      'MANGA',
-            season:      attrs.status || 'ongoing',
-            status:      attrs.status || null,
-            isManga:     true,
+            genres: tags,
+            averageScore: null,
+            format: 'MANGA',
+            season: attrs.status || 'ongoing',
+            status: attrs.status || null,
+            isManga: true,
         };
     }
 
@@ -1200,21 +1128,13 @@
 
     // ── HELPERS ───────────────────────────────────────────────────────────────
     function escapeHTML(s) { const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML; }
-    function fmtTime(s) {
-        if (!s||isNaN(s)||s<0) return '0:00';
-        s=Math.floor(s);
-        const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
-        if (h>0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-        return `${m}:${String(sec).padStart(2,'0')}`;
-    }
+    function fmtTime(s) { if(!s||isNaN(s)||s<0) return '0:00'; s=Math.floor(s); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; return `${m}:${String(sec).padStart(2,'0')}`; }
     function buildStreamUrl(prov, anime, ep, audio, resumeAtSec) {
         let url = prov.getUrl(anime.id, anime.season, ep, audio);
         const t = Math.floor(resumeAtSec || 0);
         if (t >= 3) {
-            if (prov.resumeSupport === 'url-t')
-                url += (url.includes('?') ? '&' : '?') + `t=${t}`;
-            else if (prov.resumeSupport === 'url-start')
-                url += (url.includes('?') ? '&' : '?') + `start=${t}`;
+            if (prov.resumeSupport === 'url-t') url += (url.includes('?') ? '&' : '?') + `t=${t}`;
+            else if (prov.resumeSupport === 'url-start') url += (url.includes('?') ? '&' : '?') + `start=${t}`;
         }
         return url;
     }
@@ -1226,9 +1146,8 @@
     }
     window.toggleFullscreen = () => {
         const pw = document.getElementById('playerWrapper');
-        if (!document.fullscreenElement&&!document.webkitFullscreenElement) {
-            (pw.requestFullscreen||pw.webkitRequestFullscreen||function(){}).call(pw);
-        } else { (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }
+        if (!document.fullscreenElement&&!document.webkitFullscreenElement) (pw.requestFullscreen||pw.webkitRequestFullscreen||function(){}).call(pw);
+        else (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
     };
 
     // ── LAST WATCHED BANNER ───────────────────────────────────────────────────
@@ -1239,27 +1158,21 @@
     const lwPct     = document.getElementById('lwPct');
     const lwBarFill = document.getElementById('lwBarFill');
     let _lwTimer    = null;
-    window.hideLWBanner = () => {
-        lwBanner.classList.remove('visible');
-        if (_lwTimer) { clearTimeout(_lwTimer); _lwTimer = null; }
-    };
+    window.hideLWBanner = () => { lwBanner.classList.remove('visible'); if (_lwTimer) { clearTimeout(_lwTimer); _lwTimer = null; } };
     function showLastWatchedBanner(animeTitle, epNum, timeSec, durationSec) {
         if (!timeSec || timeSec < 5) return;
         const pct = durationSec > 0 ? Math.min(Math.round((timeSec / durationSec) * 100), 100) : null;
         lwTitle.textContent = `${animeTitle} — Episode ${epNum}`;
         lwTime.textContent  = fmtTime(timeSec);
-        if (pct !== null) {
-            lwPct.textContent     = pct + '%';
-            lwBarFill.style.width = pct + '%';
-            lwSub.innerHTML = `Last watched at <strong id="lwTime">${fmtTime(timeSec)}</strong>`;
-        } else { lwPct.textContent=''; lwBarFill.style.width='0%'; }
+        if (pct !== null) { lwPct.textContent = pct+'%'; lwBarFill.style.width = pct+'%'; lwSub.innerHTML = `Last watched at <strong id="lwTime">${fmtTime(timeSec)}</strong>`; }
+        else { lwPct.textContent=''; lwBarFill.style.width='0%'; }
         lwBanner.classList.add('visible');
         if (_lwTimer) clearTimeout(_lwTimer);
         _lwTimer = setTimeout(() => { lwBanner.classList.remove('visible'); _lwTimer=null; }, 6000);
     }
 
     // ── STATE ─────────────────────────────────────────────────────────────────
-    let appMode = 'anime'; // 'anime' | 'manga'
+    let appMode = 'anime';
     let state = {
         selectedAnime:null, selectedEpisode:1,
         selectedProvider:PROVIDERS[0], selectedAudio:'sub',
@@ -1271,7 +1184,6 @@
         server5:{ animeSession:null, episodes:[], isLoading:false, cacheKey:null },
         currentTime:0, duration:0,
 
-        // Manga state
         mangaMode:{
             selectedManga:null,
             chapters:[],
@@ -1293,13 +1205,9 @@
         const idx = state.watchHistory.findIndex(h=>h.id===animeId);
         if (idx<0) return;
         if (!state.watchHistory[idx].epProgress) state.watchHistory[idx].epProgress={};
-        state.watchHistory[idx].epProgress[epNum] = {
-            time:Math.floor(time),
-            duration:Math.floor(duration||1440),
-            ts:Date.now()
-        };
-        state.watchHistory[idx].episode    = epNum;
-        state.watchHistory[idx].timestamp  = Date.now();
+        state.watchHistory[idx].epProgress[epNum] = { time:Math.floor(time), duration:Math.floor(duration||1440), ts:Date.now() };
+        state.watchHistory[idx].episode = epNum;
+        state.watchHistory[idx].timestamp = Date.now();
         saveHistory();
     }
 
@@ -1310,27 +1218,23 @@
     const progressTimeLabel  = document.getElementById('progressTimeLabel');
     const progressDurLabel   = document.getElementById('progressDurLabel');
     const progressResumeNote = document.getElementById('progressResumeNote');
-
     function startProgressTracking(startAtSec=0) {
         stopProgressTracking();
         _startWall=Date.now(); _startSec=Math.max(0,startAtSec);
         state.currentTime=_startSec;
-        if (!state.duration||state.duration<10)
-            state.duration=state.selectedAnime?.format==='MOVIE'?5400:1440;
+        if (!state.duration||state.duration<10) state.duration=state.selectedAnime?.format==='MOVIE'?5400:1440;
         progressTrackWrap.style.display='block';
         progressResumeNote.textContent=_startSec>5?`↩ Resumed from ${fmtTime(_startSec)}`:'';
         _saveTimer=setInterval(()=>{
             const elapsed=(Date.now()-_startWall)/1000;
             state.currentTime=Math.min(_startSec+elapsed,state.duration);
             updateProgressUI();
-            if (state.selectedAnime&&Math.round(elapsed)%8===0)
-                saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+            if (state.selectedAnime&&Math.round(elapsed)%8===0) saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
         },1500);
     }
     function stopProgressTracking() {
         if (_saveTimer){clearInterval(_saveTimer);_saveTimer=null;}
-        if (state.selectedAnime&&state.currentTime>5)
-            saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+        if (state.selectedAnime&&state.currentTime>5) saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
         _startWall=null;
     }
     function updateProgressUI() {
@@ -1395,9 +1299,9 @@
             isManga:false,
         };
     }
-    async function fetchTrending()  { const d=await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);   return (d.Page?.media||[]).filter(Boolean); }
+    async function fetchTrending()  { const d=await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`); return (d.Page?.media||[]).filter(Boolean); }
     async function fetchPopular()   { const d=await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}}}`); return (d.Page?.media||[]).filter(Boolean); }
-    async function fetchTopRated()  { const d=await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`);      return (d.Page?.media||[]).filter(Boolean); }
+    async function fetchTopRated()  { const d=await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`); return (d.Page?.media||[]).filter(Boolean); }
     async function searchAnilist(q) {
         if (!q||q.trim().length<2) return [];
         const d=await alQuery(`query($s:String){Page(perPage:10){media(search:$s,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`,{s:q.trim()});
@@ -1411,10 +1315,7 @@
         const RF=`relations{edges{node{id title{romaji english}format season seasonYear}relationType}}`;
         const d=await alQuery(`query($id:Int){Media(id:$id){${RF}}}`,{id});
         if (!d.Media) return [];
-        return (d.Media.relations?.edges||[])
-            .filter(e=>e.relationType==='SEQUEL'||e.relationType==='PREQUEL')
-            .map(e=>({id:e.node.id,title:e.node.title?.english||e.node.title?.romaji||'Unknown',
-                       format:e.node.format||'',season:e.node.season&&e.node.seasonYear?`${e.node.season} ${e.node.seasonYear}`:'',relationType:e.relationType}));
+        return (d.Media.relations?.edges||[]).filter(e=>e.relationType==='SEQUEL'||e.relationType==='PREQUEL').map(e=>({id:e.node.id,title:e.node.title?.english||e.node.title?.romaji||'Unknown',format:e.node.format||'',season:e.node.season&&e.node.seasonYear?`${e.node.season} ${e.node.seasonYear}`:'',relationType:e.relationType}));
     }
     async function fetchById(id) { const d=await alQuery(`query($id:Int){Media(id:$id){${MF}}}`,{id}); return d.Media?fmtAnime(d.Media):null; }
 
@@ -1426,8 +1327,7 @@
     function s5Embed(as,es,title){return `${S5}/embed?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}&title=${encodeURIComponent(title)}&ngrok-skip-browser-warning=1`;}
     function s5Prefetch(as,es){fetch(`${S5}/prefetch?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}`,S5H).catch(()=>{});}
     async function s5Load(title) {
-        if (state.server5.cacheKey===title&&state.server5.animeSession&&state.server5.episodes.length)
-            return {animeSession:state.server5.animeSession,episodes:state.server5.episodes};
+        if (state.server5.cacheKey===title&&state.server5.animeSession&&state.server5.episodes.length) return {animeSession:state.server5.animeSession,episodes:state.server5.episodes};
         const res=await s5Search(title);
         if (!Array.isArray(res)||!res.length) throw new Error(`"${title}" not found on Server 5`);
         const best=res.find(r=>(r.title||'').toLowerCase()===title.toLowerCase())||res[0];
@@ -1480,37 +1380,32 @@
     // ── ANIME GENRE BAR ───────────────────────────────────────────────────────
     const ANIME_GENRES = ['All','Action','Adventure','Comedy','Drama','Ecchi','Fantasy','Horror','Mahou Shoujo','Mecha','Mystery','Psychological','Romance','Sci-Fi','Slice of Life','Sports','Supernatural','Thriller'];
     function renderAnimeGenreBar() {
-        genreBarInner.innerHTML = ANIME_GENRES.map(g=>
-            `<button class="genre-btn${state.activeGenre===g?' active':''}" onclick="setGenre('${g}',this)">${escapeHTML(g)}</button>`
-        ).join('');
+        genreBarInner.innerHTML = ANIME_GENRES.map(g=> `<button class="genre-btn${state.activeGenre===g?' active':''}" onclick="setGenre('${g}',this)">${escapeHTML(g)}</button>` ).join('');
     }
 
     // ── MANGA GENRE BAR ───────────────────────────────────────────────────────
-    // Map genre names to MangaDex tag IDs (popular genres)
     const MANGA_GENRE_MAP = {
         'All': null,
-        'Action':        '391b0423-d847-456f-aff0-8b0cfc03066b',
-        'Adventure':     '87cc87cd-a395-47af-b27a-93258283bbc6',
-        'Comedy':        '4d32cc48-9f00-4cca-9b5a-a839f0764984',
-        'Drama':         'b9af3a63-f058-46de-a9a0-e0c13906197a',
-        'Fantasy':       'cdc58593-87dd-415e-bbc0-2ec27bf404cc',
-        'Horror':        'cdad7e68-1419-41dd-bdce-27753074a640',
-        'Mystery':       'ee968100-4191-4968-93d3-f68d863pac5b', // approx
-        'Romance':       '423e2eae-a59a-4997-bde5-0d7b8f2a5c59',
-        'Sci-Fi':        '256c8bd9-4904-4360-bf4f-508a76d67183',
+        'Action': '391b0423-d847-456f-aff0-8b0cfc03066b',
+        'Adventure': '87cc87cd-a395-47af-b27a-93258283bbc6',
+        'Comedy': '4d32cc48-9f00-4cca-9b5a-a839f0764984',
+        'Drama': 'b9af3a63-f058-46de-a9a0-e0c13906197a',
+        'Fantasy': 'cdc58593-87dd-415e-bbc0-2ec27bf404cc',
+        'Horror': 'cdad7e68-1419-41dd-bdce-27753074a640',
+        'Mystery': 'ee968100-4191-4968-93d3-f68d863pac5b',
+        'Romance': '423e2eae-a59a-4997-bde5-0d7b8f2a5c59',
+        'Sci-Fi': '256c8bd9-4904-4360-bf4f-508a76d67183',
         'Slice of Life': 'e5301a23-ebd9-49dd-a0cb-2add944c7fe9',
-        'Sports':        '69964a64-2f90-4d33-beeb-f3ed2875eb4c',
+        'Sports': '69964a64-2f90-4d33-beeb-f3ed2875eb4c',
         'Psychological': '3b60b75c-a2d7-4860-ab56-05f391bb889c',
-        'Supernatural':  'eabc5b4c-6aff-42f3-b657-3e90cbd00b75',
-        'Isekai':        'ace04997-f6bd-436e-b261-779182193d3d',
-        'Mecha':         'a1f53773-c69a-550d-3f5f-8e3038fcbcf9',
-        'Historical':    '33771934-028e-4cb3-8744-691e866a923e',
+        'Supernatural': 'eabc5b4c-6aff-42f3-b657-3e90cbd00b75',
+        'Isekai': 'ace04997-f6bd-436e-b261-779182193d3d',
+        'Mecha': 'a1f53773-c69a-550d-3f5f-8e3038fcbcf9',
+        'Historical': '33771934-028e-4cb3-8744-691e866a923e',
     };
     async function renderMangaGenreBar() {
         const genres = Object.keys(MANGA_GENRE_MAP);
-        genreBarInner.innerHTML = genres.map(g=>
-            `<button class="genre-btn${state.mangaMode.activeGenreTag===g?' active':''}" onclick="setMangaGenre('${g}',this)">${escapeHTML(g)}</button>`
-        ).join('');
+        genreBarInner.innerHTML = genres.map(g=> `<button class="genre-btn${state.mangaMode.activeGenreTag===g?' active':''}" onclick="setMangaGenre('${g}',this)">${escapeHTML(g)}</button>` ).join('');
     }
     window.setMangaGenre = async (genre, btn) => {
         state.mangaMode.activeGenreTag = genre;
@@ -1525,34 +1420,26 @@
         document.getElementById('modeBtnAnime').classList.toggle('active', mode==='anime');
         document.getElementById('modeBtnManga').classList.toggle('active', mode==='manga');
         goHome(true);
-        if (mode==='anime') {
-            renderAnimeGenreBar();
-            await loadHomePage();
-        } else {
-            await renderMangaGenreBar();
-            await loadMangaHome();
-        }
+        if (mode==='anime') { renderAnimeGenreBar(); await loadHomePage(); }
+        else { await renderMangaGenreBar(); await loadMangaHome(); }
     };
 
     // ── PLAYER STATES ─────────────────────────────────────────────────────────
     function showPlayerLoading(msg,sub='') {
         stopProgressTracking(); hideLWBanner();
-        progressTrackWrap.style.display='none';
-        playerIframe.style.display='none'; playerIframe.src='';
+        progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
         playerPlaceholder.style.display='flex';
         playerPlaceholder.innerHTML=`<div class="server5-loading"><div class="spinner"></div><span class="status-text">${escapeHTML(msg)}</span>${sub?`<span class="sub-text">${escapeHTML(sub)}</span>`:''}</div>`;
     }
     function showPlayerError(msg) {
         stopProgressTracking(); hideLWBanner();
-        progressTrackWrap.style.display='none';
-        playerIframe.style.display='none'; playerIframe.src='';
+        progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
         playerPlaceholder.style.display='flex';
         playerPlaceholder.innerHTML=`<span class="big-icon" style="animation:none;">⚠️</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`;
     }
     function showPlayerIdle() {
         stopProgressTracking(); hideLWBanner();
-        progressTrackWrap.style.display='none';
-        playerIframe.style.display='none'; playerIframe.src='';
+        progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
         playerPlaceholder.style.display='flex';
         playerPlaceholder.innerHTML=`<span class="big-icon">🎬</span><p>Select an episode to start streaming</p>`;
     }
@@ -1564,17 +1451,10 @@
         stopProgressTracking(); hideLWBanner();
         playerIframe.style.display='none'; playerIframe.src='';
         if (prov.id==='server5'){await loadS5Stream(anime,ep,resumeAtSec);return;}
-        if (prov.external){
-            const url=prov.getUrl(anime.id,anime.season,ep,state.selectedAudio);
-            window.open(url,'_blank');
-            showToast(`Opening ${prov.name} in new tab`,'↗️');
-            showPlayerIdle(); return;
-        }
+        if (prov.external){ window.open(prov.getUrl(anime.id,anime.season,ep,state.selectedAudio),'_blank'); showToast(`Opening ${prov.name} in new tab`,'↗️'); showPlayerIdle(); return; }
         const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
-        playerIframe.removeAttribute('sandbox');
-        playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
-        playerPlaceholder.style.display='none';
-        playerIframe.style.display='block';
+        playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
+        playerPlaceholder.style.display='none'; playerIframe.style.display='block';
         playerIframe.onload=null; playerIframe.src=url;
         playerIframe.onload=()=>{
             startProgressTracking(resumeAtSec);
@@ -1593,18 +1473,15 @@
         try {
             const cached=state.server5.cacheKey===anime.title&&state.server5.animeSession&&state.server5.episodes.length>0;
             if (!cached) showPlayerLoading('Searching Server 5…',`Looking up "${anime.title}"`);
-            else         showPlayerLoading('Loading episode…',`Episode ${epNum}`);
+            else showPlayerLoading('Loading episode…',`Episode ${epNum}`);
             const {animeSession,episodes}=await s5Load(anime.title);
             if (!cached) renderS5Episodes(episodes,epNum);
             const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
             if (!ep?.session) throw new Error(`Episode ${epNum} not found`);
             const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
-            playerIframe.removeAttribute('sandbox');
-            playerIframe.setAttribute('allow','autoplay; fullscreen');
-            playerPlaceholder.style.display='none';
-            playerIframe.style.display='block';
-            playerIframe.onload=null;
-            playerIframe.src=s5Embed(animeSession,ep.session,epTitle);
+            playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; fullscreen');
+            playerPlaceholder.style.display='none'; playerIframe.style.display='block';
+            playerIframe.onload=null; playerIframe.src=s5Embed(animeSession,ep.session,epTitle);
             playerIframe.onload=()=>{
                 startProgressTracking(resumeAtSec);
                 const prog=getEpProgress(anime.id,epNum);
@@ -1617,22 +1494,15 @@
             const nxt=episodes.find(e=>String(e.number)===String(epNum+1))||episodes[epNum];
             if (nxt?.session) s5Prefetch(animeSession,nxt.session);
             s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c=>c.classList.toggle('active',String(c.dataset.epnum)===String(ep.number||epNum)));
-        } catch(err) {
-            showPlayerError(`Server 5: ${err.message}. Try another server.`);
-            showToast('Server 5 failed — try another server','⚠️');
-        } finally { state.server5.isLoading=false; }
+        } catch(err) { showPlayerError(`Server 5: ${err.message}. Try another server.`); showToast('Server 5 failed — try another server','⚠️'); }
+        finally { state.server5.isLoading=false; }
     }
 
     function _trySendSeek(sec) {
         const t=Math.floor(sec);
         const tries=[{type:'seek',time:t},{event:'command',func:'seekTo',args:[t]},{event:'seek',time:t},{action:'seek',time:t}];
         [500,1500,3000].forEach(delay=>{
-            setTimeout(()=>{
-                tries.forEach(msg=>{
-                    try{playerIframe.contentWindow?.postMessage(msg,'*');}catch(_){}
-                    try{playerIframe.contentWindow?.postMessage(JSON.stringify(msg),'*');}catch(_){}
-                });
-            },delay);
+            setTimeout(()=>{ tries.forEach(msg=>{ try{playerIframe.contentWindow?.postMessage(msg,'*');}catch(_){} try{playerIframe.contentWindow?.postMessage(JSON.stringify(msg),'*');}catch(_){} }); },delay);
         });
     }
 
@@ -1649,15 +1519,13 @@
             card.className='s5-ep-card'+(String(num)===String(activeEpNum)?' active':'');
             card.dataset.epnum=num;
             card.innerHTML=`
-                ${ep.snapshot?`<img class="s5-ep-thumb" src="${escapeHTML(ep.snapshot)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:``}
-                <div class="s5-ep-thumb-placeholder" style="${ep.snapshot?'display:none':''}">▶</div>
+                ${ep.snapshot?`<img class="s5-ep-thumb" src="${escapeHTML(ep.snapshot)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:`<div class="s5-ep-thumb-placeholder" style="display:flex">▶</div>`}
                 <div class="s5-ep-label">Episode ${num}${label?`<small>${escapeHTML(label)}</small>`:''}${pct>0&&pct<92?`<small style="color:var(--accent3);">⏱ ${pct}% watched</small>`:''}${pct>=92?`<small style="color:#22c55e;">✓ Watched</small>`:''}</div>
                 <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
             card.addEventListener('click',()=>{
                 state.selectedEpisode=num; updateHistory(state.selectedAnime,num);
                 const p=getEpProgress(state.selectedAnime?.id,num);
-                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92)
-                    showResumeModal(num,p.time,p.duration,()=>loadS5Stream(state.selectedAnime,num,p.time),()=>loadS5Stream(state.selectedAnime,num,0));
+                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(num,p.time,p.duration,()=>loadS5Stream(state.selectedAnime,num,p.time),()=>loadS5Stream(state.selectedAnime,num,0));
                 else loadS5Stream(state.selectedAnime,num,0);
             });
             s5EpGrid.appendChild(card);
@@ -1691,8 +1559,7 @@
                 const ep=parseInt(btn.dataset.ep);
                 state.selectedEpisode=ep; renderStdEpisodes(); updateHistory(state.selectedAnime,ep);
                 const p=getEpProgress(animeId,ep);
-                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92)
-                    showResumeModal(ep,p.time,p.duration,()=>loadStream(p.time),()=>loadStream(0));
+                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(ep,p.time,p.duration,()=>loadStream(p.time),()=>loadStream(0));
                 else loadStream(0);
             });
         });
@@ -1723,9 +1590,7 @@
     function renderWatchHistory() {
         if (!state.watchHistory.length){continueSection.style.display='none';return;}
         continueSection.style.display='block';
-        document.getElementById('continueTitle').innerHTML = appMode==='manga'
-            ? '📖 <strong>Continue Reading</strong>'
-            : '⏳ <strong>Continue Watching</strong>';
+        document.getElementById('continueTitle').innerHTML = appMode==='manga' ? '📖 <strong>Continue Reading</strong>' : '⏳ <strong>Continue Watching</strong>';
         historyRow.innerHTML='';
         const seen=new Set(), unique=[];
         for (const h of state.watchHistory){
@@ -1786,8 +1651,7 @@
         showPlayerIdle(); openWatchPage(); $('#watchPageTitle').textContent=animeData.title;
         showToast(`${animeData.title}`,'🎌'); loadAnimeRelations(animeData.id);
         const prog=getEpProgress(animeData.id,startEp);
-        if (prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92)
-            showResumeModal(startEp,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
+        if (prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(startEp,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
         else loadStream(0);
     }
 
@@ -1805,7 +1669,6 @@
         $('#mangaReadTitle').textContent = mangaData.title;
         document.getElementById('mangaSidebarTitle').textContent = mangaData.title;
 
-        // Show sidebar
         const sidebar = document.getElementById('mangaSidebar');
         sidebar.style.display = 'flex';
         if (mangaData.coverImage) {
@@ -1823,7 +1686,6 @@
 
         showToast(`${mangaData.title}`,'📖');
 
-        // Load chapters — show loading state
         const container = document.getElementById('mangaPagesContainer');
         container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading chapters…</p><small>Fetching chapter list</small></div>`;
 
@@ -1834,9 +1696,7 @@
             buildChapterSelect(chapters);
 
             const hist = getHistoryEntry(mangaData.id);
-            const startChIdx = forceChapter !== null
-                ? Math.max(0, chapters.findIndex((_,i)=>i===forceChapter-1))
-                : (hist?.episode ? Math.max(0, parseInt(hist.episode)-1) : 0);
+            const startChIdx = forceChapter !== null ? Math.max(0, chapters.findIndex((_,i)=>i===forceChapter-1)) : (hist?.episode ? Math.max(0, parseInt(hist.episode)-1) : 0);
             mm.currentChapterIndex = Math.min(startChIdx, chapters.length-1);
             await loadMangaChapter(mm.currentChapterIndex);
         } catch(err) {
@@ -1863,9 +1723,7 @@
         document.getElementById('mangaChapterSelect').value = String(idx);
         document.getElementById('mfsChapterSelect').value = String(idx);
         await loadMangaChapter(idx);
-        // Also update fullscreen if open
-        if (document.getElementById('mangaFullscreenOverlay').classList.contains('active'))
-            await mfsLoadChapter(idx);
+        if (document.getElementById('mangaFullscreenOverlay').classList.contains('active')) await mfsLoadChapter(idx);
     };
     window.mfsChapterChange = async (val) => {
         const idx = parseInt(val);
@@ -1888,7 +1746,7 @@
         }).join('');
     }
 
-    // ── LOAD MANGA CHAPTER (with fast lazy loading) ───────────────────────────
+    // ── LOAD MANGA CHAPTER (fast lazy loading, auto‑retry broken images) ──────
     async function loadMangaChapter(chapterIndex) {
         const mm = state.mangaMode;
         if (mm.isLoadingChapter) return;
@@ -1900,27 +1758,20 @@
         const chNum = chapter.attributes?.chapter || (chapterIndex+1);
         container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading Chapter ${chNum}…</p><small>Fetching pages</small></div>`;
 
-        // Update nav buttons
         document.getElementById('mangaPrevChBtn').disabled = chapterIndex<=0;
         document.getElementById('mangaNextChBtn').disabled = chapterIndex>=mm.chapters.length-1;
         document.getElementById('mangaPrevChBtn2').disabled = chapterIndex<=0;
         document.getElementById('mangaNextChBtn2').disabled = chapterIndex>=mm.chapters.length-1;
-
-        // Update chapter select
         document.getElementById('mangaChapterSelect').value = String(chapterIndex);
         document.getElementById('mfsChapterSelect').value = String(chapterIndex);
-
-        // Update chapter list highlight
         document.querySelectorAll('.manga-chapter-item').forEach((el,i)=>el.classList.toggle('active',i===chapterIndex));
 
-        // Save progress
         updateHistory(mm.selectedManga, chapterIndex+1);
 
         try {
             const pages = await mdGetPages(chapter.id);
             mm.currentPages = pages;
 
-            // Render pages with lazy loading — first 3 eager, rest lazy
             container.innerHTML = '';
             pages.forEach((url, i) => {
                 const wrapper = document.createElement('div');
@@ -1933,30 +1784,29 @@
                 const img = document.createElement('img');
                 img.className = 'manga-page-img loading';
                 img.alt = `Page ${i+1}`;
-                // Eager-load first 3, lazy-load rest for performance
                 img.loading = i < 3 ? 'eager' : 'lazy';
                 img.decoding = 'async';
+                img.dataset.originalSrc = url;
                 img.onload  = () => img.classList.remove('loading');
-                img.onerror = () => {
-                    img.classList.remove('loading');
-                    img.classList.add('error-state');
-                    img.alt = `Page ${i+1} failed to load`;
-                    // Retry with proxy
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                    if (!img.dataset.retried) { img.dataset.retried='1'; img.src=proxyUrl; }
+                img.onerror = function() {
+                    if (!this.dataset.retried) {
+                        this.dataset.retried = '1';
+                        this.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                        return;
+                    }
+                    // show placeholder after final failure
+                    this.classList.remove('loading');
+                    this.classList.add('error-state');
+                    this.alt = `Page ${i+1} failed to load`;
                 };
                 img.src = url;
-
                 wrapper.appendChild(badge);
                 wrapper.appendChild(img);
                 container.appendChild(wrapper);
             });
 
-            // Update progress bar on scroll
             updateMangaProgress(container);
-            container.addEventListener('scroll',()=>updateMangaProgress(container),{passive:true});
-            document.addEventListener('scroll',()=>updateMangaProgress(container),{passive:true});
-
+            window.addEventListener('scroll', mangaScrollHandler, {passive: true});
         } catch(err) {
             container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">⚠️</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectChapterByIndex(${chapterIndex})">Retry</button></div>`;
         } finally {
@@ -1964,14 +1814,23 @@
         }
     }
 
+    let mangaScrollTimer = null;
+    function mangaScrollHandler() {
+        if (!mangaReadPage.classList.contains('active')) return;
+        if (mangaScrollTimer) cancelAnimationFrame(mangaScrollTimer);
+        mangaScrollTimer = requestAnimationFrame(() => updateMangaProgress(document.getElementById('mangaPagesContainer')));
+    }
+
     function updateMangaProgress(container) {
         if (!container) return;
         const imgs = container.querySelectorAll('.manga-page-img');
         if (!imgs.length) return;
-        // Find how far we've scrolled relative to the container
+        const rect = container.getBoundingClientRect();
+        const viewHeight = window.innerHeight;
+        if (rect.bottom < 0 || rect.top > viewHeight) return;
+        const totalHeight = container.scrollHeight;
         const scrolled = window.scrollY - container.offsetTop;
-        const total = container.scrollHeight - window.innerHeight;
-        const pct = total > 0 ? Math.min(Math.max((scrolled/total)*100, 0), 100) : 0;
+        const pct = totalHeight > 0 ? Math.min(Math.max((scrolled/totalHeight)*100, 0), 100) : 0;
         document.getElementById('mangaProgressFill').style.width = pct+'%';
     }
 
@@ -1998,10 +1857,9 @@
         document.body.style.overflow = 'hidden';
         document.getElementById('mfsTitle').textContent = mm.selectedManga.title;
         _mfsCurrentChapterIndex = mm.currentChapterIndex;
-        buildChapterSelect(mm.chapters); // ensure select is populated
+        buildChapterSelect(mm.chapters);
         document.getElementById('mfsChapterSelect').value = String(_mfsCurrentChapterIndex);
         await mfsLoadChapter(_mfsCurrentChapterIndex);
-        // Auto-hide bars after 3s
         _mfsTriggerAutoHide();
     };
     window.closeMangaFullscreen = () => {
@@ -2026,13 +1884,11 @@
         fsScroll.innerHTML = `<div class="manga-chapter-loading" style="background:transparent"><div class="manga-spinner"></div><p>Loading Chapter ${chNum}…</p></div>`;
 
         try {
-            // Use cached pages if same chapter
             let pages = mm.currentPages;
             if (idx !== state.mangaMode.currentChapterIndex || !pages.length) {
                 pages = await mdGetPages(chapter.id);
                 mm.currentPages = pages;
             }
-            // Re-fetch if needed
             if (!pages.length) pages = await mdGetPages(chapter.id);
 
             fsScroll.innerHTML = '';
@@ -2043,14 +1899,14 @@
                 img.alt = `Page ${i+1}`;
                 img.loading = i<3?'eager':'lazy';
                 img.decoding = 'async';
-                img.onerror = () => {
-                    if (!img.dataset.retried){img.dataset.retried='1';img.src=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;}
+                img.dataset.originalSrc = url;
+                img.onerror = function() {
+                    if (!this.dataset.retried) { this.dataset.retried='1'; this.src=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; }
                 };
                 img.src = url;
                 fsScroll.appendChild(img);
             });
 
-            // Scroll progress update
             fsScroll.addEventListener('scroll',()=>{
                 const s=fsScroll.scrollTop, max=fsScroll.scrollHeight-fsScroll.clientHeight;
                 const pct=max>0?(s/max)*100:0;
@@ -2085,9 +1941,7 @@
         const bottombar = document.getElementById('mfsBottombar');
         topbar.classList.remove('hidden'); bottombar.classList.remove('hidden');
         if (_mfsHideTimer) clearTimeout(_mfsHideTimer);
-        _mfsHideTimer = setTimeout(()=>{
-            topbar.classList.add('hidden'); bottombar.classList.add('hidden');
-        }, 3500);
+        _mfsHideTimer = setTimeout(()=>{ topbar.classList.add('hidden'); bottombar.classList.add('hidden'); }, 3500);
     }
     fsScroll.addEventListener('click',_mfsTriggerAutoHide);
     fsOverlay.addEventListener('mousemove',_mfsTriggerAutoHide);
@@ -2158,7 +2012,8 @@
         div.className='anime-card'+(isManga?' manga-card':'');
         div.innerHTML=`
             <div class="anime-card-img-wrap">
-                <img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" onerror="this.style.display='none'"/>
+                <img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" data-original-src="${escapeHTML(item.coverImage)}"
+                     onerror="var s=this.dataset.originalSrc; if(s&&!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(s);}else{this.style.display='none';this.parentElement.style.background='var(--surface3)';this.parentElement.insertAdjacentHTML('beforeend','<div style=position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:1.5rem;>📖</div>')}"/>
                 <div class="anime-card-overlay"></div>
                 ${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">⭐ ${rating}</span>`:''}
                 ${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}
@@ -2395,8 +2250,7 @@
                         if(prov.id!=='server5') state.server5.isLoading=false;
                         syncEpisodeUI();
                         const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
-                        if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92)
-                            showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
+                        if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
                         else loadStream(0);
                     }
                     if(prov.external) showToast(`${prov.name} opens in a new tab`,'↗️');
@@ -2443,7 +2297,6 @@
             else{searchDropdown.classList.remove('active');searchInput.blur();}
             return;
         }
-        // Manga fullscreen shortcut
         if((e.key==='m'||e.key==='M')&&(onManga||onWatch)&&!onFS){
             if(onManga) openMangaFullscreen();
             return;
@@ -2471,8 +2324,7 @@
             if(state.selectedEpisode>1){
                 state.selectedEpisode--;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();
                 const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
-                if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92)
-                    showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
+                if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
                 else loadStream(0);
                 showToast(`Episode ${state.selectedEpisode}`,'◀');
             }
@@ -2533,11 +2385,10 @@
     window.addEventListener('beforeunload',()=>stopProgressTracking());
     document.addEventListener('visibilitychange',()=>{
         if(document.visibilityState==='hidden'){stopProgressTracking();}
-        else if(watchPage.classList.contains('active')&&playerIframe.src&&playerIframe.src!=='about:blank')
-            startProgressTracking(state.currentTime);
+        else if(watchPage.classList.contains('active')&&playerIframe.src&&playerIframe.src!=='about:blank') startProgressTracking(state.currentTime);
     });
 
-    // Expose globals needed by inline onclick attrs
+    // Expose globals
     window.state = state;
     window.selectManga = selectManga;
     window.selectAnime = selectAnime;
