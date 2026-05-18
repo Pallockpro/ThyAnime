@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThyAnime — Watch Anime Online Free</title>
+    <title>ThyAnime — Watch Anime & Read Manga Free</title>
     <link rel="icon" type="image/gif" href="https://media1.tenor.com/m/2thZuhJSwFsAAAAC/wolf-girl-howling.gif">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,10 @@
             --cyan-dim:rgba(6,182,212,0.12);
             --pink:#ec4899;
             --pink-dim:rgba(236,72,153,0.12);
+            --manga:#f97316;
+            --manga2:#fb923c;
+            --manga-dim:rgba(249,115,22,0.15);
+            --manga-glow:rgba(249,115,22,0.4);
             --border:rgba(255,255,255,0.055);
             --border2:rgba(255,255,255,0.1);
             --radius:18px;
@@ -107,6 +111,10 @@
         .search-result-title{font-family:var(--font);font-weight:700;font-size:0.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .search-result-meta{font-size:0.69rem;color:var(--text3);margin-top:2px;}
         .search-result-resume{font-size:0.64rem;color:var(--cyan);margin-top:3px;display:flex;align-items:center;gap:4px;}
+        .nav-mode-tabs{display:flex;gap:3px;background:rgba(255,255,255,0.04);padding:3px;border-radius:10px;border:1px solid var(--border);}
+        .nav-mode-btn{padding:5px 14px;border-radius:7px;border:none;cursor:pointer;font-family:var(--font);font-weight:700;font-size:0.75rem;transition:all var(--t) var(--ease);background:transparent;color:var(--text3);white-space:nowrap;}
+        .nav-mode-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 10px var(--accent-glow);}
+        .nav-mode-btn.manga-active{background:linear-gradient(135deg,var(--manga),var(--manga2));color:#fff;box-shadow:0 2px 10px var(--manga-glow);}
         .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
         .live-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.22);border-radius:999px;font-family:var(--font);font-size:0.71rem;font-weight:600;color:var(--text2);white-space:nowrap;}
         .live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 7px rgba(34,197,94,0.9);position:relative;}
@@ -121,6 +129,7 @@
         .genre-btn{padding:5px 14px;border-radius:999px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.75rem;white-space:nowrap;transition:all var(--t) var(--ease);}
         .genre-btn:hover{color:var(--text);background:rgba(255,255,255,0.06);}
         .genre-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
+        .genre-btn.manga-mode.active{background:linear-gradient(135deg,var(--manga),var(--manga2));box-shadow:0 2px 14px var(--manga-glow);}
 
         /* ── TAB BAR ── */
         .tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
@@ -151,6 +160,8 @@
         .hero-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;font-family:var(--font);font-weight:700;font-size:0.84rem;cursor:pointer;border:none;transition:all var(--t) var(--ease);}
         .hero-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 22px var(--accent-glow);}
         .hero-btn.primary:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 7px 30px rgba(124,58,237,0.6);}
+        .hero-btn.primary.manga{background:linear-gradient(135deg,var(--manga),var(--manga2));box-shadow:0 4px 22px var(--manga-glow);}
+        .hero-btn.primary.manga:hover{box-shadow:0 7px 30px rgba(249,115,22,0.6);}
         .hero-btn.secondary{background:rgba(255,255,255,0.09);color:#fff;border:1px solid rgba(255,255,255,0.18);}
         .hero-btn.secondary:hover{background:rgba(255,255,255,0.15);transform:translateY(-1px);}
 
@@ -172,6 +183,7 @@
         .history-card:hover .history-card-thumb img{transform:scale(1.06);}
         .history-card-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,15,0.75) 0%,transparent 55%);}
         .history-ep-badge{position:absolute;top:7px;left:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:3px 7px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+        .history-ep-badge.manga{background:linear-gradient(135deg,var(--manga),var(--manga2));}
         .history-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;}
         .history-play-btn span{width:36px;height:36px;border-radius:50%;background:rgba(124,58,237,0.9);display:flex;align-items:center;justify-content:center;font-size:0.85rem;box-shadow:0 4px 18px rgba(124,58,237,0.55);}
         .history-card:hover .history-play-btn{opacity:1;}
@@ -187,12 +199,14 @@
         /* ── ANIME CARD ── */
         .anime-card{border-radius:var(--radius-xs);overflow:hidden;cursor:pointer;transition:transform 0.25s var(--ease),box-shadow 0.25s var(--ease),border-color 0.25s;background:var(--surface);border:1px solid var(--border);position:relative;display:flex;flex-direction:column;}
         .anime-card:hover{transform:translateY(-6px) scale(1.025);border-color:rgba(124,58,237,0.6);box-shadow:0 18px 44px rgba(0,0,0,0.65),0 0 28px rgba(124,58,237,0.14);z-index:5;}
+        .anime-card.manga-card:hover{border-color:rgba(249,115,22,0.6);box-shadow:0 18px 44px rgba(0,0,0,0.65),0 0 28px rgba(249,115,22,0.14);}
         .anime-card-img-wrap{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--surface3);}
         .anime-card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s var(--ease);}
         .anime-card:hover .anime-card-img-wrap img{transform:scale(1.06);}
         .anime-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,15,0.85) 0%,transparent 52%);opacity:0;transition:opacity var(--t);}
         .anime-card:hover .anime-card-overlay{opacity:1;}
         .anime-card-badge{position:absolute;top:6px;left:6px;background:linear-gradient(135deg,rgba(124,58,237,0.95),rgba(168,85,247,0.95));backdrop-filter:blur(6px);color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:2px 7px;border-radius:5px;z-index:2;}
+        .anime-card-badge.manga{background:linear-gradient(135deg,rgba(249,115,22,0.95),rgba(251,146,60,0.95));}
         .anime-card-ep-badge{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);color:rgba(255,255,255,0.82);font-weight:600;font-size:0.59rem;padding:2px 6px;border-radius:5px;z-index:2;}
         .anime-card-info{padding:8px 10px 10px;display:flex;flex-direction:column;gap:3px;flex:1;}
         .anime-card-title{font-family:var(--font);font-weight:600;font-size:0.74rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -353,12 +367,53 @@
         .sidebar-desc{font-size:0.76rem;color:var(--text2);line-height:1.7;max-height:120px;overflow-y:auto;}
         .sidebar-genres{display:flex;flex-wrap:wrap;gap:4px;}
         .sidebar-genre{padding:3px 9px;border-radius:999px;font-size:0.64rem;font-weight:500;background:rgba(124,58,237,0.12);color:rgba(168,85,247,0.92);font-family:var(--font);}
+        .sidebar-genre.manga{background:rgba(249,115,22,0.12);color:rgba(251,146,60,0.92);}
         .related-seasons{display:flex;flex-direction:column;gap:5px;}
         .related-seasons .rel-label{font-family:var(--font);font-size:0.67rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:700;}
         .related-season-item{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 11px;cursor:pointer;transition:background var(--t);display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);}
         .related-season-item:hover{background:rgba(124,58,237,0.08);border-color:rgba(124,58,237,0.32);}
         .related-season-item span{font-family:var(--font);font-size:0.75rem;font-weight:600;}
         .related-season-item .rel-meta{font-size:0.64rem;color:var(--text3);white-space:nowrap;}
+
+        /* ── MANGA PAGE ── */
+        .manga-page{display:none;flex-direction:column;gap:20px;}
+        .manga-page.active{display:flex;}
+        .manga-home-page{display:flex;gap:26px;}
+        .manga-home-page.hidden{display:none;}
+
+        /* ── MANGA READER ── */
+        .manga-reader-page{display:none;flex-direction:column;gap:0;}
+        .manga-reader-page.active{display:flex;}
+        .manga-reader-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 0;}
+        .manga-reader-title{font-family:var(--font);font-weight:700;font-size:0.95rem;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .manga-chapter-nav{display:flex;align-items:center;gap:8px;}
+        .manga-nav-btn{padding:7px 14px;border-radius:9px;border:1px solid var(--border2);background:rgba(255,255,255,0.05);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.77rem;cursor:pointer;transition:all var(--t);}
+        .manga-nav-btn:hover{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.5);}
+        .manga-nav-btn:disabled{opacity:0.3;cursor:default;}
+        .manga-chapter-indicator{font-family:var(--font);font-size:0.77rem;color:var(--text2);white-space:nowrap;}
+        .manga-source-toggle{display:flex;gap:3px;background:rgba(255,255,255,0.04);padding:3px;border-radius:10px;border:1px solid var(--border2);}
+        .manga-source-btn{padding:6px 13px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.72rem;transition:all var(--t) var(--ease);background:transparent;color:var(--text3);}
+        .manga-source-btn.active{background:linear-gradient(135deg,var(--manga),var(--manga2));color:#fff;box-shadow:0 2px 10px var(--manga-glow);}
+        .manga-source-btn:hover:not(.active){color:var(--text);}
+        .manga-reader-wrap{background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(249,115,22,0.15);}
+        .manga-pages-container{display:flex;flex-direction:column;align-items:center;gap:2px;background:#111;max-height:82vh;overflow-y:auto;padding:8px 0;}
+        .manga-pages-container::-webkit-scrollbar{width:4px;}
+        .manga-pages-container::-webkit-scrollbar-thumb{background:var(--surface4);}
+        .manga-page-img{width:100%;max-width:800px;display:block;object-fit:contain;}
+        .manga-page-img.errored{display:none;}
+        .manga-loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:400px;color:var(--text3);}
+        .manga-spinner{width:34px;height:34px;border:2.5px solid rgba(255,255,255,0.07);border-top-color:var(--manga);border-radius:50%;animation:spin 0.72s linear infinite;}
+        .manga-chapter-list{display:flex;flex-direction:column;gap:4px;max-height:320px;overflow-y:auto;padding-right:4px;}
+        .manga-chapter-list::-webkit-scrollbar{width:3px;}
+        .manga-chapter-item{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:all var(--t);}
+        .manga-chapter-item:hover{background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.4);}
+        .manga-chapter-item.active{background:rgba(249,115,22,0.12);border-color:var(--manga);}
+        .manga-ch-num{font-family:var(--font);font-weight:700;font-size:0.8rem;color:var(--text);}
+        .manga-ch-title{font-size:0.72rem;color:var(--text2);flex:1;margin:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .manga-ch-date{font-size:0.65rem;color:var(--text3);white-space:nowrap;}
+        .manga-sidebar{background:var(--surface);border-radius:var(--radius);border:1px solid rgba(249,115,22,0.2);padding:16px;display:flex;flex-direction:column;gap:13px;position:sticky;top:108px;}
+        .manga-sidebar-cover{border-radius:10px;overflow:hidden;aspect-ratio:3/4;background:var(--surface3);}
+        .manga-sidebar-cover img{width:100%;height:100%;object-fit:cover;}
 
         /* ── BROWSE ── */
         .pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:26px;}
@@ -377,12 +432,14 @@
         @media(max-width:900px){
             .sidebar-col{display:none;}
             .home-page{flex-direction:column;}
+            .manga-home-page{flex-direction:column;}
             .hero-title{font-size:1.7rem;}
         }
         @media(max-width:600px){
             .nav-inner{height:54px;padding:0 14px;gap:8px;}
             .nav-logo{font-size:1rem;}
             .nav-logo-icon{width:28px;height:28px;}
+            .nav-mode-btn{padding:4px 10px;font-size:0.68rem;}
             .app{padding:0 14px 60px;}
             .hero-section{margin:0 -14px;}
             .anime-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
@@ -458,6 +515,10 @@
             <input type="text" id="searchInput" placeholder="Search anime..." autocomplete="off"/>
             <div class="search-dropdown" id="searchDropdown"></div>
         </div>
+        <div class="nav-mode-tabs">
+            <button class="nav-mode-btn active" id="navAnimeBtn" onclick="switchMode('anime')">🎬 Anime</button>
+            <button class="nav-mode-btn" id="navMangaBtn" onclick="switchMode('manga')">📚 Manga</button>
+        </div>
         <div class="nav-right">
             <div class="live-pill">
                 <div class="live-dot"></div>
@@ -469,29 +530,14 @@
 </nav>
 
 <div class="genre-bar" id="genreBar">
-    <div class="genre-bar-inner">
-        <button class="genre-btn active" onclick="setGenre('All',this)">All</button>
-        <button class="genre-btn" onclick="setGenre('Action',this)">Action</button>
-        <button class="genre-btn" onclick="setGenre('Adventure',this)">Adventure</button>
-        <button class="genre-btn" onclick="setGenre('Comedy',this)">Comedy</button>
-        <button class="genre-btn" onclick="setGenre('Drama',this)">Drama</button>
-        <button class="genre-btn" onclick="setGenre('Ecchi',this)">Ecchi</button>
-        <button class="genre-btn" onclick="setGenre('Fantasy',this)">Fantasy</button>
-        <button class="genre-btn" onclick="setGenre('Horror',this)">Horror</button>
-        <button class="genre-btn" onclick="setGenre('Mahou Shoujo',this)">Mahou Shoujo</button>
-        <button class="genre-btn" onclick="setGenre('Mecha',this)">Mecha</button>
-        <button class="genre-btn" onclick="setGenre('Mystery',this)">Mystery</button>
-        <button class="genre-btn" onclick="setGenre('Psychological',this)">Psychological</button>
-        <button class="genre-btn" onclick="setGenre('Romance',this)">Romance</button>
-        <button class="genre-btn" onclick="setGenre('Sci-Fi',this)">Sci-Fi</button>
-        <button class="genre-btn" onclick="setGenre('Slice of Life',this)">Slice of Life</button>
-        <button class="genre-btn" onclick="setGenre('Sports',this)">Sports</button>
-        <button class="genre-btn" onclick="setGenre('Supernatural',this)">Supernatural</button>
-        <button class="genre-btn" onclick="setGenre('Thriller',this)">Thriller</button>
+    <div class="genre-bar-inner" id="genreBarInner">
+        <!-- filled dynamically -->
     </div>
 </div>
 
 <div class="app">
+
+    <!-- ══════════════════ ANIME HOME ══════════════════ -->
     <div class="home-page" id="homePage">
         <div class="main-col">
             <div class="hero-section">
@@ -534,6 +580,96 @@
         </div>
     </div>
 
+    <!-- ══════════════════ MANGA HOME ══════════════════ -->
+    <div class="manga-home-page hidden" id="mangaHomePage">
+        <div class="main-col">
+            <div class="hero-section" id="mangaHeroSection">
+                <img class="hero-bg" id="mangaHeroBg" src="" alt=""/>
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <div class="hero-badges" id="mangaHeroBadges"></div>
+                    <h1 class="hero-title" id="mangaHeroTitle">Loading Manga...</h1>
+                    <div class="hero-genres" id="mangaHeroGenres"></div>
+                    <p class="hero-desc" id="mangaHeroDesc"></p>
+                    <div class="hero-actions">
+                        <button class="hero-btn primary manga" onclick="handleMangaHeroRead()">📖 Read Now</button>
+                        <button class="hero-btn secondary" onclick="handleMangaHeroDetails()">ⓘ Details</button>
+                    </div>
+                </div>
+            </div>
+            <div id="continueMangaSection" style="display:none;" class="section-wrap">
+                <div class="section-header">
+                    <span class="section-title">📖 <strong>Continue Reading</strong></span>
+                    <button class="section-clear-btn" onclick="clearMangaHistory()">Clear All</button>
+                </div>
+                <div class="history-row" id="mangaHistoryRow"></div>
+            </div>
+            <div class="section-wrap">
+                <div class="tab-bar">
+                    <button class="tab-btn active" id="mangaTabTrending" onclick="setMangaTab('trending',this)">Trending</button>
+                    <button class="tab-btn" id="mangaTabPopular" onclick="setMangaTab('popular',this)">Popular</button>
+                    <button class="tab-btn" id="mangaTabTopRated" onclick="setMangaTab('toprated',this)">Top Rated</button>
+                </div>
+                <div id="mangaTabTrendingGrid"><div class="anime-grid" id="mangaTrendingGrid"></div></div>
+                <div id="mangaTabPopularGrid" style="display:none;"><div class="anime-grid" id="mangaPopularGrid"></div></div>
+                <div id="mangaTabTopRatedGrid" style="display:none;"><div class="anime-grid" id="mangaTopRatedGrid"></div></div>
+            </div>
+        </div>
+        <div class="sidebar-col">
+            <div class="sidebar-widget">
+                <div class="sidebar-widget-header" style="color:var(--manga);">📚 Top Manga</div>
+                <div class="top-airing-list" id="topMangaList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════ MANGA READER ══════════════════ -->
+    <div class="manga-reader-page" id="mangaReaderPage">
+        <div class="manga-reader-top">
+            <button class="back-btn" onclick="goMangaHome()">← Back</button>
+            <span class="manga-reader-title" id="mangaReaderTitle">—</span>
+            <div class="manga-source-toggle" id="mangaSourceToggle">
+                <button class="manga-source-btn active" data-src="mangadex" onclick="setMangaSource('mangadex',this)">MangaDex</button>
+                <button class="manga-source-btn" data-src="comick" onclick="setMangaSource('comick',this)">ComicK</button>
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;" id="mangaReaderLayout">
+            <div>
+                <div class="manga-chapter-nav" style="margin-bottom:12px;">
+                    <button class="manga-nav-btn" id="mangaPrevChBtn" onclick="changeMangaChapter(-1)">← Prev</button>
+                    <span class="manga-chapter-indicator" id="mangaChapterIndicator">Chapter —</span>
+                    <button class="manga-nav-btn" id="mangaNextChBtn" onclick="changeMangaChapter(1)">Next →</button>
+                    <select id="mangaChapterSelect" style="margin-left:8px;padding:7px 10px;border-radius:9px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--font);font-size:0.74rem;cursor:pointer;" onchange="jumpToMangaChapter(this.value)">
+                    </select>
+                </div>
+                <div class="manga-reader-wrap">
+                    <div class="manga-pages-container" id="mangaPagesContainer">
+                        <div class="manga-loading-state">
+                            <div class="manga-spinner"></div>
+                            <span style="font-family:var(--font);font-size:0.84rem;">Select a chapter to start reading</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="manga-chapter-nav" style="margin-top:12px;justify-content:center;">
+                    <button class="manga-nav-btn" id="mangaPrevChBtn2" onclick="changeMangaChapter(-1)">← Prev Chapter</button>
+                    <button class="manga-nav-btn" id="mangaNextChBtn2" onclick="changeMangaChapter(1)">Next Chapter →</button>
+                </div>
+            </div>
+            <aside class="manga-sidebar">
+                <div class="manga-sidebar-cover">
+                    <img id="mangaSidebarCover" src="" alt="" style="display:none;"/>
+                    <div id="mangaSidebarCoverPlaceholder" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:2.5rem;">📚</div>
+                </div>
+                <h2 id="mangaSidebarTitle" style="font-family:var(--font);font-weight:700;font-size:0.95rem;">No manga selected</h2>
+                <div class="sidebar-tags" id="mangaSidebarTags"></div>
+                <p class="sidebar-desc" id="mangaSidebarDesc" style="font-size:0.75rem;color:var(--text2);line-height:1.7;max-height:100px;overflow-y:auto;">Details here.</p>
+                <div style="font-family:var(--font);font-size:0.69rem;text-transform:uppercase;letter-spacing:0.09em;color:var(--manga);font-weight:700;margin-top:4px;">📋 Chapters</div>
+                <div class="manga-chapter-list" id="mangaChapterListSidebar"></div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- ══════════════════ ANIME WATCH ══════════════════ -->
     <div class="watch-page" id="watchPage">
         <div class="watch-top-bar">
             <button class="back-btn" onclick="goHome()">← Back</button>
@@ -553,7 +689,6 @@
                         </div>
                         <iframe id="playerIframe" style="display:none;"
                             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>
-                        <!-- Last Watched Banner — shown for 6 seconds over the player -->
                         <div id="lastWatchedBanner">
                             <span class="lw-icon">⏱</span>
                             <div class="lw-text">
@@ -627,7 +762,7 @@
     </div>
 </div>
 
-<div class="footer">ThyAnime — Free anime streaming · Not affiliated with AniList or any provider</div>
+<div class="footer">ThyAnime — Free anime & manga · Not affiliated with AniList, MangaDex or any provider</div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -721,6 +856,159 @@
         return {};
     }
 
+    // ── MANGADEX API ────────────────────────────────────────────────────────
+    const MDX_BASE = 'https://api.mangadex.org';
+    const MDX_PROXIES = [
+        u => u,
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    ];
+    let _mdxPi = 0;
+    async function mdxFetch(path) {
+        const url = MDX_BASE + path;
+        const order = [_mdxPi, ...[...MDX_PROXIES.keys()].filter(i => i !== _mdxPi)];
+        for (const idx of order) {
+            try {
+                const r = await fetch(MDX_PROXIES[idx](url), {headers:{'Accept':'application/json'}});
+                if (!r.ok) throw 0;
+                const j = await r.json();
+                _mdxPi = idx; return j;
+            } catch(_) {}
+        }
+        return null;
+    }
+
+    /** Get MangaDex cover URL for a manga object */
+    function mdxCoverUrl(manga) {
+        const rel = (manga.relationships || []).find(r => r.type === 'cover_art');
+        if (!rel?.attributes?.fileName) return '';
+        return `https://uploads.mangadex.org/covers/${manga.id}/${rel.attributes.fileName}.256.jpg`;
+    }
+
+    /** Format a MangaDex manga object to our standard shape */
+    function fmtMangaDex(manga) {
+        if (!manga) return null;
+        const attrs = manga.attributes || {};
+        const title = attrs.title?.en || Object.values(attrs.title || {})[0] || 'Unknown';
+        const desc  = attrs.description?.en || Object.values(attrs.description || {})[0] || '';
+        return {
+            id:          manga.id,
+            anilistId:   null,
+            title:       String(title),
+            coverImage:  mdxCoverUrl(manga),
+            chapters:    attrs.lastChapter ? parseInt(attrs.lastChapter) : null,
+            description: desc.replace(/<[^>]*>/g, '').slice(0, 500),
+            genres:      (attrs.tags || []).map(t => t.attributes?.name?.en).filter(Boolean).slice(0, 8),
+            status:      attrs.status || null,
+            year:        attrs.year || null,
+            type:        'MANGA',
+            _source:     'mangadex',
+        };
+    }
+
+    async function mdxTrending() {
+        const j = await mdxFetch('/manga?limit=20&order[followedCount]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive');
+        return (j?.data || []).map(fmtMangaDex).filter(Boolean);
+    }
+    async function mdxPopular() {
+        const j = await mdxFetch('/manga?limit=20&order[rating]=desc&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive');
+        return (j?.data || []).map(fmtMangaDex).filter(Boolean);
+    }
+    async function mdxSearch(q) {
+        const j = await mdxFetch(`/manga?limit=10&title=${encodeURIComponent(q)}&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive`);
+        return (j?.data || []).map(fmtMangaDex).filter(Boolean);
+    }
+
+    /** Fetch chapters for a MangaDex manga ID, English preferred */
+    async function mdxChapters(mangaId) {
+        const j = await mdxFetch(`/manga/${mangaId}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica`);
+        return (j?.data || []).filter(ch => ch.attributes?.pages > 0);
+    }
+
+    /** Fetch page image URLs for a MangaDex chapter */
+    async function mdxChapterPages(chapterId) {
+        const j = await mdxFetch(`/at-home/server/${chapterId}`);
+        if (!j?.chapter) return [];
+        const base = j.baseUrl;
+        const hash = j.chapter.hash;
+        return (j.chapter.data || []).map(fn => `${base}/data/${hash}/${fn}`);
+    }
+
+    // ── COMICK API (fallback) ────────────────────────────────────────────────
+    const COMICK_BASE = 'https://api.comick.fun';
+    async function comickSearch(q) {
+        try {
+            const r = await fetch(`${COMICK_BASE}/v1.0/search?q=${encodeURIComponent(q)}&limit=10&type=comic`);
+            if (!r.ok) return [];
+            const j = await r.json();
+            return (j || []).map(m => ({
+                id:          m.slug,
+                _comickHid:  m.hid,
+                anilistId:   null,
+                title:       m.title || m.slug,
+                coverImage:  m.md_covers?.[0]?.b2key ? `https://meo.comick.pictures/${m.md_covers[0].b2key}` : '',
+                chapters:    m.last_chapter || null,
+                description: m.desc || '',
+                genres:      (m.genres || []).map(g => g.name || g).filter(Boolean),
+                status:      m.status === 1 ? 'ONGOING' : 'COMPLETED',
+                year:        m.year || null,
+                type:        'MANGA',
+                _source:     'comick',
+            }));
+        } catch(e) { return []; }
+    }
+    async function comickChapters(hid) {
+        try {
+            const r = await fetch(`${COMICK_BASE}/comic/${hid}/chapters?lang=en&limit=300&page=1`);
+            if (!r.ok) return [];
+            const j = await r.json();
+            return (j?.chapters || []);
+        } catch(e) { return []; }
+    }
+    async function comickChapterPages(chHid) {
+        try {
+            const r = await fetch(`${COMICK_BASE}/chapter/${chHid}`);
+            if (!r.ok) return [];
+            const j = await r.json();
+            return (j?.chapter?.md_images || []).map(img => `https://meo.comick.pictures/${img.b2key}`);
+        } catch(e) { return []; }
+    }
+
+    // ── AniList MANGA ────────────────────────────────────────────────────────
+    const MF_MANGA = `id title{romaji english native}coverImage{large extraLarge}chapters description genres averageScore format status`;
+    function fmtAnilistManga(m) {
+        if (!m) return null;
+        return {
+            id:          'al_' + m.id,
+            anilistId:   m.id,
+            title:       String(m.title?.english||m.title?.romaji||m.title?.native||'Unknown'),
+            coverImage:  String(m.coverImage?.extraLarge||m.coverImage?.large||''),
+            chapters:    m.chapters||null,
+            description: m.description?String(m.description).replace(/<[^>]*>/g,''):'',
+            genres:      m.genres||[],
+            averageScore:m.averageScore||null,
+            status:      m.status||null,
+            type:        'MANGA',
+            _source:     'anilist',
+        };
+    }
+    async function alMangaTrending() {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:MANGA){${MF_MANGA}}}}`);
+        return (d.Page?.media||[]).map(fmtAnilistManga).filter(Boolean);
+    }
+    async function alMangaPopular() {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:MANGA){${MF_MANGA}}}}`);
+        return (d.Page?.media||[]).map(fmtAnilistManga).filter(Boolean);
+    }
+    async function alMangaTopRated() {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:MANGA){${MF_MANGA}}}}`);
+        return (d.Page?.media||[]).map(fmtAnilistManga).filter(Boolean);
+    }
+    async function alMangaSearch(q) {
+        const d = await alQuery(`query($s:String){Page(perPage:10){media(search:$s,type:MANGA,sort:POPULARITY_DESC){${MF_MANGA}}}}`,{s:q.trim()});
+        return (d.Page?.media||[]).map(fmtAnilistManga).filter(Boolean);
+    }
+
     // ── PROVIDERS ───────────────────────────────────────────────────────────
     const PROVIDERS = [
         { id:'animeplay', name:'Server 1', icon:'⚡', color:'#7c3aed', description:'Fast & reliable',
@@ -734,7 +1022,7 @@
           supportsAudio:false, external:false, resumeSupport:'url-start' },
         { id:'miruro',    name:'Server 4', icon:'🪄', color:'#10b981', description:'High quality — new tab',
           getUrl:(id,s,ep)=>`https://www.miruro.tv/watch/${id}/-/${ep}`,
-          supportsAudio:false, external:true,  resumeSupport:'external' },
+          supportsAudio:false, external:true, resumeSupport:'external' },
         { id:'server5',   name:'Server 5', icon:'🌐', color:'#f97316', description:'Direct embed',
           supportsAudio:false, external:false, resumeSupport:'postmsg' },
     ];
@@ -752,10 +1040,8 @@
         let url = prov.getUrl(anime.id, anime.season, ep, audio);
         const t = Math.floor(resumeAtSec || 0);
         if (t >= 3) {
-            if (prov.resumeSupport === 'url-t')
-                url += (url.includes('?') ? '&' : '?') + `t=${t}`;
-            else if (prov.resumeSupport === 'url-start')
-                url += (url.includes('?') ? '&' : '?') + `start=${t}`;
+            if (prov.resumeSupport === 'url-t')     url += (url.includes('?') ? '&' : '?') + `t=${t}`;
+            else if (prov.resumeSupport === 'url-start') url += (url.includes('?') ? '&' : '?') + `start=${t}`;
         }
         return url;
     }
@@ -767,9 +1053,9 @@
     }
     window.toggleFullscreen = () => {
         const pw = document.getElementById('playerWrapper');
-        if (!document.fullscreenElement&&!document.webkitFullscreenElement) {
+        if (!document.fullscreenElement&&!document.webkitFullscreenElement)
             (pw.requestFullscreen||pw.webkitRequestFullscreen||function(){}).call(pw);
-        } else { (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }
+        else (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
     };
 
     // ── LAST WATCHED BANNER ──────────────────────────────────────────────────
@@ -780,42 +1066,21 @@
     const lwPct     = document.getElementById('lwPct');
     const lwBarFill = document.getElementById('lwBarFill');
     let _lwTimer    = null;
-
-    window.hideLWBanner = () => {
-        lwBanner.classList.remove('visible');
-        if (_lwTimer) { clearTimeout(_lwTimer); _lwTimer = null; }
-    };
-
-    /**
-     * Show the "last watched" info banner overlaid on the player for 6 seconds.
-     * Works for every server — it's purely informational (read from localStorage),
-     * so no cross-origin iframe access is needed at all.
-     */
+    window.hideLWBanner = () => { lwBanner.classList.remove('visible'); if (_lwTimer) { clearTimeout(_lwTimer); _lwTimer = null; } };
     function showLastWatchedBanner(animeTitle, epNum, timeSec, durationSec) {
         if (!timeSec || timeSec < 5) return;
         const pct = durationSec > 0 ? Math.min(Math.round((timeSec / durationSec) * 100), 100) : null;
-
         lwTitle.textContent = `${animeTitle} — Episode ${epNum}`;
         lwTime.textContent  = fmtTime(timeSec);
-        if (pct !== null) {
-            lwPct.textContent       = pct + '%';
-            lwBarFill.style.width   = pct + '%';
-            lwSub.innerHTML = `Last watched at <strong id="lwTime">${fmtTime(timeSec)}</strong>`;
-        } else {
-            lwPct.textContent     = '';
-            lwBarFill.style.width = '0%';
-        }
-
+        if (pct !== null) { lwPct.textContent = pct + '%'; lwBarFill.style.width = pct + '%'; }
+        else { lwPct.textContent = ''; lwBarFill.style.width = '0%'; }
         lwBanner.classList.add('visible');
-
         if (_lwTimer) clearTimeout(_lwTimer);
-        _lwTimer = setTimeout(() => {
-            lwBanner.classList.remove('visible');
-            _lwTimer = null;
-        }, 6000);
+        _lwTimer = setTimeout(() => { lwBanner.classList.remove('visible'); _lwTimer = null; }, 6000);
     }
 
     // ── STATE ────────────────────────────────────────────────────────────────
+    let appMode = 'anime'; // 'anime' | 'manga'
     let state = {
         selectedAnime:null, selectedEpisode:1,
         selectedProvider:PROVIDERS[0], selectedAudio:'sub',
@@ -827,10 +1092,28 @@
         server5:{ animeSession:null, episodes:[], isLoading:false, cacheKey:null },
         currentTime:0, duration:0,
     };
+    let mangaState = {
+        selectedManga:      null,
+        chapters:           [],
+        currentChapterIdx:  0,
+        currentPages:       [],
+        isLoadingChapters:  false,
+        isLoadingPages:     false,
+        source:             'mangadex',  // 'mangadex' | 'comick'
+        trendingData:       [],
+        popularData:        [],
+        topRatedData:       [],
+        heroManga:          null,
+        activeTab:          'trending',
+        activeGenre:        'All',
+        history:            [],
+    };
 
     // ── PERSISTENCE ──────────────────────────────────────────────────────────
     try { const s=localStorage.getItem('thyAnime_history'); if(s) state.watchHistory=JSON.parse(s); } catch(e){}
+    try { const s=localStorage.getItem('thyAnime_mangaHistory'); if(s) mangaState.history=JSON.parse(s); } catch(e){}
     function saveHistory() { try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(e){} }
+    function saveMangaHistory() { try{localStorage.setItem('thyAnime_mangaHistory',JSON.stringify(mangaState.history));}catch(e){} }
     function getHistoryEntry(id) { return state.watchHistory.find(h=>h.id===id)||null; }
     function getEpProgress(animeId, epNum) { return getHistoryEntry(animeId)?.epProgress?.[epNum]||null; }
     function saveEpProgress(animeId, epNum, time, duration) {
@@ -838,74 +1121,71 @@
         const idx = state.watchHistory.findIndex(h=>h.id===animeId);
         if (idx<0) return;
         if (!state.watchHistory[idx].epProgress) state.watchHistory[idx].epProgress={};
-        state.watchHistory[idx].epProgress[epNum] = {
-            time:Math.floor(time),
-            duration:Math.floor(duration||1440),
-            ts:Date.now()
-        };
-        state.watchHistory[idx].episode    = epNum;
-        state.watchHistory[idx].timestamp  = Date.now();
+        state.watchHistory[idx].epProgress[epNum] = {time:Math.floor(time),duration:Math.floor(duration||1440),ts:Date.now()};
+        state.watchHistory[idx].episode   = epNum;
+        state.watchHistory[idx].timestamp = Date.now();
         saveHistory();
     }
+    function getMangaHistoryEntry(id) { return mangaState.history.find(h=>h.id===id)||null; }
+    function updateMangaHistory(manga, chapterIdx) {
+        if (!manga) return;
+        const idx = mangaState.history.findIndex(h=>h.id===manga.id);
+        const entry = {
+            ...manga, chapterIdx, timestamp:Date.now()
+        };
+        if (idx>=0) mangaState.history[idx]=entry;
+        else mangaState.history.unshift(entry);
+        if (mangaState.history.length>30) mangaState.history=mangaState.history.slice(0,30);
+        saveMangaHistory();
+    }
+    window.clearMangaHistory = () => { mangaState.history=[]; saveMangaHistory(); renderMangaHistory(); showToast('Manga history cleared','🗑️'); };
 
     // ── PROGRESS TRACKING ────────────────────────────────────────────────────
-    let _startWall = null, _startSec = 0, _saveTimer = null;
+    let _startWall=null, _startSec=0, _saveTimer=null;
     const progressTrackWrap  = document.getElementById('progressTrackWrap');
     const progressFill       = document.getElementById('progressFill');
     const progressTimeLabel  = document.getElementById('progressTimeLabel');
     const progressDurLabel   = document.getElementById('progressDurLabel');
     const progressResumeNote = document.getElementById('progressResumeNote');
-
-    function startProgressTracking(startAtSec = 0) {
+    function startProgressTracking(startAtSec=0) {
         stopProgressTracking();
-        _startWall = Date.now();
-        _startSec  = Math.max(0, startAtSec);
-        state.currentTime = _startSec;
-        if (!state.duration || state.duration < 10)
-            state.duration = state.selectedAnime?.format === 'MOVIE' ? 5400 : 1440;
-        progressTrackWrap.style.display = 'block';
-        progressResumeNote.textContent  = _startSec > 5 ? `↩ Resumed from ${fmtTime(_startSec)}` : '';
-        _saveTimer = setInterval(() => {
-            const elapsed = (Date.now() - _startWall) / 1000;
-            state.currentTime = Math.min(_startSec + elapsed, state.duration);
+        _startWall=Date.now(); _startSec=Math.max(0,startAtSec); state.currentTime=_startSec;
+        if (!state.duration||state.duration<10) state.duration=state.selectedAnime?.format==='MOVIE'?5400:1440;
+        progressTrackWrap.style.display='block';
+        progressResumeNote.textContent=_startSec>5?`↩ Resumed from ${fmtTime(_startSec)}`:'';
+        _saveTimer=setInterval(()=>{
+            const elapsed=(Date.now()-_startWall)/1000;
+            state.currentTime=Math.min(_startSec+elapsed,state.duration);
             updateProgressUI();
-            if (state.selectedAnime && Math.round(elapsed) % 8 === 0) {
-                saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
-            }
-        }, 1500);
+            if (state.selectedAnime&&Math.round(elapsed)%8===0)
+                saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+        },1500);
     }
-
     function stopProgressTracking() {
-        if (_saveTimer) { clearInterval(_saveTimer); _saveTimer = null; }
-        if (state.selectedAnime && state.currentTime > 5)
-            saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
-        _startWall = null;
+        if (_saveTimer){clearInterval(_saveTimer);_saveTimer=null;}
+        if (state.selectedAnime&&state.currentTime>5)
+            saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+        _startWall=null;
     }
-
     function updateProgressUI() {
-        const pct = state.duration > 0 ? Math.min((state.currentTime / state.duration) * 100, 100) : 0;
-        progressFill.style.width       = pct + '%';
-        progressTimeLabel.textContent  = fmtTime(state.currentTime);
-        progressDurLabel.textContent   = state.duration > 0 ? fmtTime(state.duration) : '—';
+        const pct=state.duration>0?Math.min((state.currentTime/state.duration)*100,100):0;
+        progressFill.style.width=pct+'%';
+        progressTimeLabel.textContent=fmtTime(state.currentTime);
+        progressDurLabel.textContent=state.duration>0?fmtTime(state.duration):'—';
     }
-
-    // Listen for real timing postMessages from players that support it
-    window.addEventListener('message', e => {
+    window.addEventListener('message',e=>{
         try {
-            const d = e.data;
-            if (!d || typeof d !== 'object') return;
-            const time     = d.currentTime ?? d.position ?? d.time ?? null;
-            const duration = d.duration ?? d.totalTime ?? null;
-            if (time !== null && !isNaN(time) && parseFloat(time) > 0) {
-                state.currentTime = parseFloat(time);
-                if (duration !== null && !isNaN(duration) && parseFloat(duration) > 0)
-                    state.duration = parseFloat(duration);
-                if (_startWall) { _startWall = Date.now(); _startSec = state.currentTime; }
+            const d=e.data; if (!d||typeof d!=='object') return;
+            const time=d.currentTime??d.position??d.time??null;
+            const duration=d.duration??d.totalTime??null;
+            if (time!==null&&!isNaN(time)&&parseFloat(time)>0){
+                state.currentTime=parseFloat(time);
+                if (duration!==null&&!isNaN(duration)&&parseFloat(duration)>0) state.duration=parseFloat(duration);
+                if (_startWall){_startWall=Date.now();_startSec=state.currentTime;}
                 updateProgressUI();
-                if (state.selectedAnime)
-                    saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
+                if (state.selectedAnime) saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
             }
-        } catch(_) {}
+        } catch(_){}
     });
 
     // ── RESUME MODAL ─────────────────────────────────────────────────────────
@@ -914,50 +1194,33 @@
     const resumeSupportNote = document.getElementById('resumeSupportNote');
     const resumeYesBtn      = document.getElementById('resumeYesBtn');
     const resumeNoBtn       = document.getElementById('resumeNoBtn');
-
-    function showResumeModal(episode, time, duration, onResume, onFresh) {
-        const pct = duration > 0 ? Math.round((time / duration) * 100) : null;
-        resumeModalText.innerHTML =
-            `Continue <strong>Episode ${episode}</strong> from <strong>${fmtTime(time)}</strong>${pct !== null ? ` (${pct}% watched)` : ''}.`;
-        const prov = state.selectedProvider;
-        let noteClass = 'warn', noteText = '';
-        if (prov.resumeSupport === 'url-t' || prov.resumeSupport === 'url-start') {
-            noteClass = 'good';
-            noteText  = `✓ ${prov.name} supports auto-seek — will jump to ${fmtTime(time)}`;
-        } else if (prov.resumeSupport === 'postmsg') {
-            noteClass = 'warn';
-            noteText  = `⚡ ${prov.name} will attempt to seek after loading`;
-        } else if (prov.resumeSupport === 'external') {
-            noteClass = 'warn';
-            noteText  = `↗ ${prov.name} opens in a new tab — resume is manual`;
-        } else {
-            noteText = `⏱ Progress tracked locally; ${prov.name} may not seek automatically`;
-        }
-        resumeSupportNote.className = `resume-support-note ${noteClass}`;
-        resumeSupportNote.textContent = noteText;
+    function showResumeModal(episode,time,duration,onResume,onFresh) {
+        const pct=duration>0?Math.round((time/duration)*100):null;
+        resumeModalText.innerHTML=`Continue <strong>Episode ${episode}</strong> from <strong>${fmtTime(time)}</strong>${pct!==null?` (${pct}% watched)`:''}. `;
+        const prov=state.selectedProvider;
+        let noteClass='warn',noteText='';
+        if (prov.resumeSupport==='url-t'||prov.resumeSupport==='url-start'){
+            noteClass='good'; noteText=`✓ ${prov.name} supports auto-seek — will jump to ${fmtTime(time)}`;
+        } else if (prov.resumeSupport==='postmsg') { noteText=`⚡ ${prov.name} will attempt to seek after loading`; }
+        else if (prov.resumeSupport==='external') { noteText=`↗ ${prov.name} opens in a new tab — resume is manual`; }
+        else { noteText=`⏱ Progress tracked locally; ${prov.name} may not seek automatically`; }
+        resumeSupportNote.className=`resume-support-note ${noteClass}`; resumeSupportNote.textContent=noteText;
         resumeModal.classList.remove('hidden');
-        resumeYesBtn.onclick = () => { resumeModal.classList.add('hidden'); onResume(); };
-        resumeNoBtn.onclick  = () => { resumeModal.classList.add('hidden'); onFresh(); };
+        resumeYesBtn.onclick=()=>{ resumeModal.classList.add('hidden'); onResume(); };
+        resumeNoBtn.onclick =()=>{ resumeModal.classList.add('hidden'); onFresh(); };
     }
-    resumeModal.addEventListener('click', e => {
-        if (e.target === resumeModal) resumeModal.classList.add('hidden');
-    });
+    resumeModal.addEventListener('click',e=>{ if (e.target===resumeModal) resumeModal.classList.add('hidden'); });
 
-    // ── ANILIST DATA ─────────────────────────────────────────────────────────
+    // ── ANILIST ANIME DATA ───────────────────────────────────────────────────
     const MF = `id title{romaji english native}coverImage{large extraLarge}episodes description genres averageScore format season seasonYear status`;
     function fmtAnime(m) {
         if (!m) return null;
         return {
-            id:           m.id,
-            title:        String(m.title?.english||m.title?.romaji||m.title?.native||'Unknown'),
-            coverImage:   String(m.coverImage?.extraLarge||m.coverImage?.large||''),
-            episodes:     m.episodes||0,
-            description:  m.description?String(m.description).replace(/<[^>]*>/g,''):'',
-            genres:       m.genres||[],
-            averageScore: m.averageScore||null,
-            format:       String(m.format||''),
-            season:       m.season&&m.seasonYear?`${m.season} ${m.seasonYear}`:String(m.season||''),
-            status:       m.status||null,
+            id:m.id, title:String(m.title?.english||m.title?.romaji||m.title?.native||'Unknown'),
+            coverImage:String(m.coverImage?.extraLarge||m.coverImage?.large||''),
+            episodes:m.episodes||0, description:m.description?String(m.description).replace(/<[^>]*>/g,''):'',
+            genres:m.genres||[], averageScore:m.averageScore||null, format:String(m.format||''),
+            season:m.season&&m.seasonYear?`${m.season} ${m.seasonYear}`:String(m.season||''), status:m.status||null,
         };
     }
     async function fetchTrending()  { const d=await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);   return (d.Page?.media||[]).filter(Boolean); }
@@ -1006,803 +1269,1083 @@
     // ── DOM ──────────────────────────────────────────────────────────────────
     const $  = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
-    const searchInput       = $('#searchInput');
-    const searchDropdown    = $('#searchDropdown');
-    const homePage          = $('#homePage');
-    const watchPage         = $('#watchPage');
-    const browsePage_el     = $('#browsePage');
-    const playerPlaceholder = $('#playerPlaceholder');
-    const playerIframe      = $('#playerIframe');
-    const playerWrapper     = $('#playerWrapper');
-    const episodeSection    = $('#episodeSection');
-    const episodeGrid       = $('#episodeGrid');
-    const s5EpSection       = $('#s5EpisodeSection');
-    const s5EpGrid          = $('#s5EpisodeGrid');
-    const audioToggle       = $('#audioToggleWrap');
-    const provWrap          = $('#providerDropdownWrap');
-    const provMenu          = $('#providerDropdownMenu');
-    const provDot           = $('#provDot');
-    const provLabel         = $('#provLabel');
-    const historyRow        = $('#historyRow');
-    const continueSection   = $('#continueWatchingSection');
-    const browseGrid        = $('#browseGrid');
-    const browsePagination  = $('#browsePagination');
-    const sidebarRelations  = $('#sidebarRelations');
-    const topAiringList     = $('#topAiringList');
-    const newestGrid        = $('#newestGrid');
-    const popularGrid       = $('#popularGrid');
-    const topRatedGrid      = $('#topRatedGrid');
-    const heroBg            = $('#heroBg');
-    const heroTitle         = $('#heroTitle');
-    const heroGenres        = $('#heroGenres');
-    const heroBadges        = $('#heroBadges');
-    const heroDesc          = $('#heroDesc');
-    const shortcutsBtn      = $('#shortcutsBtn');
-    const shortcutsPanel    = $('#shortcutsPanel');
+    const searchInput      = $('#searchInput');
+    const searchDropdown   = $('#searchDropdown');
+    const homePage         = $('#homePage');
+    const mangaHomePage    = $('#mangaHomePage');
+    const mangaReaderPage  = $('#mangaReaderPage');
+    const watchPage        = $('#watchPage');
+    const browsePage_el    = $('#browsePage');
+    const playerPlaceholder= $('#playerPlaceholder');
+    const playerIframe     = $('#playerIframe');
+    const playerWrapper    = $('#playerWrapper');
+    const episodeSection   = $('#episodeSection');
+    const episodeGrid      = $('#episodeGrid');
+    const s5EpSection      = $('#s5EpisodeSection');
+    const s5EpGrid         = $('#s5EpisodeGrid');
+    const audioToggle      = $('#audioToggleWrap');
+    const provWrap         = $('#providerDropdownWrap');
+    const provMenu         = $('#providerDropdownMenu');
+    const provDot          = $('#provDot');
+    const provLabel        = $('#provLabel');
+    const historyRow       = $('#historyRow');
+    const continueSection  = $('#continueWatchingSection');
+    const browseGrid       = $('#browseGrid');
+    const browsePagination = $('#browsePagination');
+    const sidebarRelations = $('#sidebarRelations');
+    const topAiringList    = $('#topAiringList');
+    const newestGrid       = $('#newestGrid');
+    const popularGrid      = $('#popularGrid');
+    const topRatedGrid     = $('#topRatedGrid');
+    const heroBg           = $('#heroBg');
+    const heroTitle        = $('#heroTitle');
+    const heroGenres       = $('#heroGenres');
+    const heroBadges       = $('#heroBadges');
+    const heroDesc         = $('#heroDesc');
+    const shortcutsBtn     = $('#shortcutsBtn');
+    const shortcutsPanel   = $('#shortcutsPanel');
 
-    // ── PLAYER STATES ─────────────────────────────────────────────────────────
-    function showPlayerLoading(msg, sub='') {
-        stopProgressTracking();
-        hideLWBanner();
-        progressTrackWrap.style.display = 'none';
-        playerIframe.style.display = 'none';
-        playerIframe.src = '';
-        playerPlaceholder.style.display = 'flex';
-        playerPlaceholder.innerHTML = `<div class="server5-loading"><div class="spinner"></div><span class="status-text">${escapeHTML(msg)}</span>${sub?`<span class="sub-text">${escapeHTML(sub)}</span>`:''}</div>`;
-    }
-    function showPlayerError(msg) {
-        stopProgressTracking();
-        hideLWBanner();
-        progressTrackWrap.style.display = 'none';
-        playerIframe.style.display = 'none';
-        playerIframe.src = '';
-        playerPlaceholder.style.display = 'flex';
-        playerPlaceholder.innerHTML = `<span class="big-icon" style="animation:none;">⚠️</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`;
-    }
-    function showPlayerIdle() {
-        stopProgressTracking();
-        hideLWBanner();
-        progressTrackWrap.style.display = 'none';
-        playerIframe.style.display = 'none';
-        playerIframe.src = '';
-        playerPlaceholder.style.display = 'flex';
-        playerPlaceholder.innerHTML = `<span class="big-icon">🎬</span><p>Select an episode to start streaming</p>`;
+    // ── GENRE BAR CONFIGS ────────────────────────────────────────────────────
+    const ANIME_GENRES = ['All','Action','Adventure','Comedy','Drama','Ecchi','Fantasy','Horror','Mahou Shoujo','Mecha','Mystery','Psychological','Romance','Sci-Fi','Slice of Life','Sports','Supernatural','Thriller'];
+    const MANGA_GENRES = ['All','Action','Adventure','Comedy','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Slice of Life','Sports','Supernatural','Thriller','Isekai','Shounen','Shoujo','Seinen','Josei'];
+
+    function renderGenreBar(genres, activeGenre, onSelect, mangaMode=false) {
+        const inner = document.getElementById('genreBarInner');
+        inner.innerHTML = genres.map(g =>
+            `<button class="genre-btn${mangaMode?' manga-mode':''} ${g===activeGenre?'active':''}" onclick="(${onSelect.toString()})('${g}',this)">${g}</button>`
+        ).join('');
     }
 
-    // ── LOAD STREAM ───────────────────────────────────────────────────────────
-    async function loadStream(resumeAtSec = 0) {
-        if (!state.selectedAnime || !state.selectedProvider) return;
-        const prov  = state.selectedProvider;
-        const anime = state.selectedAnime;
-        const ep    = state.selectedEpisode;
+    // ── MODE SWITCHING ────────────────────────────────────────────────────────
+    window.switchMode = (mode) => {
+        appMode = mode;
+        const navAnime = $('#navAnimeBtn');
+        const navManga = $('#navMangaBtn');
+        navAnime.className = 'nav-mode-btn' + (mode==='anime'?' active':'');
+        navManga.className = 'nav-mode-btn' + (mode==='manga'?' manga-active':'');
 
-        stopProgressTracking();
-        hideLWBanner();
-        playerIframe.style.display = 'none';
-        playerIframe.src = '';
+        // Search placeholder
+        searchInput.placeholder = mode === 'manga' ? 'Search manga...' : 'Search anime...';
 
-        if (prov.id === 'server5') {
-            await loadS5Stream(anime, ep, resumeAtSec);
-            return;
-        }
-
-        if (prov.external) {
-            const url = prov.getUrl(anime.id, anime.season, ep, state.selectedAudio);
-            window.open(url, '_blank');
-            showToast(`Opening ${prov.name} in new tab`, '↗️');
-            showPlayerIdle();
-            return;
-        }
-
-        const url = buildStreamUrl(prov, anime, ep, state.selectedAudio, resumeAtSec);
-
-        playerIframe.removeAttribute('sandbox');
-        playerIframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
-        playerPlaceholder.style.display = 'none';
-        playerIframe.style.display = 'block';
-        playerIframe.onload = null;
-        playerIframe.src = url;
-
-        playerIframe.onload = () => {
-            startProgressTracking(resumeAtSec);
-            // Show the last-watched info banner (purely informational, no seek needed)
-            const prog = getEpProgress(anime.id, ep);
-            if (prog && prog.time > 5) {
-                showLastWatchedBanner(anime.title, ep, prog.time, prog.duration);
-            }
-            if (prov.resumeSupport === 'postmsg' && resumeAtSec >= 3) {
-                _trySendSeek(resumeAtSec);
-            }
-        };
-
-        // Start tracking immediately too (handles cached-load browsers)
-        startProgressTracking(resumeAtSec);
-
-        // Show the last-watched banner right away (before iframe loads)
-        const progImmediate = getEpProgress(anime.id, ep);
-        if (progImmediate && progImmediate.time > 5) {
-            showLastWatchedBanner(anime.title, ep, progImmediate.time, progImmediate.duration);
-        }
-    }
-
-    async function loadS5Stream(anime, epNum, resumeAtSec = 0) {
-        if (state.server5.isLoading) return;
-        state.server5.isLoading = true;
-        hideLWBanner();
-        try {
-            const cached = state.server5.cacheKey === anime.title
-                && state.server5.animeSession
-                && state.server5.episodes.length > 0;
-            if (!cached) showPlayerLoading('Searching Server 5…', `Looking up "${anime.title}"`);
-            else         showPlayerLoading('Loading episode…', `Episode ${epNum}`);
-
-            const {animeSession, episodes} = await s5Load(anime.title);
-            if (!cached) renderS5Episodes(episodes, epNum);
-
-            const ep = episodes.find(e => String(e.number) === String(epNum))
-                || episodes[epNum - 1]
-                || episodes[0];
-            if (!ep?.session) throw new Error(`Episode ${epNum} not found`);
-
-            const epTitle = ep.title && ep.title !== `Episode ${ep.number||epNum}`
-                ? ep.title
-                : `${anime.title} Ep ${ep.number||epNum}`;
-
-            playerIframe.removeAttribute('sandbox');
-            playerIframe.setAttribute('allow', 'autoplay; fullscreen');
-            playerPlaceholder.style.display = 'none';
-            playerIframe.style.display = 'block';
-            playerIframe.onload = null;
-            playerIframe.src = s5Embed(animeSession, ep.session, epTitle);
-
-            playerIframe.onload = () => {
-                startProgressTracking(resumeAtSec);
-                const prog = getEpProgress(anime.id, epNum);
-                if (prog && prog.time > 5) {
-                    showLastWatchedBanner(anime.title, epNum, prog.time, prog.duration);
-                }
-                if (resumeAtSec >= 3) _trySendSeek(resumeAtSec);
-            };
-            startProgressTracking(resumeAtSec);
-
-            // Show banner immediately too
-            const progImmediate = getEpProgress(anime.id, epNum);
-            if (progImmediate && progImmediate.time > 5) {
-                showLastWatchedBanner(anime.title, epNum, progImmediate.time, progImmediate.duration);
-            }
-
-            // Prefetch next episode
-            const nxt = episodes.find(e => String(e.number) === String(epNum + 1)) || episodes[epNum];
-            if (nxt?.session) s5Prefetch(animeSession, nxt.session);
-
-            s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c =>
-                c.classList.toggle('active', String(c.dataset.epnum) === String(ep.number || epNum))
-            );
-        } catch(err) {
-            showPlayerError(`Server 5: ${err.message}. Try another server.`);
-            showToast('Server 5 failed — try another server', '⚠️');
-        } finally {
-            state.server5.isLoading = false;
-        }
-    }
-
-    /** postMessage seek — tries multiple formats used by different players */
-    function _trySendSeek(sec) {
-        const t = Math.floor(sec);
-        const tries = [
-            {type:'seek', time:t},
-            {event:'command', func:'seekTo', args:[t]},
-            {event:'seek', time:t},
-            {action:'seek', time:t},
-        ];
-        [500, 1500, 3000].forEach(delay => {
-            setTimeout(() => {
-                tries.forEach(msg => {
-                    try { playerIframe.contentWindow?.postMessage(msg, '*'); } catch(_){}
-                    try { playerIframe.contentWindow?.postMessage(JSON.stringify(msg), '*'); } catch(_){}
-                });
-            }, delay);
-        });
-    }
-
-    // ── EPISODE RENDERS ───────────────────────────────────────────────────────
-    function renderS5Episodes(episodes, activeEpNum) {
-        s5EpGrid.innerHTML = '';
-        episodeSection.style.display = 'none';
-        s5EpSection.style.display    = 'flex';
-        episodes.forEach((ep, i) => {
-            const num   = ep.number || (i + 1);
-            const label = ep.title && ep.title !== `Episode ${num}` ? ep.title : '';
-            const prog  = getEpProgress(state.selectedAnime?.id, num);
-            const pct   = prog && prog.duration > 0 ? Math.round((prog.time / prog.duration) * 100) : 0;
-            const card  = document.createElement('div');
-            card.className  = 's5-ep-card' + (String(num) === String(activeEpNum) ? ' active' : '');
-            card.dataset.epnum = num;
-            card.innerHTML = `
-                ${ep.snapshot ? `<img class="s5-ep-thumb" src="${escapeHTML(ep.snapshot)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-                <div class="s5-ep-thumb-placeholder" style="${ep.snapshot ? 'display:none' : ''}">▶</div>
-                <div class="s5-ep-label">
-                    Episode ${num}
-                    ${label ? `<small>${escapeHTML(label)}</small>` : ''}
-                    ${pct > 0 && pct < 92 ? `<small style="color:var(--accent3);">⏱ ${pct}% watched</small>` : ''}
-                    ${pct >= 92 ? `<small style="color:#22c55e;">✓ Watched</small>` : ''}
-                </div>
-                <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
-            card.addEventListener('click', () => {
-                state.selectedEpisode = num;
-                updateHistory(state.selectedAnime, num);
-                const p = getEpProgress(state.selectedAnime?.id, num);
-                if (p && p.time > 10 && p.duration > 0 && (p.time / p.duration) < 0.92) {
-                    showResumeModal(num, p.time, p.duration,
-                        () => loadS5Stream(state.selectedAnime, num, p.time),
-                        () => loadS5Stream(state.selectedAnime, num, 0)
-                    );
-                } else {
-                    loadS5Stream(state.selectedAnime, num, 0);
-                }
-            });
-            s5EpGrid.appendChild(card);
-        });
-        const ac = s5EpGrid.querySelector('.s5-ep-card.active');
-        if (ac) ac.scrollIntoView({behavior:'smooth', block:'nearest'});
-    }
-
-    function renderStdEpisodes() {
-        if (!state.selectedAnime?.episodes) { episodeSection.style.display = 'none'; return; }
-        episodeSection.style.display = 'flex';
-        const total   = state.selectedAnime.episodes;
-        const maxShow = Math.min(total, 200);
-        const animeId = state.selectedAnime.id;
-        let html = '';
-        for (let i = 1; i <= maxShow; i++) {
-            const prog = getEpProgress(animeId, i);
-            const pct  = prog && prog.duration > 0 ? (prog.time / prog.duration) * 100 : 0;
-            let cls = 'episode-btn';
-            if (i === state.selectedEpisode) cls += ' active';
-            else if (pct >= 90)              cls += ' completed';
-            else if (pct > 5)                cls += ' in-progress';
-            const tip = pct >= 90 ? 'Watched' : pct > 5 ? `${Math.round(pct)}% watched` : '';
-            html += `<button class="${cls}" data-ep="${i}" title="${tip}">${i}</button>`;
-        }
-        if (total > maxShow) html += `<span style="padding:8px;color:var(--text3);font-family:var(--font);font-size:0.74rem;">+${total - maxShow} more</span>`;
-        episodeGrid.innerHTML = html;
-        const ab = episodeGrid.querySelector('.episode-btn.active');
-        if (ab) ab.scrollIntoView({behavior:'smooth', block:'nearest'});
-        episodeGrid.querySelectorAll('.episode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const ep = parseInt(btn.dataset.ep);
-                state.selectedEpisode = ep;
-                renderStdEpisodes();
-                updateHistory(state.selectedAnime, ep);
-                const p = getEpProgress(animeId, ep);
-                if (p && p.time > 10 && p.duration > 0 && (p.time / p.duration) < 0.92) {
-                    showResumeModal(ep, p.time, p.duration,
-                        () => loadStream(p.time),
-                        () => loadStream(0)
-                    );
-                } else {
-                    loadStream(0);
-                }
-            });
-        });
-    }
-
-    function syncEpisodeUI() {
-        if (state.selectedProvider.id === 'server5') {
-            if (state.server5.cacheKey === state.selectedAnime?.title && state.server5.episodes.length) {
-                episodeSection.style.display = 'none';
-                s5EpSection.style.display    = 'flex';
-                renderS5Episodes(state.server5.episodes, state.selectedEpisode);
-            } else {
-                episodeSection.style.display = 'none';
-                s5EpSection.style.display    = 'none';
-            }
+        if (mode === 'anime') {
+            homePage.classList.remove('hidden');
+            mangaHomePage.classList.add('hidden');
+            mangaReaderPage.classList.remove('active');
+            watchPage.classList.remove('active');
+            genreBarEl.style.display = '';
+            renderGenreBar(ANIME_GENRES, state.activeGenre, window.__animeGenreHandler, false);
         } else {
-            s5EpSection.style.display = 'none';
-            renderStdEpisodes();
+            homePage.classList.add('hidden');
+            mangaHomePage.classList.remove('hidden');
+            mangaReaderPage.classList.remove('active');
+            watchPage.classList.remove('active');
+            genreBarEl.style.display = '';
+            renderGenreBar(MANGA_GENRES, mangaState.activeGenre, window.__mangaGenreHandler, true);
+            if (!mangaState.trendingData.length) loadMangaHome();
         }
-    }
+    };
 
-    // ── HISTORY ───────────────────────────────────────────────────────────────
-    function updateHistory(anime, ep) {
-        if (!anime) return;
-        const idx = state.watchHistory.findIndex(h => h.id === anime.id);
-        if (idx >= 0) {
-            const existing = state.watchHistory[idx];
-            state.watchHistory[idx] = {
-                ...anime,
-                epProgress:   existing.epProgress   || {},
-                lastProvider: existing.lastProvider  || null,
-                lastAudio:    existing.lastAudio     || null,
-                episode:   ep,
-                timestamp: Date.now(),
-            };
-        } else {
-            state.watchHistory.unshift({...anime, episode:ep, timestamp:Date.now(), epProgress:{}});
-        }
-        if (state.watchHistory.length > 30) state.watchHistory = state.watchHistory.slice(0, 30);
-        saveHistory();
-    }
-
-    function renderWatchHistory() {
-        if (!state.watchHistory.length) { continueSection.style.display = 'none'; return; }
-        continueSection.style.display = 'block';
-        historyRow.innerHTML = '';
-        const seen = new Set(), unique = [];
-        for (const h of state.watchHistory) {
-            if (!seen.has(h.id)) { seen.add(h.id); unique.push(h); }
-            if (unique.length >= 12) break;
-        }
-        unique.forEach(h => {
-            const prog   = getEpProgress(h.id, h.episode);
-            const pct    = prog && prog.duration > 0 ? Math.min((prog.time / prog.duration) * 100, 100) : 0;
-            const timeStr= prog && prog.time > 10 ? fmtTime(prog.time) : '';
-            const card   = document.createElement('div');
-            card.className = 'history-card';
-            card.innerHTML = `
-                <div class="history-card-thumb">
-                    <img src="${escapeHTML(h.coverImage)}" alt="" loading="lazy" onerror="this.parentElement.style.background='var(--surface3)'"/>
-                    <div class="history-card-thumb-overlay"></div>
-                    <span class="history-ep-badge">EP ${h.episode||1}${timeStr ? ' · ' + timeStr : ''}</span>
-                    <div class="history-play-btn"><span>▶</span></div>
-                </div>
-                <div class="history-card-body">
-                    <div class="history-card-title">${escapeHTML(h.title)}</div>
-                    <div class="history-card-meta">
-                        ${h.format ? `<span>${escapeHTML(h.format)}</span>` : ''}
-                        ${pct > 0 ? `<span style="color:var(--accent3);">${Math.round(pct)}%</span>` : ''}
-                    </div>
-                </div>
-                <div class="history-progress-bar">
-                    <div class="history-progress-fill" style="width:${Math.round(pct)}%"></div>
-                </div>`;
-            card.addEventListener('click', () => selectAnime(h, h.episode));
-            historyRow.appendChild(card);
-        });
-    }
-    window.clearHistory = () => { state.watchHistory = []; saveHistory(); renderWatchHistory(); showToast('Watch history cleared','🗑️'); };
-
-    // ── SELECT ANIME ──────────────────────────────────────────────────────────
-    async function selectAnime(animeData, forceEpisode = null) {
-        if (!animeData) return;
-        state.selectedAnime    = animeData;
-        state.server5          = {animeSession:null, episodes:[], isLoading:false, cacheKey:null};
-        state.selectedProvider = PROVIDERS.find(p => !p.external) || PROVIDERS[0];
-        state.selectedAudio    = 'sub';
-
-        const hist = getHistoryEntry(animeData.id);
-        if (hist?.lastProvider) {
-            const lp = PROVIDERS.find(p => p.id === hist.lastProvider);
-            if (lp) state.selectedProvider = lp;
-        }
-        if (hist?.lastAudio) state.selectedAudio = hist.lastAudio;
-
-        const startEp = forceEpisode !== null ? forceEpisode : (hist?.episode || 1);
-        state.selectedEpisode = startEp;
-        state.currentTime = 0;
-        state.duration    = 0;
-
-        updateHistory(animeData, startEp);
-        updateWatchUI();
-        renderProviderDropdown();
-        updateAudioToggle();
-        syncEpisodeUI();
-        showPlayerIdle();
-        openWatchPage();
-        $('#watchPageTitle').textContent = animeData.title;
-        showToast(`${animeData.title}`, '🎌');
-        loadAnimeRelations(animeData.id);
-
-        const prog = getEpProgress(animeData.id, startEp);
-        if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) {
-            showResumeModal(
-                startEp, prog.time, prog.duration,
-                () => loadStream(prog.time),
-                () => loadStream(0)
-            );
-        } else {
-            loadStream(0);
-        }
-    }
-
-    // ── TOP AIRING ────────────────────────────────────────────────────────────
-    function renderTopAiring() {
-        if (!state.trendingData.length) return;
-        topAiringList.innerHTML = '';
-        state.trendingData.slice(0, 10).forEach((anime, i) => {
-            const item = document.createElement('div'); item.className = 'top-airing-item';
-            const rankClass = i < 3 ? ['gold','silver','bronze'][i] : '';
-            const rating = anime.averageScore ? (anime.averageScore / 10).toFixed(1) : '';
-            item.innerHTML = `
-                <span class="top-airing-rank ${rankClass}">${i + 1}</span>
-                <img class="top-airing-thumb" src="${escapeHTML(anime.coverImage)}" loading="lazy" onerror="this.style.display='none'">
-                <div class="top-airing-info">
-                    <div class="top-airing-name">${escapeHTML(anime.title)}</div>
-                    <div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · ⭐'+rating:''}</div>
-                </div>`;
-            item.addEventListener('click', () => selectAnime(anime));
-            topAiringList.appendChild(item);
-        });
-    }
-
-    // ── GENRE / TABS ──────────────────────────────────────────────────────────
-    window.setGenre = (genre, btn) => {
+    window.__animeGenreHandler = (genre, btn) => {
         state.activeGenre = genre;
         $$('.genre-btn').forEach(b => b.classList.remove('active'));
         btn?.classList.add('active');
         refreshTabGrid();
     };
-    function filterByGenre(d) { return state.activeGenre === 'All' ? d : d.filter(a => a.genres?.includes(state.activeGenre)); }
+    window.__mangaGenreHandler = (genre, btn) => {
+        mangaState.activeGenre = genre;
+        $$('.genre-btn').forEach(b => b.classList.remove('active'));
+        btn?.classList.add('active');
+        refreshMangaTabGrid();
+    };
+    window.setGenre = (genre, btn) => window.__animeGenreHandler(genre, btn);
+
+    // ── TABS ──────────────────────────────────────────────────────────────────
+    function filterByGenre(d) { return state.activeGenre==='All'?d:d.filter(a=>a.genres?.includes(state.activeGenre)); }
+    function filterMangaByGenre(d) { return mangaState.activeGenre==='All'?d:d.filter(m=>m.genres?.some(g=>g.toLowerCase()===mangaState.activeGenre.toLowerCase())); }
+
     window.setTab = (tab, btn) => {
         state.activeTab = tab;
-        $$('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn?.classList.add('active');
-        ['newest','popular','toprated'].forEach(t => {
-            const el = $(`#tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
-            if (el) el.style.display = t === tab ? 'block' : 'none';
+        $$('.tab-btn').forEach(b=>b.classList.remove('active')); btn?.classList.add('active');
+        ['newest','popular','toprated'].forEach(t=>{
+            const el=$(`#tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
+            if (el) el.style.display=t===tab?'block':'none';
         });
         refreshTabGrid();
     };
     function refreshTabGrid() {
-        if (state.activeTab === 'newest')       populateGrid(newestGrid,   filterByGenre(state.trendingData));
-        else if (state.activeTab === 'popular') populateGrid(popularGrid,  filterByGenre(state.popularData));
-        else                                    populateGrid(topRatedGrid, filterByGenre(state.topRatedData));
+        if (state.activeTab==='newest')       populateGrid(newestGrid,   filterByGenre(state.trendingData));
+        else if (state.activeTab==='popular') populateGrid(popularGrid,  filterByGenre(state.popularData));
+        else                                   populateGrid(topRatedGrid, filterByGenre(state.topRatedData));
+    }
+
+    window.setMangaTab = (tab, btn) => {
+        mangaState.activeTab = tab;
+        $$('#mangaHomePage .tab-btn').forEach(b=>b.classList.remove('active')); btn?.classList.add('active');
+        ['trending','popular','toprated'].forEach(t=>{
+            const el=$(`#mangaTab${t.charAt(0).toUpperCase()+t.slice(1)}Grid`);
+            if (el) el.style.display=t===tab?'block':'none';
+        });
+        refreshMangaTabGrid();
+    };
+    function refreshMangaTabGrid() {
+        if (mangaState.activeTab==='trending')     populateMangaGrid($('#mangaTrendingGrid'), filterMangaByGenre(mangaState.trendingData));
+        else if (mangaState.activeTab==='popular') populateMangaGrid($('#mangaPopularGrid'),  filterMangaByGenre(mangaState.popularData));
+        else                                        populateMangaGrid($('#mangaTopRatedGrid'), filterMangaByGenre(mangaState.topRatedData));
     }
 
     // ── CARDS ─────────────────────────────────────────────────────────────────
     function createAnimeCard(anime) {
         if (!anime) return document.createElement('div');
-        const rating = anime.averageScore ? (anime.averageScore / 10).toFixed(1) : null;
-        const epText = anime.episodes ? `${anime.episodes} eps` : '';
-        const div    = document.createElement('div'); div.className = 'anime-card';
-        div.innerHTML = `
+        const rating = anime.averageScore?(anime.averageScore/10).toFixed(1):null;
+        const epText = anime.episodes?`${anime.episodes} eps`:'';
+        const div = document.createElement('div'); div.className='anime-card';
+        div.innerHTML=`
             <div class="anime-card-img-wrap">
                 <img src="${escapeHTML(anime.coverImage)}" alt="" loading="lazy" onerror="this.style.display='none'"/>
                 <div class="anime-card-overlay"></div>
-                ${rating ? `<span class="anime-card-badge">⭐ ${rating}</span>` : ''}
-                ${epText ? `<span class="anime-card-ep-badge">${epText}</span>` : ''}
+                ${rating?`<span class="anime-card-badge">⭐ ${rating}</span>`:''}
+                ${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}
             </div>
             <div class="anime-card-info">
                 <span class="anime-card-title">${escapeHTML(anime.title)}</span>
                 <span class="anime-card-sub">${escapeHTML(anime.format)} · ${escapeHTML(anime.genres?.slice(0,2).join(', ')||'')}</span>
             </div>`;
-        div.addEventListener('click', () => selectAnime(anime));
+        div.addEventListener('click',()=>selectAnime(anime));
+        return div;
+    }
+    function createMangaCard(manga) {
+        if (!manga) return document.createElement('div');
+        const rating = manga.averageScore?(manga.averageScore/10).toFixed(1):null;
+        const chText = manga.chapters?`${manga.chapters} ch`:'';
+        const div = document.createElement('div'); div.className='anime-card manga-card';
+        div.innerHTML=`
+            <div class="anime-card-img-wrap">
+                <img src="${escapeHTML(manga.coverImage)}" alt="" loading="lazy" onerror="this.style.display='none'"/>
+                <div class="anime-card-overlay"></div>
+                ${rating?`<span class="anime-card-badge manga">⭐ ${rating}</span>`:''}
+                ${chText?`<span class="anime-card-ep-badge">${chText}</span>`:''}
+            </div>
+            <div class="anime-card-info">
+                <span class="anime-card-title">${escapeHTML(manga.title)}</span>
+                <span class="anime-card-sub">${escapeHTML(manga.status||'MANGA')} · ${escapeHTML(manga.genres?.slice(0,2).join(', ')||'')}</span>
+            </div>`;
+        div.addEventListener('click',()=>selectManga(manga));
         return div;
     }
     function populateGrid(container, data) {
-        container.innerHTML = '';
+        container.innerHTML='';
         if (!data?.length) {
-            for (let i = 0; i < 16; i++) {
-                const s = document.createElement('div');
-                s.className = 'skeleton'; s.style.cssText = 'aspect-ratio:3/4;border-radius:9px;';
-                container.appendChild(s);
-            }
+            for (let i=0;i<16;i++){ const s=document.createElement('div');s.className='skeleton';s.style.cssText='aspect-ratio:3/4;border-radius:9px;';container.appendChild(s); }
             return;
         }
-        data.forEach(a => container.appendChild(createAnimeCard(a)));
+        data.forEach(a=>container.appendChild(createAnimeCard(a)));
+    }
+    function populateMangaGrid(container, data) {
+        if (!container) return;
+        container.innerHTML='';
+        if (!data?.length) {
+            for (let i=0;i<16;i++){ const s=document.createElement('div');s.className='skeleton';s.style.cssText='aspect-ratio:3/4;border-radius:9px;';container.appendChild(s); }
+            return;
+        }
+        data.forEach(m=>container.appendChild(createMangaCard(m)));
     }
 
-    // ── HOME ──────────────────────────────────────────────────────────────────
+    // ── HOME LOAD ─────────────────────────────────────────────────────────────
     async function loadHomePage() {
-        populateGrid(newestGrid, []); populateGrid(popularGrid, []); populateGrid(topRatedGrid, []);
+        populateGrid(newestGrid,[]); populateGrid(popularGrid,[]); populateGrid(topRatedGrid,[]);
         try {
-            const [trending, popular, topRated] = await Promise.all([fetchTrending(), fetchPopular(), fetchTopRated()]);
-            state.trendingData  = trending.map(fmtAnime).filter(Boolean);
-            state.popularData   = popular.map(fmtAnime).filter(Boolean);
-            state.topRatedData  = topRated.map(fmtAnime).filter(Boolean);
-        } catch(e) { console.error('[ThyAnime] load error:', e); }
+            const [trending,popular,topRated]=await Promise.all([fetchTrending(),fetchPopular(),fetchTopRated()]);
+            state.trendingData=trending.map(fmtAnime).filter(Boolean);
+            state.popularData=popular.map(fmtAnime).filter(Boolean);
+            state.topRatedData=topRated.map(fmtAnime).filter(Boolean);
+        } catch(e) { console.error('[ThyAnime]',e); }
 
         if (state.trendingData.length) {
-            const hero = state.trendingData[0]; state.heroAnime = hero;
-            heroBg.src = hero.coverImage; heroTitle.textContent = hero.title;
-            heroBadges.innerHTML = [
-                hero.format       ? `<span class="hero-badge-pill type">${escapeHTML(hero.format)}</span>` : '',
-                hero.averageScore ? `<span class="hero-badge-pill">⭐ ${(hero.averageScore/10).toFixed(1)}</span>` : '',
-                hero.status       ? `<span class="hero-badge-pill">${escapeHTML(hero.status)}</span>` : '',
+            const hero=state.trendingData[0]; state.heroAnime=hero;
+            heroBg.src=hero.coverImage; heroTitle.textContent=hero.title;
+            heroBadges.innerHTML=[
+                hero.format?`<span class="hero-badge-pill type">${escapeHTML(hero.format)}</span>`:'',
+                hero.averageScore?`<span class="hero-badge-pill">⭐ ${(hero.averageScore/10).toFixed(1)}</span>`:'',
+                hero.status?`<span class="hero-badge-pill">${escapeHTML(hero.status)}</span>`:'',
             ].filter(Boolean).join('');
-            heroGenres.innerHTML = hero.genres?.slice(0, 4).map(g => `<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('') || '';
-            heroDesc.textContent = hero.description
-                ? (hero.description.length > 180 ? hero.description.slice(0, 180) + '…' : hero.description)
-                : '';
-        } else {
-            heroTitle.textContent = 'Could not load featured anime';
-        }
-        populateGrid(newestGrid,   state.trendingData);
-        populateGrid(popularGrid,  state.popularData);
-        populateGrid(topRatedGrid, state.topRatedData);
+            heroGenres.innerHTML=hero.genres?.slice(0,4).map(g=>`<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('')||'';
+            heroDesc.textContent=hero.description?(hero.description.length>180?hero.description.slice(0,180)+'…':hero.description):'';
+        } else { heroTitle.textContent='Could not load featured anime'; }
+
+        populateGrid(newestGrid,state.trendingData);
+        populateGrid(popularGrid,state.popularData);
+        populateGrid(topRatedGrid,state.topRatedData);
         renderTopAiring();
         renderWatchHistory();
     }
 
-    window.handleHeroWatch   = () => { if (state.heroAnime) selectAnime(state.heroAnime); };
-    window.handleHeroDetails = () => { if (state.heroAnime) { showToast(state.heroAnime.title,'ℹ️'); selectAnime(state.heroAnime); } };
+    // ── MANGA HOME LOAD ───────────────────────────────────────────────────────
+    async function loadMangaHome() {
+        const tg=$('#mangaTrendingGrid'), pg=$('#mangaPopularGrid'), rg=$('#mangaTopRatedGrid');
+        populateMangaGrid(tg,[]); populateMangaGrid(pg,[]); populateMangaGrid(rg,[]);
 
-    // ── PAGES ─────────────────────────────────────────────────────────────────
-    window.goHome = () => {
-        stopProgressTracking();
-        hideLWBanner();
-        homePage.classList.remove('hidden');
+        try {
+            // Use MangaDex for trending/popular, AniList for top rated (has scores)
+            const [trending, popular, topRated] = await Promise.all([
+                mdxTrending(),
+                mdxPopular(),
+                alMangaTopRated(),
+            ]);
+            mangaState.trendingData = trending;
+            mangaState.popularData  = popular;
+            mangaState.topRatedData = topRated;
+        } catch(e) { console.error('[ThyAnime Manga]', e); }
+
+        if (mangaState.trendingData.length) {
+            const hero = mangaState.trendingData[Math.floor(Math.random()*Math.min(mangaState.trendingData.length,5))];
+            mangaState.heroManga = hero;
+            $('#mangaHeroBg').src = hero.coverImage;
+            $('#mangaHeroTitle').textContent = hero.title;
+            $('#mangaHeroBadges').innerHTML = [
+                `<span class="hero-badge-pill type">MANGA</span>`,
+                hero.status?`<span class="hero-badge-pill">${escapeHTML(hero.status)}</span>`:'',
+                hero.chapters?`<span class="hero-badge-pill">${hero.chapters} Chapters</span>`:'',
+            ].filter(Boolean).join('');
+            $('#mangaHeroGenres').innerHTML=hero.genres?.slice(0,4).map(g=>`<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('')||'';
+            $('#mangaHeroDesc').textContent=hero.description?(hero.description.length>180?hero.description.slice(0,180)+'…':hero.description):'';
+        }
+
+        populateMangaGrid(tg, mangaState.trendingData);
+        populateMangaGrid(pg, mangaState.popularData);
+        populateMangaGrid(rg, mangaState.topRatedData);
+        renderTopManga();
+        renderMangaHistory();
+    }
+
+    window.handleMangaHeroRead    = () => { if (mangaState.heroManga) selectManga(mangaState.heroManga); };
+    window.handleMangaHeroDetails = () => { if (mangaState.heroManga) selectManga(mangaState.heroManga); };
+
+    // ── TOP MANGA SIDEBAR ─────────────────────────────────────────────────────
+    function renderTopManga() {
+        const list = $('#topMangaList'); if (!list) return;
+        list.innerHTML='';
+        const data = mangaState.popularData.slice(0,10);
+        data.forEach((manga,i)=>{
+            const item=document.createElement('div'); item.className='top-airing-item';
+            const rankClass=i<3?['gold','silver','bronze'][i]:'';
+            item.innerHTML=`
+                <span class="top-airing-rank ${rankClass}">${i+1}</span>
+                <img class="top-airing-thumb" src="${escapeHTML(manga.coverImage)}" loading="lazy" onerror="this.style.display='none'">
+                <div class="top-airing-info">
+                    <div class="top-airing-name">${escapeHTML(manga.title)}</div>
+                    <div class="top-airing-meta">${escapeHTML(manga.status||'MANGA')}${manga.chapters?' · '+manga.chapters+' ch':''}</div>
+                </div>`;
+            item.addEventListener('click',()=>selectManga(manga));
+            list.appendChild(item);
+        });
+    }
+
+    // ── SELECT MANGA ──────────────────────────────────────────────────────────
+    async function selectManga(mangaData) {
+        if (!mangaData) return;
+        mangaState.selectedManga  = mangaData;
+        mangaState.chapters       = [];
+        mangaState.currentPages   = [];
+        mangaState.currentChapterIdx = 0;
+
+        const hist = getMangaHistoryEntry(mangaData.id);
+        if (hist?.chapterIdx >= 0) mangaState.currentChapterIdx = hist.chapterIdx;
+
+        // Determine source (default mangadex unless it's an anilist-only manga)
+        mangaState.source = mangaData._source === 'comick' ? 'comick' : 'mangadex';
+        $$('#mangaSourceToggle .manga-source-btn').forEach(b =>
+            b.classList.toggle('active', b.dataset.src === mangaState.source)
+        );
+
+        openMangaReader();
+        updateMangaSidebar();
+        await loadMangaChapters(mangaData);
+    }
+
+    async function loadMangaChapters(mangaData) {
+        if (mangaState.isLoadingChapters) return;
+        mangaState.isLoadingChapters = true;
+        setMangaReaderLoading('Loading chapters…');
+
+        try {
+            let chapters = [];
+            const src = mangaState.source;
+
+            if (src === 'mangadex') {
+                // For AniList-sourced manga, search MangaDex by title
+                let mdxId = mangaData._source === 'mangadex' ? mangaData.id : null;
+                if (!mdxId) {
+                    const results = await mdxSearch(mangaData.title);
+                    if (results.length) mdxId = results[0].id;
+                }
+                if (mdxId) {
+                    const raw = await mdxChapters(mdxId);
+                    chapters = raw.map((ch,i) => ({
+                        idx:         i,
+                        id:          ch.id,
+                        number:      ch.attributes?.chapter || String(i+1),
+                        title:       ch.attributes?.title || '',
+                        pages:       ch.attributes?.pages || 0,
+                        publishedAt: ch.attributes?.publishAt ? ch.attributes.publishAt.slice(0,10) : '',
+                        _source:     'mangadex',
+                    }));
+                }
+            } else if (src === 'comick') {
+                let hid = mangaData._comickHid || null;
+                if (!hid) {
+                    const results = await comickSearch(mangaData.title);
+                    if (results.length) hid = results[0]._comickHid;
+                }
+                if (hid) {
+                    const raw = await comickChapters(hid);
+                    chapters = raw.map((ch,i) => ({
+                        idx:         i,
+                        id:          ch.hid,
+                        number:      String(ch.chap || i+1),
+                        title:       ch.title || '',
+                        pages:       ch.images?.length || 0,
+                        publishedAt: ch.created_at ? ch.created_at.slice(0,10) : '',
+                        _source:     'comick',
+                    }));
+                }
+            }
+
+            if (!chapters.length) throw new Error('No chapters found. Try the other source.');
+
+            mangaState.chapters = chapters;
+            renderMangaChapterList();
+            renderMangaChapterSelect();
+
+            const startIdx = Math.min(mangaState.currentChapterIdx, chapters.length - 1);
+            mangaState.currentChapterIdx = startIdx;
+            await loadMangaChapterPages(startIdx);
+
+        } catch(err) {
+            setMangaReaderError(err.message || 'Failed to load chapters');
+        } finally {
+            mangaState.isLoadingChapters = false;
+        }
+    }
+
+    async function loadMangaChapterPages(chapterIdx) {
+        if (mangaState.isLoadingPages) return;
+        const ch = mangaState.chapters[chapterIdx];
+        if (!ch) return;
+        mangaState.currentChapterIdx = chapterIdx;
+        mangaState.isLoadingPages    = true;
+
+        updateMangaChapterNav();
+        setMangaReaderLoading(`Loading Chapter ${ch.number}…`);
+
+        try {
+            let pages = [];
+            if (ch._source === 'mangadex') {
+                pages = await mdxChapterPages(ch.id);
+            } else {
+                pages = await comickChapterPages(ch.id);
+            }
+
+            if (!pages.length) throw new Error('No pages found for this chapter. Try the other source.');
+
+            mangaState.currentPages = pages;
+            renderMangaPages(pages);
+
+            // Save history
+            if (mangaState.selectedManga)
+                updateMangaHistory(mangaState.selectedManga, chapterIdx);
+
+            // Highlight active chapter in sidebar list
+            $$('#mangaChapterListSidebar .manga-chapter-item').forEach((el,i) =>
+                el.classList.toggle('active', i === chapterIdx)
+            );
+            const ac = $('#mangaChapterListSidebar .manga-chapter-item.active');
+            if (ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+            // Update chapter select dropdown
+            const sel = $('#mangaChapterSelect');
+            if (sel) sel.value = String(chapterIdx);
+
+        } catch(err) {
+            setMangaReaderError(err.message || 'Failed to load pages');
+        } finally {
+            mangaState.isLoadingPages = false;
+        }
+    }
+
+    function renderMangaPages(pages) {
+        const container = $('#mangaPagesContainer');
+        container.innerHTML = '';
+        pages.forEach((url, i) => {
+            const img = document.createElement('img');
+            img.className = 'manga-page-img';
+            img.loading   = 'lazy';
+            img.alt       = `Page ${i+1}`;
+            // Use a CORS proxy for MangaDex images if direct load fails
+            img.src = url;
+            img.onerror = function() {
+                if (!this.dataset.retried) {
+                    this.dataset.retried = '1';
+                    this.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                } else {
+                    this.classList.add('errored');
+                }
+            };
+            container.appendChild(img);
+        });
+        container.scrollTop = 0;
+        showToast(`Chapter ${mangaState.chapters[mangaState.currentChapterIdx]?.number} — ${pages.length} pages`, '📖');
+    }
+
+    function renderMangaChapterList() {
+        const sidebar = $('#mangaChapterListSidebar');
+        if (!sidebar) return;
+        sidebar.innerHTML = '';
+        mangaState.chapters.forEach((ch, i) => {
+            const item = document.createElement('div');
+            item.className = 'manga-chapter-item' + (i === mangaState.currentChapterIdx ? ' active' : '');
+            item.innerHTML = `
+                <span class="manga-ch-num">Ch.${ch.number}</span>
+                <span class="manga-ch-title">${escapeHTML(ch.title||'')}</span>
+                <span class="manga-ch-date">${ch.publishedAt||''}</span>`;
+            item.addEventListener('click', () => loadMangaChapterPages(i));
+            sidebar.appendChild(item);
+        });
+    }
+
+    function renderMangaChapterSelect() {
+        const sel = $('#mangaChapterSelect');
+        if (!sel) return;
+        sel.innerHTML = mangaState.chapters.map((ch,i) =>
+            `<option value="${i}">Ch. ${ch.number}${ch.title?' — '+ch.title.slice(0,28):''}</option>`
+        ).join('');
+        sel.value = String(mangaState.currentChapterIdx);
+    }
+
+    window.jumpToMangaChapter = (idx) => { loadMangaChapterPages(parseInt(idx)); };
+
+    function updateMangaChapterNav() {
+        const idx  = mangaState.currentChapterIdx;
+        const last = mangaState.chapters.length - 1;
+        const ch   = mangaState.chapters[idx];
+        $('#mangaChapterIndicator').textContent = ch ? `Chapter ${ch.number}` : '—';
+        $$('#mangaPrevChBtn,#mangaPrevChBtn2').forEach(b => b.disabled = idx <= 0);
+        $$('#mangaNextChBtn,#mangaNextChBtn2').forEach(b => b.disabled = idx >= last);
+        $('#mangaReaderTitle').textContent = mangaState.selectedManga
+            ? `${mangaState.selectedManga.title}${ch?' — Ch.'+ch.number:''}`
+            : '—';
+        const sel = $('#mangaChapterSelect');
+        if (sel) sel.value = String(idx);
+    }
+
+    window.changeMangaChapter = (delta) => {
+        const newIdx = mangaState.currentChapterIdx + delta;
+        if (newIdx < 0 || newIdx >= mangaState.chapters.length) return;
+        loadMangaChapterPages(newIdx);
+        $('#mangaPagesContainer').scrollTop = 0;
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    window.setMangaSource = async (src, btn) => {
+        if (src === mangaState.source) return;
+        mangaState.source = src;
+        $$('#mangaSourceToggle .manga-source-btn').forEach(b => b.classList.toggle('active', b.dataset.src === src));
+        if (mangaState.selectedManga) await loadMangaChapters(mangaState.selectedManga);
+    };
+
+    function setMangaReaderLoading(msg) {
+        const c = $('#mangaPagesContainer');
+        c.innerHTML = `<div class="manga-loading-state"><div class="manga-spinner"></div><span style="font-family:var(--font);font-size:0.84rem;">${escapeHTML(msg)}</span></div>`;
+    }
+    function setMangaReaderError(msg) {
+        const c = $('#mangaPagesContainer');
+        c.innerHTML = `<div class="manga-loading-state"><span style="font-size:2rem;">⚠️</span><span style="font-family:var(--font);font-size:0.84rem;color:var(--text3);">${escapeHTML(msg)}</span></div>`;
+    }
+
+    function updateMangaSidebar() {
+        const m = mangaState.selectedManga; if (!m) return;
+        const cover = $('#mangaSidebarCover');
+        const placeholder = $('#mangaSidebarCoverPlaceholder');
+        if (m.coverImage) { cover.src=m.coverImage; cover.style.display='block'; placeholder.style.display='none'; }
+        else { cover.style.display='none'; placeholder.style.display='flex'; }
+        $('#mangaSidebarTitle').textContent = m.title;
+        const tags = [];
+        if (m.status)      tags.push(`<span class="sidebar-tag">${escapeHTML(m.status)}</span>`);
+        if (m.chapters)    tags.push(`<span class="sidebar-tag">📚 ${m.chapters} ch</span>`);
+        if (m.averageScore) tags.push(`<span class="sidebar-tag star">⭐ ${(m.averageScore/10).toFixed(1)}</span>`);
+        if (m.year)        tags.push(`<span class="sidebar-tag">📅 ${m.year}</span>`);
+        $('#mangaSidebarTags').innerHTML = tags.join('') || '<span class="sidebar-tag">—</span>';
+        const desc = m.description || 'No description.';
+        $('#mangaSidebarDesc').textContent = desc.length>300?desc.slice(0,300)+'…':desc;
+    }
+
+    // ── MANGA HISTORY ─────────────────────────────────────────────────────────
+    function renderMangaHistory() {
+        const row  = $('#mangaHistoryRow');
+        const sect = $('#continueMangaSection');
+        if (!row || !sect) return;
+        if (!mangaState.history.length) { sect.style.display='none'; return; }
+        sect.style.display = 'block';
+        row.innerHTML='';
+        const seen=new Set(), unique=[];
+        for (const h of mangaState.history) {
+            if (!seen.has(h.id)) { seen.add(h.id); unique.push(h); }
+            if (unique.length>=10) break;
+        }
+        unique.forEach(h=>{
+            const card=document.createElement('div'); card.className='history-card';
+            const ch=h.chapterIdx>=0?`Ch.${h.chapterIdx+1}`:'';
+            card.innerHTML=`
+                <div class="history-card-thumb">
+                    <img src="${escapeHTML(h.coverImage||'')}" alt="" loading="lazy" onerror="this.parentElement.style.background='var(--surface3)'"/>
+                    <div class="history-card-thumb-overlay"></div>
+                    <span class="history-ep-badge manga">${ch}</span>
+                    <div class="history-play-btn"><span>📖</span></div>
+                </div>
+                <div class="history-card-body">
+                    <div class="history-card-title">${escapeHTML(h.title)}</div>
+                    <div class="history-card-meta"><span>MANGA</span></div>
+                </div>
+                <div class="history-progress-bar"><div class="history-progress-fill" style="background:linear-gradient(90deg,var(--manga),var(--manga2));width:40%"></div></div>`;
+            card.addEventListener('click',()=>selectManga(h));
+            row.appendChild(card);
+        });
+    }
+
+    // ── PAGES: MANGA ──────────────────────────────────────────────────────────
+    function openMangaReader() {
+        homePage.classList.add('hidden');
+        mangaHomePage.classList.add('hidden');
         watchPage.classList.remove('active');
         browsePage_el.classList.remove('active');
-        $('#genreBar').style.display = '';
-        searchInput.value = ''; searchDropdown.classList.remove('active');
-        playerIframe.src = ''; playerIframe.style.display = 'none'; showPlayerIdle();
-        episodeSection.style.display = 'none'; s5EpSection.style.display = 'none';
-        audioToggle.style.display = 'none'; progressTrackWrap.style.display = 'none';
-        $('#watchPageTitle').textContent = '';
-        window.scrollTo({top:0, behavior:'smooth'});
-        shortcutsBtn.classList.remove('visible'); shortcutsPanel.classList.remove('visible');
-        renderWatchHistory();
-    };
-    function openWatchPage() {
-        homePage.classList.add('hidden');
-        browsePage_el.classList.remove('active');
-        watchPage.classList.add('active');
-        $('#genreBar').style.display = 'none';
-        window.scrollTo({top:0, behavior:'smooth'});
-        shortcutsBtn.classList.add('visible');
+        mangaReaderPage.classList.add('active');
+        genreBarEl.style.display = 'none';
+        shortcutsBtn.classList.remove('visible');
+        window.scrollTo({top:0,behavior:'smooth'});
     }
-    window.goToBrowsePage = () => {
-        homePage.classList.add('hidden'); watchPage.classList.remove('active'); browsePage_el.classList.add('active');
-        $('#genreBar').style.display = 'none'; window.scrollTo({top:0,behavior:'smooth'}); loadBrowsePage(1);
+
+    window.goMangaHome = () => {
+        mangaReaderPage.classList.remove('active');
+        mangaHomePage.classList.remove('hidden');
+        genreBarEl.style.display = '';
+        renderGenreBar(MANGA_GENRES, mangaState.activeGenre, window.__mangaGenreHandler, true);
+        window.scrollTo({top:0,behavior:'smooth'});
     };
 
-    // ── BROWSE ────────────────────────────────────────────────────────────────
-    async function loadBrowsePage(page) {
-        if (state.isLoadingBrowse) return; state.isLoadingBrowse = true; browseGrid.innerHTML = '';
-        for (let i = 0; i < 20; i++) {
-            const s = document.createElement('div'); s.className = 'skeleton'; s.style.cssText = 'aspect-ratio:3/4;border-radius:9px;'; browseGrid.appendChild(s);
+    // ── TOP AIRING ────────────────────────────────────────────────────────────
+    function renderTopAiring() {
+        if (!state.trendingData.length) return;
+        topAiringList.innerHTML='';
+        state.trendingData.slice(0,10).forEach((anime,i)=>{
+            const item=document.createElement('div'); item.className='top-airing-item';
+            const rankClass=i<3?['gold','silver','bronze'][i]:'';
+            const rating=anime.averageScore?(anime.averageScore/10).toFixed(1):'';
+            item.innerHTML=`
+                <span class="top-airing-rank ${rankClass}">${i+1}</span>
+                <img class="top-airing-thumb" src="${escapeHTML(anime.coverImage)}" loading="lazy" onerror="this.style.display='none'">
+                <div class="top-airing-info">
+                    <div class="top-airing-name">${escapeHTML(anime.title)}</div>
+                    <div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · ⭐'+rating:''}</div>
+                </div>`;
+            item.addEventListener('click',()=>selectAnime(anime));
+            topAiringList.appendChild(item);
+        });
+    }
+
+    // ── PLAYER STATES ─────────────────────────────────────────────────────────
+    function showPlayerLoading(msg, sub='') {
+        stopProgressTracking(); hideLWBanner();
+        progressTrackWrap.style.display='none';
+        playerIframe.style.display='none'; playerIframe.src='';
+        playerPlaceholder.style.display='flex';
+        playerPlaceholder.innerHTML=`<div class="server5-loading"><div class="spinner"></div><span class="status-text">${escapeHTML(msg)}</span>${sub?`<span class="sub-text">${escapeHTML(sub)}</span>`:''}</div>`;
+    }
+    function showPlayerError(msg) {
+        stopProgressTracking(); hideLWBanner();
+        progressTrackWrap.style.display='none';
+        playerIframe.style.display='none'; playerIframe.src='';
+        playerPlaceholder.style.display='flex';
+        playerPlaceholder.innerHTML=`<span class="big-icon" style="animation:none;">⚠️</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`;
+    }
+    function showPlayerIdle() {
+        stopProgressTracking(); hideLWBanner();
+        progressTrackWrap.style.display='none';
+        playerIframe.style.display='none'; playerIframe.src='';
+        playerPlaceholder.style.display='flex';
+        playerPlaceholder.innerHTML=`<span class="big-icon">🎬</span><p>Select an episode to start streaming</p>`;
+    }
+
+    // ── LOAD STREAM ───────────────────────────────────────────────────────────
+    async function loadStream(resumeAtSec=0) {
+        if (!state.selectedAnime||!state.selectedProvider) return;
+        const prov=state.selectedProvider, anime=state.selectedAnime, ep=state.selectedEpisode;
+        stopProgressTracking(); hideLWBanner();
+        playerIframe.style.display='none'; playerIframe.src='';
+
+        if (prov.id==='server5') { await loadS5Stream(anime,ep,resumeAtSec); return; }
+
+        if (prov.external) {
+            window.open(prov.getUrl(anime.id,anime.season,ep,state.selectedAudio),'_blank');
+            showToast(`Opening ${prov.name} in new tab`,'↗️'); showPlayerIdle(); return;
         }
+
+        const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
+        playerIframe.removeAttribute('sandbox');
+        playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
+        playerPlaceholder.style.display='none'; playerIframe.style.display='block';
+        playerIframe.onload=null; playerIframe.src=url;
+        playerIframe.onload=()=>{
+            startProgressTracking(resumeAtSec);
+            const prog=getEpProgress(anime.id,ep);
+            if (prog&&prog.time>5) showLastWatchedBanner(anime.title,ep,prog.time,prog.duration);
+            if (prov.resumeSupport==='postmsg'&&resumeAtSec>=3) _trySendSeek(resumeAtSec);
+        };
+        startProgressTracking(resumeAtSec);
+        const progImmediate=getEpProgress(anime.id,ep);
+        if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,ep,progImmediate.time,progImmediate.duration);
+    }
+
+    async function loadS5Stream(anime,epNum,resumeAtSec=0) {
+        if (state.server5.isLoading) return;
+        state.server5.isLoading=true; hideLWBanner();
         try {
-            const {media, pageInfo} = await fetchBrowsePage(page);
-            state.browsePage       = page;
-            state.browseTotalPages = Math.ceil((pageInfo.total||0) / 20) || 1;
-            populateGrid(browseGrid, media.map(fmtAnime).filter(Boolean));
-            renderBrowsePagination();
-        } catch(e) {
-            browseGrid.innerHTML = '<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;">Failed to load. Please try again.</div>';
-        } finally { state.isLoadingBrowse = false; }
+            const cached=state.server5.cacheKey===anime.title&&state.server5.animeSession&&state.server5.episodes.length>0;
+            if (!cached) showPlayerLoading('Searching Server 5…',`Looking up "${anime.title}"`);
+            else         showPlayerLoading('Loading episode…',`Episode ${epNum}`);
+            const {animeSession,episodes}=await s5Load(anime.title);
+            if (!cached) renderS5Episodes(episodes,epNum);
+            const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
+            if (!ep?.session) throw new Error(`Episode ${epNum} not found`);
+            const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
+            playerIframe.removeAttribute('sandbox');
+            playerIframe.setAttribute('allow','autoplay; fullscreen');
+            playerPlaceholder.style.display='none'; playerIframe.style.display='block';
+            playerIframe.onload=null; playerIframe.src=s5Embed(animeSession,ep.session,epTitle);
+            playerIframe.onload=()=>{
+                startProgressTracking(resumeAtSec);
+                const prog=getEpProgress(anime.id,epNum);
+                if (prog&&prog.time>5) showLastWatchedBanner(anime.title,epNum,prog.time,prog.duration);
+                if (resumeAtSec>=3) _trySendSeek(resumeAtSec);
+            };
+            startProgressTracking(resumeAtSec);
+            const progImmediate=getEpProgress(anime.id,epNum);
+            if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,epNum,progImmediate.time,progImmediate.duration);
+            const nxt=episodes.find(e=>String(e.number)===String(epNum+1))||episodes[epNum];
+            if (nxt?.session) s5Prefetch(animeSession,nxt.session);
+            s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c=>c.classList.toggle('active',String(c.dataset.epnum)===String(ep.number||epNum)));
+        } catch(err) {
+            showPlayerError(`Server 5: ${err.message}. Try another server.`);
+            showToast('Server 5 failed — try another server','⚠️');
+        } finally { state.server5.isLoading=false; }
     }
-    function renderBrowsePagination() {
-        const {browsePage:p, browseTotalPages:t} = state;
-        browsePagination.innerHTML = `
-            <button ${p<=1?'disabled':''} onclick="window.goToBrowsePageNumber(${p-1})">← Prev</button>
-            <span class="page-indicator">Page ${p} of ${t}</span>
-            <button ${p>=t?'disabled':''} onclick="window.goToBrowsePageNumber(${p+1})">Next →</button>`;
+
+    function _trySendSeek(sec) {
+        const t=Math.floor(sec);
+        const tries=[{type:'seek',time:t},{event:'command',func:'seekTo',args:[t]},{event:'seek',time:t},{action:'seek',time:t}];
+        [500,1500,3000].forEach(delay=>{
+            setTimeout(()=>{
+                tries.forEach(msg=>{
+                    try{playerIframe.contentWindow?.postMessage(msg,'*');}catch(_){}
+                    try{playerIframe.contentWindow?.postMessage(JSON.stringify(msg),'*');}catch(_){}
+                });
+            },delay);
+        });
     }
-    window.goToBrowsePageNumber = page => { if (page<1||page>state.browseTotalPages) return; loadBrowsePage(page); };
+
+    // ── EPISODE RENDERS ───────────────────────────────────────────────────────
+    function renderS5Episodes(episodes,activeEpNum) {
+        s5EpGrid.innerHTML=''; episodeSection.style.display='none'; s5EpSection.style.display='flex';
+        episodes.forEach((ep,i)=>{
+            const num=ep.number||(i+1); const label=ep.title&&ep.title!==`Episode ${num}`?ep.title:'';
+            const prog=getEpProgress(state.selectedAnime?.id,num);
+            const pct=prog&&prog.duration>0?Math.round((prog.time/prog.duration)*100):0;
+            const card=document.createElement('div');
+            card.className='s5-ep-card'+(String(num)===String(activeEpNum)?' active':'');
+            card.dataset.epnum=num;
+            card.innerHTML=`
+                ${ep.snapshot?`<img class="s5-ep-thumb" src="${escapeHTML(ep.snapshot)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:'' }
+                <div class="s5-ep-thumb-placeholder" style="${ep.snapshot?'display:none':''}">▶</div>
+                <div class="s5-ep-label">Episode ${num}${label?`<small>${escapeHTML(label)}</small>`:''}${pct>0&&pct<92?`<small style="color:var(--accent3);">⏱ ${pct}% watched</small>`:''}${pct>=92?`<small style="color:#22c55e;">✓ Watched</small>`:''}</div>
+                <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
+            card.addEventListener('click',()=>{
+                state.selectedEpisode=num; updateHistory(state.selectedAnime,num);
+                const p=getEpProgress(state.selectedAnime?.id,num);
+                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92)
+                    showResumeModal(num,p.time,p.duration,()=>loadS5Stream(state.selectedAnime,num,p.time),()=>loadS5Stream(state.selectedAnime,num,0));
+                else loadS5Stream(state.selectedAnime,num,0);
+            });
+            s5EpGrid.appendChild(card);
+        });
+        const ac=s5EpGrid.querySelector('.s5-ep-card.active');
+        if (ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+
+    function renderStdEpisodes() {
+        if (!state.selectedAnime?.episodes){episodeSection.style.display='none';return;}
+        episodeSection.style.display='flex';
+        const total=state.selectedAnime.episodes, maxShow=Math.min(total,200), animeId=state.selectedAnime.id;
+        let html='';
+        for (let i=1;i<=maxShow;i++){
+            const prog=getEpProgress(animeId,i), pct=prog&&prog.duration>0?(prog.time/prog.duration)*100:0;
+            let cls='episode-btn';
+            if (i===state.selectedEpisode) cls+=' active';
+            else if (pct>=90)              cls+=' completed';
+            else if (pct>5)                cls+=' in-progress';
+            html+=`<button class="${cls}" data-ep="${i}" title="${pct>=90?'Watched':pct>5?Math.round(pct)+'% watched':''}">${i}</button>`;
+        }
+        if (total>maxShow) html+=`<span style="padding:8px;color:var(--text3);font-family:var(--font);font-size:0.74rem;">+${total-maxShow} more</span>`;
+        episodeGrid.innerHTML=html;
+        const ab=episodeGrid.querySelector('.episode-btn.active');
+        if (ab) ab.scrollIntoView({behavior:'smooth',block:'nearest'});
+        episodeGrid.querySelectorAll('.episode-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                const ep=parseInt(btn.dataset.ep); state.selectedEpisode=ep; renderStdEpisodes(); updateHistory(state.selectedAnime,ep);
+                const p=getEpProgress(animeId,ep);
+                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92)
+                    showResumeModal(ep,p.time,p.duration,()=>loadStream(p.time),()=>loadStream(0));
+                else loadStream(0);
+            });
+        });
+    }
+
+    function syncEpisodeUI() {
+        if (state.selectedProvider.id==='server5') {
+            if (state.server5.cacheKey===state.selectedAnime?.title&&state.server5.episodes.length) {
+                episodeSection.style.display='none'; s5EpSection.style.display='flex'; renderS5Episodes(state.server5.episodes,state.selectedEpisode);
+            } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
+        } else { s5EpSection.style.display='none'; renderStdEpisodes(); }
+    }
+
+    // ── HISTORY ───────────────────────────────────────────────────────────────
+    function updateHistory(anime,ep) {
+        if (!anime) return;
+        const idx=state.watchHistory.findIndex(h=>h.id===anime.id);
+        if (idx>=0) {
+            const existing=state.watchHistory[idx];
+            state.watchHistory[idx]={...anime,epProgress:existing.epProgress||{},lastProvider:existing.lastProvider||null,lastAudio:existing.lastAudio||null,episode:ep,timestamp:Date.now()};
+        } else {
+            state.watchHistory.unshift({...anime,episode:ep,timestamp:Date.now(),epProgress:{}});
+        }
+        if (state.watchHistory.length>30) state.watchHistory=state.watchHistory.slice(0,30);
+        saveHistory();
+    }
+    function renderWatchHistory() {
+        if (!state.watchHistory.length){continueSection.style.display='none';return;}
+        continueSection.style.display='block'; historyRow.innerHTML='';
+        const seen=new Set(),unique=[];
+        for (const h of state.watchHistory){if(!seen.has(h.id)){seen.add(h.id);unique.push(h);}if(unique.length>=12)break;}
+        unique.forEach(h=>{
+            const prog=getEpProgress(h.id,h.episode);
+            const pct=prog&&prog.duration>0?Math.min((prog.time/prog.duration)*100,100):0;
+            const timeStr=prog&&prog.time>10?fmtTime(prog.time):'';
+            const card=document.createElement('div'); card.className='history-card';
+            card.innerHTML=`
+                <div class="history-card-thumb">
+                    <img src="${escapeHTML(h.coverImage)}" alt="" loading="lazy" onerror="this.parentElement.style.background='var(--surface3)'"/>
+                    <div class="history-card-thumb-overlay"></div>
+                    <span class="history-ep-badge">EP ${h.episode||1}${timeStr?' · '+timeStr:''}</span>
+                    <div class="history-play-btn"><span>▶</span></div>
+                </div>
+                <div class="history-card-body">
+                    <div class="history-card-title">${escapeHTML(h.title)}</div>
+                    <div class="history-card-meta">${h.format?`<span>${escapeHTML(h.format)}</span>`:''} ${pct>0?`<span style="color:var(--accent3);">${Math.round(pct)}%</span>`:''}</div>
+                </div>
+                <div class="history-progress-bar"><div class="history-progress-fill" style="width:${Math.round(pct)}%"></div></div>`;
+            card.addEventListener('click',()=>selectAnime(h,h.episode));
+            historyRow.appendChild(card);
+        });
+    }
+    window.clearHistory=()=>{state.watchHistory=[];saveHistory();renderWatchHistory();showToast('Watch history cleared','🗑️');};
+
+    // ── SELECT ANIME ──────────────────────────────────────────────────────────
+    async function selectAnime(animeData,forceEpisode=null) {
+        if (!animeData) return;
+        state.selectedAnime=animeData;
+        state.server5={animeSession:null,episodes:[],isLoading:false,cacheKey:null};
+        state.selectedProvider=PROVIDERS.find(p=>!p.external)||PROVIDERS[0];
+        state.selectedAudio='sub';
+        const hist=getHistoryEntry(animeData.id);
+        if (hist?.lastProvider){const lp=PROVIDERS.find(p=>p.id===hist.lastProvider);if(lp)state.selectedProvider=lp;}
+        if (hist?.lastAudio) state.selectedAudio=hist.lastAudio;
+        const startEp=forceEpisode!==null?forceEpisode:(hist?.episode||1);
+        state.selectedEpisode=startEp; state.currentTime=0; state.duration=0;
+        updateHistory(animeData,startEp); updateWatchUI(); renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI(); showPlayerIdle(); openWatchPage();
+        $('#watchPageTitle').textContent=animeData.title;
+        showToast(`${animeData.title}`,'🎌'); loadAnimeRelations(animeData.id);
+        const prog=getEpProgress(animeData.id,startEp);
+        if (prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92)
+            showResumeModal(startEp,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
+        else loadStream(0);
+    }
 
     // ── WATCH SIDEBAR ─────────────────────────────────────────────────────────
     function updateWatchUI() {
-        const a = state.selectedAnime; if (!a) return;
-        $('#sidebarTitle').textContent = a.title || 'Unknown';
-        const tags = [];
+        const a=state.selectedAnime; if (!a) return;
+        $('#sidebarTitle').textContent=a.title||'Unknown';
+        const tags=[];
         if (a.format)       tags.push(`<span class="sidebar-tag">${escapeHTML(a.format)}</span>`);
         if (a.averageScore) tags.push(`<span class="sidebar-tag star">⭐ ${(a.averageScore/10).toFixed(1)}</span>`);
         if (a.episodes)     tags.push(`<span class="sidebar-tag">📺 ${a.episodes} eps</span>`);
         if (a.season)       tags.push(`<span class="sidebar-tag">📅 ${escapeHTML(a.season)}</span>`);
-        $('#sidebarTags').innerHTML = tags.join('') || '<span class="sidebar-tag">—</span>';
-        const desc = a.description || 'No description.';
-        $('#sidebarDesc').textContent = desc.length > 350 ? desc.slice(0, 350) + '…' : desc;
-        $('#sidebarGenres').innerHTML = a.genres?.length
-            ? a.genres.slice(0, 8).map(g => `<span class="sidebar-genre">${escapeHTML(g)}</span>`).join('')
-            : '';
-        if (a.coverImage) {
-            $('#sidebarCover').src = a.coverImage; $('#sidebarCover').style.display = 'block';
-            $('#sidebarCoverPlaceholder').style.display = 'none';
-        } else {
-            $('#sidebarCover').style.display = 'none'; $('#sidebarCoverPlaceholder').style.display = 'flex';
-        }
+        $('#sidebarTags').innerHTML=tags.join('')||'<span class="sidebar-tag">—</span>';
+        const desc=a.description||'No description.';
+        $('#sidebarDesc').textContent=desc.length>350?desc.slice(0,350)+'…':desc;
+        $('#sidebarGenres').innerHTML=a.genres?.length?a.genres.slice(0,8).map(g=>`<span class="sidebar-genre">${escapeHTML(g)}</span>`).join(''):'';
+        if (a.coverImage){$('#sidebarCover').src=a.coverImage;$('#sidebarCover').style.display='block';$('#sidebarCoverPlaceholder').style.display='none';}
+        else{$('#sidebarCover').style.display='none';$('#sidebarCoverPlaceholder').style.display='flex';}
     }
 
     // ── RELATIONS ─────────────────────────────────────────────────────────────
     async function loadAnimeRelations(id) {
-        try { state.animeRelations = await fetchRelations(id); } catch(e) { state.animeRelations = []; }
+        try{state.animeRelations=await fetchRelations(id);}catch(e){state.animeRelations=[];}
         renderRelations();
     }
     function renderRelations() {
-        if (!state.animeRelations.length) { sidebarRelations.innerHTML = ''; return; }
-        sidebarRelations.innerHTML = `<span class="rel-label">📺 Related Seasons</span>` +
-            state.animeRelations.map(r =>
-                `<div class="related-season-item" onclick="window.selectRelatedAnime(${r.id})">
-                    <span>${escapeHTML(r.title)}</span>
-                    <span class="rel-meta">${escapeHTML(r.format)} ${escapeHTML(r.season)}</span>
-                 </div>`
-            ).join('');
+        if (!state.animeRelations.length){sidebarRelations.innerHTML='';return;}
+        sidebarRelations.innerHTML=`<span class="rel-label">📺 Related Seasons</span>`+
+            state.animeRelations.map(r=>`<div class="related-season-item" onclick="window.selectRelatedAnime(${r.id})"><span>${escapeHTML(r.title)}</span><span class="rel-meta">${escapeHTML(r.format)} ${escapeHTML(r.season)}</span></div>`).join('');
     }
-    window.selectRelatedAnime = id => fetchById(id).then(a => { if (a) selectAnime(a); });
+    window.selectRelatedAnime=id=>fetchById(id).then(a=>{if(a)selectAnime(a);});
 
     // ── PROVIDER DROPDOWN ─────────────────────────────────────────────────────
     function renderProviderDropdown() {
-        provDot.style.backgroundColor = state.selectedProvider.color;
-        provLabel.textContent = state.selectedProvider.name;
-        provMenu.innerHTML = PROVIDERS.map(p =>
-            `<div class="provider-option${p.id === state.selectedProvider.id ? ' selected' : ''}" data-provider="${p.id}">
+        provDot.style.backgroundColor=state.selectedProvider.color;
+        provLabel.textContent=state.selectedProvider.name;
+        provMenu.innerHTML=PROVIDERS.map(p=>
+            `<div class="provider-option${p.id===state.selectedProvider.id?' selected':''}" data-provider="${p.id}">
                 <span class="prov-dot" style="background:${p.color};width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;"></span>
                 <span>${escapeHTML(p.icon)} ${escapeHTML(p.name)}${p.external?' ↗':''}</span>
                 <span class="prov-desc">${escapeHTML(p.description)}</span>
              </div>`
         ).join('');
-        provMenu.querySelectorAll('.provider-option').forEach(opt => {
-            opt.addEventListener('click', e => {
+        provMenu.querySelectorAll('.provider-option').forEach(opt=>{
+            opt.addEventListener('click',e=>{
                 e.stopPropagation();
-                const prov = PROVIDERS.find(p => p.id === opt.dataset.provider);
-                if (prov) {
-                    const changed = prov.id !== state.selectedProvider.id;
-                    state.selectedProvider = prov;
-                    const idx = state.watchHistory.findIndex(h => h.id === state.selectedAnime?.id);
-                    if (idx >= 0) { state.watchHistory[idx].lastProvider = prov.id; saveHistory(); }
-                    renderProviderDropdown();
-                    updateAudioToggle();
-                    if (changed) {
-                        if (prov.id !== 'server5') state.server5.isLoading = false;
+                const prov=PROVIDERS.find(p=>p.id===opt.dataset.provider);
+                if (prov){
+                    const changed=prov.id!==state.selectedProvider.id;
+                    state.selectedProvider=prov;
+                    const idx=state.watchHistory.findIndex(h=>h.id===state.selectedAnime?.id);
+                    if(idx>=0){state.watchHistory[idx].lastProvider=prov.id;saveHistory();}
+                    renderProviderDropdown(); updateAudioToggle();
+                    if (changed){
+                        if(prov.id!=='server5')state.server5.isLoading=false;
                         syncEpisodeUI();
-                        const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
-                        if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) {
-                            showResumeModal(state.selectedEpisode, prog.time, prog.duration,
-                                () => loadStream(prog.time),
-                                () => loadStream(0)
-                            );
-                        } else {
-                            loadStream(0);
-                        }
+                        const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
+                        if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92)
+                            showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
+                        else loadStream(0);
                     }
-                    if (prov.external) showToast(`${prov.name} opens in a new tab`, '↗️');
+                    if(prov.external)showToast(`${prov.name} opens in a new tab`,'↗️');
                 }
-                state.providerDropdownOpen = false; provWrap.classList.remove('open');
+                state.providerDropdownOpen=false; provWrap.classList.remove('open');
             });
         });
     }
-    window.toggleProviderDropdown = () => {
-        state.providerDropdownOpen = !state.providerDropdownOpen;
-        provWrap.classList.toggle('open', state.providerDropdownOpen);
-    };
-    document.addEventListener('click', e => {
-        if (!provWrap.contains(e.target)) { state.providerDropdownOpen = false; provWrap.classList.remove('open'); }
-    });
+    window.toggleProviderDropdown=()=>{ state.providerDropdownOpen=!state.providerDropdownOpen; provWrap.classList.toggle('open',state.providerDropdownOpen); };
+    document.addEventListener('click',e=>{ if(!provWrap.contains(e.target)){state.providerDropdownOpen=false;provWrap.classList.remove('open');} });
 
     // ── AUDIO ─────────────────────────────────────────────────────────────────
     function updateAudioToggle() {
-        if (state.selectedProvider.supportsAudio && state.selectedAnime) {
-            audioToggle.style.display = 'flex';
-            audioToggle.querySelectorAll('.audio-btn').forEach(b =>
-                b.classList.toggle('active', b.dataset.audio === state.selectedAudio)
-            );
-        } else {
-            audioToggle.style.display = 'none';
-        }
+        if (state.selectedProvider.supportsAudio&&state.selectedAnime) {
+            audioToggle.style.display='flex';
+            audioToggle.querySelectorAll('.audio-btn').forEach(b=>b.classList.toggle('active',b.dataset.audio===state.selectedAudio));
+        } else { audioToggle.style.display='none'; }
     }
-    window.setAudio = audio => {
-        state.selectedAudio = audio;
-        const idx = state.watchHistory.findIndex(h => h.id === state.selectedAnime?.id);
-        if (idx >= 0) { state.watchHistory[idx].lastAudio = audio; saveHistory(); }
+    window.setAudio=audio=>{
+        state.selectedAudio=audio;
+        const idx=state.watchHistory.findIndex(h=>h.id===state.selectedAnime?.id);
+        if(idx>=0){state.watchHistory[idx].lastAudio=audio;saveHistory();}
         updateAudioToggle();
-        const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
-        loadStream(prog && prog.time > 10 ? prog.time : 0);
+        const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
+        loadStream(prog&&prog.time>10?prog.time:0);
     };
 
+    // ── PAGES ─────────────────────────────────────────────────────────────────
+    window.goHome=()=>{
+        stopProgressTracking(); hideLWBanner();
+        if (appMode==='manga') {
+            mangaReaderPage.classList.remove('active');
+            mangaHomePage.classList.remove('hidden');
+            homePage.classList.add('hidden');
+            genreBarEl.style.display='';
+            renderGenreBar(MANGA_GENRES, mangaState.activeGenre, window.__mangaGenreHandler, true);
+        } else {
+            homePage.classList.remove('hidden');
+            mangaHomePage.classList.add('hidden');
+            watchPage.classList.remove('active'); browsePage_el.classList.remove('active');
+            genreBarEl.style.display='';
+            renderGenreBar(ANIME_GENRES, state.activeGenre, window.__animeGenreHandler, false);
+        }
+        searchInput.value=''; searchDropdown.classList.remove('active');
+        playerIframe.src=''; playerIframe.style.display='none'; showPlayerIdle();
+        episodeSection.style.display='none'; s5EpSection.style.display='none';
+        audioToggle.style.display='none'; progressTrackWrap.style.display='none';
+        $('#watchPageTitle').textContent='';
+        window.scrollTo({top:0,behavior:'smooth'});
+        shortcutsBtn.classList.remove('visible'); shortcutsPanel.classList.remove('visible');
+        renderWatchHistory(); renderMangaHistory();
+    };
+
+    function openWatchPage() {
+        homePage.classList.add('hidden'); mangaHomePage.classList.add('hidden');
+        browsePage_el.classList.remove('active'); watchPage.classList.add('active');
+        genreBarEl.style.display='none'; window.scrollTo({top:0,behavior:'smooth'});
+        shortcutsBtn.classList.add('visible');
+    }
+
+    window.goToBrowsePage=()=>{
+        homePage.classList.add('hidden'); mangaHomePage.classList.add('hidden');
+        watchPage.classList.remove('active'); browsePage_el.classList.add('active');
+        genreBarEl.style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); loadBrowsePage(1);
+    };
+
+    // ── BROWSE ────────────────────────────────────────────────────────────────
+    async function loadBrowsePage(page) {
+        if (state.isLoadingBrowse) return; state.isLoadingBrowse=true; browseGrid.innerHTML='';
+        for(let i=0;i<20;i++){const s=document.createElement('div');s.className='skeleton';s.style.cssText='aspect-ratio:3/4;border-radius:9px;';browseGrid.appendChild(s);}
+        try {
+            const {media,pageInfo}=await fetchBrowsePage(page);
+            state.browsePage=page; state.browseTotalPages=Math.ceil((pageInfo.total||0)/20)||1;
+            populateGrid(browseGrid,media.map(fmtAnime).filter(Boolean)); renderBrowsePagination();
+        } catch(e) {
+            browseGrid.innerHTML='<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;">Failed to load. Please try again.</div>';
+        } finally { state.isLoadingBrowse=false; }
+    }
+    function renderBrowsePagination() {
+        const {browsePage:p,browseTotalPages:t}=state;
+        browsePagination.innerHTML=`<button ${p<=1?'disabled':''} onclick="window.goToBrowsePageNumber(${p-1})">← Prev</button><span class="page-indicator">Page ${p} of ${t}</span><button ${p>=t?'disabled':''} onclick="window.goToBrowsePageNumber(${p+1})">Next →</button>`;
+    }
+    window.goToBrowsePageNumber=page=>{ if(page<1||page>state.browseTotalPages)return; loadBrowsePage(page); };
+
     // ── KEYBOARD SHORTCUTS ────────────────────────────────────────────────────
-    shortcutsBtn.addEventListener('click', () => shortcutsPanel.classList.toggle('visible'));
-    document.addEventListener('click', e => {
-        if (!shortcutsPanel.contains(e.target) && e.target !== shortcutsBtn)
-            shortcutsPanel.classList.remove('visible');
-    });
-    document.addEventListener('keydown', e => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        const onWatch = watchPage.classList.contains('active');
-        if (e.key === '/' && !e.ctrlKey) { e.preventDefault(); searchInput.focus(); return; }
-        if (e.key === 'Escape') {
-            if (!resumeModal.classList.contains('hidden')) { resumeModal.classList.add('hidden'); return; }
-            if (onWatch) goHome();
-            else { searchDropdown.classList.remove('active'); searchInput.blur(); }
+    shortcutsBtn.addEventListener('click',()=>shortcutsPanel.classList.toggle('visible'));
+    document.addEventListener('click',e=>{ if(!shortcutsPanel.contains(e.target)&&e.target!==shortcutsBtn) shortcutsPanel.classList.remove('visible'); });
+    document.addEventListener('keydown',e=>{
+        if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
+        const onWatch=watchPage.classList.contains('active');
+        const onManga=mangaReaderPage.classList.contains('active');
+        if (e.key==='/'&&!e.ctrlKey){e.preventDefault();searchInput.focus();return;}
+        if (e.key==='Escape'){
+            if(!resumeModal.classList.contains('hidden')){resumeModal.classList.add('hidden');return;}
+            goHome(); return;
+        }
+        if (onManga) {
+            if (e.key==='ArrowRight'||e.key==='ArrowDown') { e.preventDefault(); changeMangaChapter(1); }
+            if (e.key==='ArrowLeft'||e.key==='ArrowUp')   { e.preventDefault(); changeMangaChapter(-1); }
             return;
         }
         if (!onWatch) return;
-        if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); return; }
-        if (e.key === 'd' || e.key === 'D') {
-            if (state.selectedProvider.supportsAudio) {
-                setAudio(state.selectedAudio === 'sub' ? 'dub' : 'sub');
-                showToast(`Audio: ${state.selectedAudio.toUpperCase()}`, '🎧');
-            }
+        if (e.key==='f'||e.key==='F'){e.preventDefault();toggleFullscreen();return;}
+        if (e.key==='d'||e.key==='D'){
+            if(state.selectedProvider.supportsAudio){setAudio(state.selectedAudio==='sub'?'dub':'sub');showToast(`Audio: ${state.selectedAudio.toUpperCase()}`,'🎧');}return;
+        }
+        if (e.key==='p'||e.key==='P'){
+            const curr=PROVIDERS.findIndex(p=>p.id===state.selectedProvider.id);
+            const nxt=PROVIDERS[(curr+1)%PROVIDERS.length]; state.selectedProvider=nxt;
+            renderProviderDropdown();updateAudioToggle();syncEpisodeUI();
+            const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
+            loadStream(prog&&prog.time>10?prog.time:0);showToast(`${nxt.name}`,'📡');return;
+        }
+        if (e.key==='ArrowRight'){
+            const total=state.selectedAnime?.episodes||0;
+            if(state.selectedEpisode<total){state.selectedEpisode++;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();loadStream(0);showToast(`Episode ${state.selectedEpisode}`,'▶');}
             return;
         }
-        if (e.key === 'p' || e.key === 'P') {
-            const curr = PROVIDERS.findIndex(p => p.id === state.selectedProvider.id);
-            const nxt  = PROVIDERS[(curr + 1) % PROVIDERS.length];
-            state.selectedProvider = nxt;
-            renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
-            const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
-            loadStream(prog && prog.time > 10 ? prog.time : 0);
-            showToast(`${nxt.name}`, '📡');
-            return;
-        }
-        if (e.key === 'ArrowRight') {
-            const total = state.selectedAnime?.episodes || 0;
-            if (state.selectedEpisode < total) {
-                state.selectedEpisode++;
-                updateHistory(state.selectedAnime, state.selectedEpisode);
-                syncEpisodeUI(); loadStream(0);
-                showToast(`Episode ${state.selectedEpisode}`, '▶');
-            }
-            return;
-        }
-        if (e.key === 'ArrowLeft') {
-            if (state.selectedEpisode > 1) {
-                state.selectedEpisode--;
-                updateHistory(state.selectedAnime, state.selectedEpisode);
-                syncEpisodeUI();
-                const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
-                if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) {
-                    showResumeModal(state.selectedEpisode, prog.time, prog.duration,
-                        () => loadStream(prog.time),
-                        () => loadStream(0)
-                    );
-                } else { loadStream(0); }
-                showToast(`Episode ${state.selectedEpisode}`, '◀');
-            }
-            return;
+        if (e.key==='ArrowLeft'){
+            if(state.selectedEpisode>1){
+                state.selectedEpisode--;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();
+                const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
+                if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92)
+                    showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
+                else loadStream(0);
+                showToast(`Episode ${state.selectedEpisode}`,'◀');
+            }return;
         }
     });
 
     // ── SEARCH ────────────────────────────────────────────────────────────────
     async function handleSearchInput() {
-        const q = searchInput.value.trim();
-        if (q.length < 2) { searchDropdown.classList.remove('active'); searchDropdown.innerHTML = ''; return; }
-        searchDropdown.innerHTML = '<div style="padding:14px;text-align:center;color:var(--text3);font-family:var(--font);">🔍 Searching…</div>';
+        const q=searchInput.value.trim();
+        if (q.length<2){searchDropdown.classList.remove('active');searchDropdown.innerHTML='';return;}
+        searchDropdown.innerHTML=`<div style="padding:14px;text-align:center;color:var(--text3);font-family:var(--font);">🔍 Searching…</div>`;
         searchDropdown.classList.add('active');
         try {
-            const results = await searchAnilist(q);
-            if (!results?.length) { searchDropdown.innerHTML = '<div style="padding:14px;text-align:center;color:var(--text3);">😔 No results found</div>'; return; }
-            const rmap = {};
-            searchDropdown.innerHTML = results.map(media => {
-                const f = fmtAnime(media); if (!f) return ''; rmap[f.id] = f;
-                const rating  = f.averageScore ? `⭐${(f.averageScore/10).toFixed(1)}` : '';
-                const meta    = [f.format, f.episodes ? `${f.episodes}eps` : '', rating].filter(Boolean).join(' · ');
-                const hist    = getHistoryEntry(f.id);
-                const epProg  = hist ? getEpProgress(f.id, hist.episode) : null;
-                const resumeStr = hist
-                    ? `<div class="search-result-resume">▶ EP${hist.episode||1}${epProg&&epProg.time>10?' · '+fmtTime(epProg.time):''}</div>`
-                    : '';
-                return `<div class="search-result-item" data-id="${f.id}">
-                    <img class="search-result-img" src="${escapeHTML(f.coverImage)}" onerror="this.style.display='none'">
+            let results, isMangaMode = appMode === 'manga';
+            if (isMangaMode) {
+                // Search both MangaDex and AniList manga simultaneously
+                const [mdxR, alR] = await Promise.all([mdxSearch(q), alMangaSearch(q)]);
+                // Merge, deduplicate by title similarity
+                const seen = new Set();
+                results = [...mdxR, ...alR].filter(m => { const k=m.title.toLowerCase(); if(seen.has(k))return false;seen.add(k);return true; }).slice(0,10);
+            } else {
+                const raw = await searchAnilist(q);
+                const rmap = {};
+                results = raw.map(media => { const f=fmtAnime(media); if(f) rmap[f.id]=f; return f; }).filter(Boolean);
+                if (!results?.length){searchDropdown.innerHTML=`<div style="padding:14px;text-align:center;color:var(--text3);">😔 No results found</div>`;return;}
+                searchDropdown.innerHTML=results.map(f=>{
+                    const rating=f.averageScore?`⭐${(f.averageScore/10).toFixed(1)}`:'';
+                    const meta=[f.format,f.episodes?`${f.episodes}eps`:'',rating].filter(Boolean).join(' · ');
+                    const hist=getHistoryEntry(f.id);
+                    const epProg=hist?getEpProgress(f.id,hist.episode):null;
+                    const resumeStr=hist?`<div class="search-result-resume">▶ EP${hist.episode||1}${epProg&&epProg.time>10?' · '+fmtTime(epProg.time):''}</div>`:'';
+                    return `<div class="search-result-item" data-id="${f.id}">
+                        <img class="search-result-img" src="${escapeHTML(f.coverImage)}" onerror="this.style.display='none'">
+                        <div class="search-result-info">
+                            <div class="search-result-title">${escapeHTML(f.title)}</div>
+                            <div class="search-result-meta">${escapeHTML(meta)}</div>
+                            ${resumeStr}
+                        </div></div>`;
+                }).join('');
+                searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{
+                    item.addEventListener('click',()=>{ const d=rmap[parseInt(item.dataset.id)]; if(d){selectAnime(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';} });
+                });
+                return;
+            }
+
+            if (!results?.length){searchDropdown.innerHTML=`<div style="padding:14px;text-align:center;color:var(--text3);">😔 No manga found</div>`;return;}
+            searchDropdown.innerHTML=results.map((m,i)=>{
+                const chText=m.chapters?`${m.chapters} ch`:'';
+                const meta=['MANGA',chText,m.status].filter(Boolean).join(' · ');
+                return `<div class="search-result-item" data-mangaidx="${i}">
+                    <img class="search-result-img" src="${escapeHTML(m.coverImage)}" onerror="this.style.display='none'">
                     <div class="search-result-info">
-                        <div class="search-result-title">${escapeHTML(f.title)}</div>
+                        <div class="search-result-title">${escapeHTML(m.title)}</div>
                         <div class="search-result-meta">${escapeHTML(meta)}</div>
-                        ${resumeStr}
-                    </div>
-                </div>`;
+                    </div></div>`;
             }).join('');
-            searchDropdown.querySelectorAll('.search-result-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const d = rmap[parseInt(item.dataset.id)];
-                    if (d) { selectAnime(d); searchDropdown.classList.remove('active'); searchInput.value = d.title || ''; }
+            searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{
+                item.addEventListener('click',()=>{
+                    const m=results[parseInt(item.dataset.mangaidx)];
+                    if(m){selectManga(m);searchDropdown.classList.remove('active');searchInput.value=m.title||'';}
                 });
             });
         } catch(e) {
-            searchDropdown.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text3);">Error searching. Try again.</div>`;
+            searchDropdown.innerHTML=`<div style="padding:14px;text-align:center;color:var(--text3);">Error searching. Try again.</div>`;
         }
     }
-    searchInput.addEventListener('input', () => { clearTimeout(state.searchTimeout); state.searchTimeout = setTimeout(handleSearchInput, 350); });
-    searchInput.addEventListener('focus', () => { if (searchInput.value.trim().length >= 2 && searchDropdown.innerHTML) searchDropdown.classList.add('active'); });
-    document.addEventListener('click', e => { if (!searchDropdown.contains(e.target) && e.target !== searchInput) searchDropdown.classList.remove('active'); });
-    searchInput.addEventListener('keydown', e => {
-        if (e.key === 'Escape') { searchDropdown.classList.remove('active'); searchInput.blur(); }
-        if (e.key === 'Enter') { const f = searchDropdown.querySelector('.search-result-item'); if (f) f.click(); }
+    searchInput.addEventListener('input',()=>{clearTimeout(state.searchTimeout);state.searchTimeout=setTimeout(handleSearchInput,350);});
+    searchInput.addEventListener('focus',()=>{if(searchInput.value.trim().length>=2&&searchDropdown.innerHTML)searchDropdown.classList.add('active');});
+    document.addEventListener('click',e=>{if(!searchDropdown.contains(e.target)&&e.target!==searchInput)searchDropdown.classList.remove('active');});
+    searchInput.addEventListener('keydown',e=>{
+        if(e.key==='Escape'){searchDropdown.classList.remove('active');searchInput.blur();}
+        if(e.key==='Enter'){const f=searchDropdown.querySelector('.search-result-item');if(f)f.click();}
     });
 
     // ── LIFECYCLE ─────────────────────────────────────────────────────────────
-    window.addEventListener('beforeunload', () => stopProgressTracking());
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            stopProgressTracking();
-        } else if (watchPage.classList.contains('active') && playerIframe.src && playerIframe.src !== 'about:blank') {
-            startProgressTracking(state.currentTime);
-        }
+    window.addEventListener('beforeunload',()=>stopProgressTracking());
+    document.addEventListener('visibilitychange',()=>{
+        if(document.visibilityState==='hidden') stopProgressTracking();
+        else if(watchPage.classList.contains('active')&&playerIframe.src&&playerIframe.src!=='about:blank') startProgressTracking(state.currentTime);
     });
 
+    window.handleHeroWatch   = () => { if(state.heroAnime)selectAnime(state.heroAnime); };
+    window.handleHeroDetails = () => { if(state.heroAnime){showToast(state.heroAnime.title,'ℹ️');selectAnime(state.heroAnime);} };
+
     // ── INIT ──────────────────────────────────────────────────────────────────
+    // Render initial genre bar (anime mode)
+    renderGenreBar(ANIME_GENRES, state.activeGenre, window.__animeGenreHandler, false);
     renderProviderDropdown(); updateAudioToggle();
-    episodeSection.style.display = 'none'; s5EpSection.style.display = 'none'; audioToggle.style.display = 'none';
+    episodeSection.style.display='none'; s5EpSection.style.display='none'; audioToggle.style.display='none';
     loadHomePage();
 
 })();
