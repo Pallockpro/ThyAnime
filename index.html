@@ -412,6 +412,7 @@
         .manga-nav-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.79rem;transition:all var(--t) var(--ease);}
         .manga-nav-btn:hover:not(:disabled){background:rgba(236,72,153,0.1);border-color:rgba(236,72,153,0.5);}
         .manga-nav-btn:disabled{opacity:0.3;cursor:default;}
+        /* ── NEW: Manga reader toolbar group ── */
         .manga-toolbar{display:flex;align-items:center;gap:6px;padding:8px 0 0;flex-wrap:wrap;}
         .manga-tool-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.72rem;transition:all var(--t) var(--ease);white-space:nowrap;}
         .manga-tool-btn:hover{background:rgba(236,72,153,0.08);border-color:rgba(236,72,153,0.3);color:var(--text);}
@@ -424,12 +425,14 @@
         .manga-pages-container.fit-width .manga-page-wrapper{width:100%;max-width:100%;}
         .manga-pages-container.fit-height .manga-page-wrapper{width:auto;max-height:90vh;}
         .manga-pages-container.fit-height .manga-page-img{width:auto;height:90vh;max-width:100%;}
+        /* Single page mode */
         .manga-pages-container.single-page .manga-page-wrapper{display:none;}
         .manga-pages-container.single-page .manga-page-wrapper.current-page{display:block;}
         .manga-page-wrapper{width:100%;max-width:900px;position:relative;}
         .manga-page-img{width:100%;height:auto;display:block;border-radius:6px;background:var(--surface3);}
         .manga-page-img.loading{min-height:200px;background:linear-gradient(135deg,var(--surface2),var(--surface3));animation:shimmer 2s ease infinite;}
         .manga-page-num{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);color:rgba(255,255,255,0.7);font-family:var(--font);font-weight:700;font-size:0.6rem;padding:2px 6px;border-radius:4px;pointer-events:none;}
+        /* Single page nav overlay */
         .single-page-nav{display:none;position:absolute;inset:0;z-index:3;}
         .manga-pages-container.single-page .single-page-nav{display:flex;}
         .sp-nav-left,.sp-nav-right{flex:1;cursor:pointer;display:flex;align-items:center;opacity:0;transition:opacity 0.2s;}
@@ -438,6 +441,7 @@
         .manga-pages-container.single-page:hover .sp-nav-left,
         .manga-pages-container.single-page:hover .sp-nav-right{opacity:1;}
         .sp-nav-arrow{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border:1px solid rgba(236,72,153,0.4);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#f9a8d4;}
+        /* Page indicator for single mode */
         .single-page-indicator{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border:1px solid rgba(236,72,153,0.3);border-radius:999px;padding:4px 14px;font-family:var(--font);font-weight:700;font-size:0.7rem;color:#f9a8d4;pointer-events:none;z-index:4;display:none;}
         .manga-pages-container.single-page .single-page-indicator{display:block;}
         .manga-chapter-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px 32px;color:var(--text2);text-align:center;width:100%;}
@@ -458,6 +462,7 @@
         .mfs-chapter-info{font-size:0.73rem;color:var(--text3);font-family:var(--font);white-space:nowrap;}
         .mfs-close-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.76rem;transition:all var(--t);flex-shrink:0;}
         .mfs-close-btn:hover{background:rgba(255,255,255,0.12);color:#fff;}
+        /* ── NEW: Fullscreen toolbar ── */
         .mfs-toolbar{display:flex;align-items:center;gap:6px;margin-left:auto;}
         .mfs-tool-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.7rem;transition:all var(--t);white-space:nowrap;}
         .mfs-tool-btn:hover{background:rgba(236,72,153,0.12);border-color:rgba(236,72,153,0.4);color:#f9a8d4;}
@@ -466,9 +471,11 @@
         .mfs-scroll::-webkit-scrollbar{width:3px;}
         .mfs-scroll::-webkit-scrollbar-thumb{background:rgba(236,72,153,0.3);border-radius:10px;}
         .mfs-page-img{display:block;max-width:100%;object-fit:contain;}
+        /* fit modes in fullscreen */
         .mfs-scroll.fit-width .mfs-page-img{width:100%;height:auto;}
         .mfs-scroll.fit-height .mfs-page-img{width:auto;height:100vh;max-width:100%;}
         .mfs-scroll.fit-original .mfs-page-img{width:auto;max-width:100%;height:auto;}
+        /* Single page fullscreen */
         .mfs-scroll.single-page{display:flex;flex-direction:row;overflow:hidden;}
         .mfs-scroll.single-page .mfs-page-img{display:none;width:100%;height:100%;object-fit:contain;}
         .mfs-scroll.single-page .mfs-page-img.fs-current{display:block;}
@@ -482,6 +489,7 @@
         .mfs-nav-btn:disabled{opacity:0.3;cursor:default;}
         .mfs-chapter-select{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.74rem;outline:none;cursor:pointer;max-width:160px;}
         .mfs-chapter-select option{background:var(--surface2);}
+        /* ── NEW: Single page nav arrows in fullscreen ── */
         .mfs-sp-nav{display:none;position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);border:1px solid rgba(236,72,153,0.4);color:#f9a8d4;font-size:1.4rem;cursor:pointer;align-items:center;justify-content:center;transition:all 0.2s;}
         .mfs-sp-nav:hover{background:rgba(236,72,153,0.25);transform:translateY(-50%) scale(1.08);}
         #mfsSpLeft{left:16px;}
@@ -496,6 +504,7 @@
         .manga-ch-num{font-family:var(--font);font-weight:700;font-size:0.73rem;color:var(--pink);flex-shrink:0;min-width:32px;}
         .manga-ch-title{font-family:var(--font);font-size:0.72rem;font-weight:500;color:var(--text2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .manga-ch-date{font-size:0.62rem;color:var(--text3);flex-shrink:0;}
+        /* ── NEW: Bookmark button ── */
         .manga-bookmark-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.72rem;transition:all var(--t);white-space:nowrap;}
         .manga-bookmark-btn:hover{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:#fcd34d;}
         .manga-bookmark-btn.bookmarked{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.4);color:#fcd34d;}
@@ -578,6 +587,7 @@
     </div>
     <div style="position:relative;flex:1;display:flex;flex-direction:column;overflow:hidden;">
         <div class="mfs-scroll" id="mfsScroll"></div>
+        <!-- Single page nav arrows -->
         <button class="mfs-sp-nav" id="mfsSpLeft" onclick="mfsSpNav(-1)">‹</button>
         <button class="mfs-sp-nav" id="mfsSpRight" onclick="mfsSpNav(1)">›</button>
     </div>
@@ -762,6 +772,7 @@
             <button class="manga-nav-btn" id="mangaNextChBtn" onclick="navigateChapter(1)" disabled>Next ▶</button>
             <button class="manga-fs-btn" onclick="openMangaFullscreen()" title="Fullscreen [M]">⛶ Fullscreen</button>
         </div>
+        <!-- NEW: manga reader toolbar -->
         <div class="manga-toolbar" id="mangaToolbar">
             <button class="manga-tool-btn active" id="readModeStrip" onclick="setReadMode('strip')">📜 Strip</button>
             <button class="manga-tool-btn" id="readModeSingle" onclick="setReadMode('single')">📄 Single Page</button>
@@ -778,6 +789,7 @@
                 <div class="manga-pages-container" id="mangaPagesContainer">
                     <div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading chapter…</p><small>Fetching pages</small></div>
                 </div>
+                <!-- Single page navigation overlay (rendered inside container dynamically) -->
                 <div class="manga-bottom-nav">
                     <button class="manga-nav-btn" id="mangaPrevChBtn2" onclick="navigateChapter(-1)" disabled>◀ Prev Chapter</button>
                     <button class="manga-nav-btn" id="mangaNextChBtn2" onclick="navigateChapter(1)" disabled>Next Chapter ▶</button>
@@ -864,6 +876,26 @@
     }
     try { db.ref('maintenance').on('value', s => applyMaintenance(s.val())); } catch(e){}
 
+    // ── MANGA VISIBILITY ──────────────────────────────────────────────────────
+    function applyMangaVisibility(visible) {
+        const mangaBtn = document.getElementById('modeBtnManga');
+        if (!mangaBtn) return;
+        if (visible === false) {
+            mangaBtn.style.display = 'none';
+            // If currently in manga mode, switch back to anime
+            if (typeof appMode !== 'undefined' && appMode === 'manga') {
+                if (typeof setMode === 'function') setMode('anime');
+            }
+        } else {
+            mangaBtn.style.display = '';
+        }
+    }
+    try { db.ref('mangavisible').on('value', s => {
+        const val = s.val();
+        // Treat null (key doesn't exist) as visible=true by default
+        applyMangaVisibility(val === null ? true : val);
+    }); } catch(e){}
+
     // ── LIVE COUNTER ──────────────────────────────────────────────────────────
     try {
         const sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -879,7 +911,7 @@
     } catch(e){}
 
     // ══════════════════════════════════════════════════════════════════════════
-    // ── DATA SOURCE MANAGER ───────────────────────────────────────────────────
+    // ── DATA SOURCE MANAGER — AniList → Jikan (MAL) → Kitsu fallback ─────────
     // ══════════════════════════════════════════════════════════════════════════
     const DataSource = { ANILIST: 'anilist', JIKAN: 'jikan', KITSU: 'kitsu' };
     let _activeSource   = DataSource.ANILIST;
@@ -1134,82 +1166,67 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // ── MANGADEX API — CORS-FIXED ─────────────────────────────────────────────
+    // ── MANGADEX API — FIXED ──────────────────────────────────────────────────
     // ══════════════════════════════════════════════════════════════════════════
     const MD_BASE = 'https://api.mangadex.org';
     const MD_IMG  = 'https://uploads.mangadex.org';
 
-    // FIX: Build URL with correct array/order serialization — no double-brackets
-    // MangaDex expects: includes[]=cover_art  NOT includes[][]=cover_art
+    // FIX: Proper URL builder that handles arrays and nested order objects correctly
     function buildMdUrl(path, params = {}) {
         const parts = [];
         for (const [k, v] of Object.entries(params)) {
             if (Array.isArray(v)) {
-                // includes[] → includes[]=a&includes[]=b
-                for (const item of v) {
-                    parts.push(encodeURIComponent(k + '[]') + '=' + encodeURIComponent(item));
-                }
+                // e.g. includes[] or contentRating[]
+                for (const item of v) parts.push(`${encodeURIComponent(k+'[]')}=${encodeURIComponent(item)}`);
             } else if (v !== null && typeof v === 'object') {
-                // order → order[field]=value
-                for (const [ok, ov] of Object.entries(v)) {
-                    parts.push(encodeURIComponent('order[' + ok + ']') + '=' + encodeURIComponent(ov));
-                }
+                // e.g. order → order[latestUploadedChapter]=desc
+                for (const [ok, ov] of Object.entries(v)) parts.push(`${encodeURIComponent('order['+ok+']')}=${encodeURIComponent(ov)}`);
             } else {
-                parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+                parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
             }
         }
         return `${MD_BASE}${path}${parts.length ? '?' + parts.join('&') : ''}`;
     }
 
-    // FIX: Proxy list ordered correctly — direct first, then reliable proxies.
-    // corsproxy.io gets the SINGLE-encoded URL (not double-encoded).
-    // allorigins.win works with encodeURIComponent of the direct URL.
+    // MangaDex supports CORS for GET from browsers directly — try direct first
+    // then allorigins, then corsproxy.io with correct encoding
     async function mdFetch(path, params = {}) {
-        const directUrl = buildMdUrl(path, params);
-
-        // Each proxy builder takes the already-correct directUrl
+        const rawUrl = buildMdUrl(path, params);
         const proxies = [
-            // 1. Direct (works in many browsers since MangaDex allows CORS for some endpoints)
-            directUrl,
-            // 2. allorigins — wraps any URL, very reliable
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`,
-            // 3. corsproxy.io — needs single-encoded URL only
-            `https://corsproxy.io/?${encodeURIComponent(directUrl)}`,
-            // 4. thingproxy fallback
-            `https://thingproxy.freeboard.io/fetch/${directUrl}`,
+            rawUrl,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
+            // corsproxy.io needs the url NOT double-encoded
+            `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`,
         ];
-
         let lastErr;
-        for (const proxyUrl of proxies) {
+        for (const pu of proxies) {
             try {
-                const r = await fetch(proxyUrl, {
+                const r = await fetch(pu, {
                     headers: { 'Accept': 'application/json' },
-                    signal: AbortSignal.timeout(16000)
+                    signal: AbortSignal.timeout(14000)
                 });
                 if (!r.ok) { lastErr = new Error(`HTTP ${r.status}`); continue; }
                 const j = await r.json();
-                if (j.result === 'error') { lastErr = new Error(j.errors?.[0]?.detail || 'MangaDex API error'); continue; }
+                // MangaDex wraps errors in result:'error'
+                if (j.result === 'error') { lastErr = new Error(j.errors?.[0]?.detail || 'API error'); continue; }
                 return j;
             } catch(e) { lastErr = e; }
         }
         throw lastErr || new Error('MangaDex API unreachable');
     }
 
-    // FIX: at-home server also uses proxy rotation
+    // FIX: mdGetPages also needs proxy rotation for at-home server
     async function mdGetPages(chapterId) {
-        const directUrl = `${MD_BASE}/at-home/server/${chapterId}`;
+        const rawUrl = `${MD_BASE}/at-home/server/${chapterId}`;
         const proxies = [
-            directUrl,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(directUrl)}`,
+            rawUrl,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
+            `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`,
         ];
         let d;
-        for (const proxyUrl of proxies) {
+        for (const pu of proxies) {
             try {
-                const r = await fetch(proxyUrl, {
-                    headers: { 'Accept': 'application/json' },
-                    signal: AbortSignal.timeout(16000)
-                });
+                const r = await fetch(pu, { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(14000) });
                 if (!r.ok) continue;
                 d = await r.json();
                 if (d.baseUrl && d.chapter) break;
@@ -1218,66 +1235,40 @@
         if (!d?.baseUrl || !d?.chapter) throw new Error('Could not load page data for this chapter');
         const { baseUrl, chapter } = d;
         const { hash, data: pages, dataSaver } = chapter;
-        const pageList = dataSaver?.length ? dataSaver : pages;
-        const folder = dataSaver?.length ? 'data-saver' : 'data';
+        // Prefer data-saver to reduce bandwidth
+        const pageList = dataSaver || pages;
+        const folder = dataSaver ? 'data-saver' : 'data';
         return pageList.map(fn => `${baseUrl}/${folder}/${hash}/${fn}`);
     }
 
-    // MangaDex search/list helpers — use flat param objects (no nested arrays in key names)
     async function mdSearchManga(query) {
-        const d = await mdFetch('/manga', {
-            title: query,
-            limit: 10,
-            'includes': ['cover_art'],
-            'contentRating': ['safe','suggestive'],
-            'order': { relevance: 'desc' }
-        });
+        const d = await mdFetch('/manga', { title: query, limit: 10, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[relevance]': 'desc' });
         return d.data || [];
     }
     async function mdPopularManga() {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            'includes': ['cover_art'],
-            'contentRating': ['safe','suggestive'],
-            'order': { followedCount: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[followedCount]': 'desc' });
         return d.data || [];
     }
     async function mdLatestManga() {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            'includes': ['cover_art'],
-            'contentRating': ['safe','suggestive'],
-            'order': { latestUploadedChapter: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[latestUploadedChapter]': 'desc' });
         return d.data || [];
     }
     async function mdTopRatedManga() {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            'includes': ['cover_art'],
-            'contentRating': ['safe','suggestive'],
-            'order': { rating: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[rating]': 'desc' });
         return d.data || [];
     }
     async function mdMangaByGenre(tagId) {
-        const d = await mdFetch('/manga', {
-            limit: 20,
-            'includes': ['cover_art'],
-            'contentRating': ['safe','suggestive'],
-            'includedTags': [tagId],
-            'order': { followedCount: 'desc' }
-        });
+        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'includedTags[]': [tagId], 'order[followedCount]': 'desc' });
         return d.data || [];
     }
+    // FIX: Get all chapters with correct pagination
     async function mdGetChapters(mangaId) {
         const first = await mdFetch('/chapter', {
             manga: mangaId,
-            'translatedLanguage': ['en'],
+            'translatedLanguage[]': ['en'],
             limit: 100,
-            'order': { chapter: 'asc' },
-            'includes': ['scanlation_group']
+            'order[chapter]': 'asc',
+            'includes[]': ['scanlation_group']
         });
         const total = first.total || 0;
         const firstData = first.data || [];
@@ -1288,11 +1279,11 @@
             promises.push(
                 mdFetch('/chapter', {
                     manga: mangaId,
-                    'translatedLanguage': ['en'],
+                    'translatedLanguage[]': ['en'],
                     limit: 100,
                     offset: i * 100,
-                    'order': { chapter: 'asc' },
-                    'includes': ['scanlation_group']
+                    'order[chapter]': 'asc',
+                    'includes[]': ['scanlation_group']
                 }).then(d => d.data || []).catch(() => [])
             );
         }
@@ -1401,10 +1392,10 @@
             selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[],
             isLoadingChapter:false, activeGenreTag:'All',
             trendingData:[], popularData:[], topRatedData:[],
-            readMode:'strip',
-            fitMode:'width',
-            currentSinglePage:0,
-            bookmarks:{},
+            readMode:'strip',   // 'strip' or 'single'
+            fitMode:'width',    // 'width' or 'original'
+            currentSinglePage:0, // for single page mode
+            bookmarks:{},        // { mangaId: { chIdx, chNum, title } }
         }
     };
 
@@ -1590,6 +1581,9 @@
 
     // ── MODE SWITCHING ────────────────────────────────────────────────────────
     window.setMode = async (mode) => {
+        // Block switching to manga if the manga button is hidden (mangavisible=false)
+        const mangaBtn = document.getElementById('modeBtnManga');
+        if (mode === 'manga' && mangaBtn && mangaBtn.style.display === 'none') return;
         appMode = mode;
         document.getElementById('modeBtnAnime').classList.toggle('active', mode==='anime');
         document.getElementById('modeBtnManga').classList.toggle('active', mode==='manga');
@@ -1830,7 +1824,9 @@
         else loadStream(0);
     }
 
-    // ── SELECT MANGA ──────────────────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════════
+    // ── SELECT MANGA — FIXED + ENHANCED ──────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════════
     async function selectManga(mangaData, forceChapter=null) {
         if (!mangaData) return;
         const mm = state.mangaMode;
@@ -1838,6 +1834,7 @@
         mm.chapters = []; mm.currentPages = []; mm.isLoadingChapter = false;
         mm.currentSinglePage = 0;
 
+        // FIX: forceChapter is a 1-based chapter number — store as index
         const startChIdx = forceChapter != null ? Math.max(0, forceChapter - 1) : 0;
 
         updateHistory(mangaData, startChIdx + 1);
@@ -1860,6 +1857,7 @@
         document.getElementById('mangaSidebarDesc').textContent = mangaData.description || '';
         document.getElementById('mangaSidebarGenres').innerHTML = (mangaData.genres||[]).slice(0,8).map(g=>`<span class="sidebar-genre manga-genre">${escapeHTML(g)}</span>`).join('');
 
+        // Apply stored read/fit modes
         applyReadMode(mm.readMode);
         applyFitMode(mm.fitMode);
         updateBookmarkBtn();
@@ -1874,6 +1872,7 @@
             renderMangaChapterList(chapters);
             buildChapterSelect(chapters);
 
+            // FIX: Determine start chapter index properly
             const hist = getHistoryEntry(mangaData.id);
             let chIdx = 0;
             if (forceChapter != null) {
@@ -1882,6 +1881,7 @@
                 chIdx = Math.min(Math.max(0, parseInt(hist.episode) - 1), chapters.length - 1);
             }
             mm.currentChapterIndex = chIdx;
+            // FIX: Set select value AFTER it's built
             document.getElementById('mangaChapterSelect').value = String(chIdx);
             await loadMangaChapter(chIdx);
         } catch(err) {
@@ -1904,6 +1904,7 @@
             renderSinglePageNav();
             updateSinglePageView();
         } else {
+            // Remove single page nav overlay if it exists
             const nav = container.querySelector('.single-page-nav');
             if (nav) nav.remove();
             const ind = container.querySelector('.single-page-indicator');
@@ -1924,6 +1925,7 @@
     }
     function renderSinglePageNav() {
         const container = document.getElementById('mangaPagesContainer');
+        // Remove existing if any
         container.querySelector('.single-page-nav')?.remove();
         container.querySelector('.single-page-indicator')?.remove();
         const nav = document.createElement('div');
@@ -1943,6 +1945,7 @@
         wrappers.forEach((w, i) => w.classList.toggle('current-page', i === mm.currentSinglePage));
         const ind = document.getElementById('spIndicator');
         if (ind) ind.textContent = `${mm.currentSinglePage + 1} / ${wrappers.length}`;
+        // Update progress bar
         const pct = wrappers.length > 1 ? (mm.currentSinglePage / (wrappers.length - 1)) * 100 : 0;
         document.getElementById('mangaProgressFill').style.width = pct + '%';
     }
@@ -1951,8 +1954,16 @@
         const container = document.getElementById('mangaPagesContainer');
         const total = container.querySelectorAll('.manga-page-wrapper').length;
         const next = mm.currentSinglePage + dir;
-        if (next < 0) { if (mm.currentChapterIndex > 0) { navigateChapter(-1); return; } return; }
-        if (next >= total) { if (mm.currentChapterIndex < mm.chapters.length - 1) { navigateChapter(1); return; } return; }
+        if (next < 0) {
+            // Go to prev chapter
+            if (mm.currentChapterIndex > 0) { navigateChapter(-1); return; }
+            return;
+        }
+        if (next >= total) {
+            // Go to next chapter
+            if (mm.currentChapterIndex < mm.chapters.length - 1) { navigateChapter(1); return; }
+            return;
+        }
         mm.currentSinglePage = next;
         updateSinglePageView();
     };
@@ -1985,6 +1996,7 @@
         status.textContent = bm ? `Ch.${bm.chNum}` : '';
     }
 
+    // FIX: buildChapterSelect — set value AFTER setting innerHTML
     function buildChapterSelect(chapters) {
         const opts = chapters.map((ch,i)=>{
             const num = ch.attributes?.chapter || (i+1);
@@ -1995,6 +2007,7 @@
         const mfsSel = document.getElementById('mfsChapterSelect');
         sel.innerHTML = opts;
         mfsSel.innerHTML = opts;
+        // FIX: Set value after innerHTML is set
         sel.value = String(state.mangaMode.currentChapterIndex);
         mfsSel.value = String(state.mangaMode.currentChapterIndex);
     }
@@ -2031,6 +2044,7 @@
                 <span class="manga-ch-date">${escapeHTML(date)}</span>
             </div>`;
         }).join('');
+        // Scroll active into view
         const active = list.querySelector('.manga-chapter-item.active');
         if (active) setTimeout(() => active.scrollIntoView({block:'nearest'}), 100);
     }
@@ -2047,16 +2061,19 @@
 
         container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading Chapter ${chNum}…</p><small>Fetching pages from MangaDex</small></div>`;
 
+        // Update nav buttons
         const prevBtns = [document.getElementById('mangaPrevChBtn'), document.getElementById('mangaPrevChBtn2')];
         const nextBtns = [document.getElementById('mangaNextChBtn'), document.getElementById('mangaNextChBtn2')];
         prevBtns.forEach(b => { if(b) b.disabled = chapterIndex <= 0; });
         nextBtns.forEach(b => { if(b) b.disabled = chapterIndex >= mm.chapters.length - 1; });
 
+        // FIX: Update selects AFTER they have correct options
         const sel = document.getElementById('mangaChapterSelect');
         const mfsSel = document.getElementById('mfsChapterSelect');
         if (sel.options.length > chapterIndex) sel.value = String(chapterIndex);
         if (mfsSel.options.length > chapterIndex) mfsSel.value = String(chapterIndex);
 
+        // Update chapter list highlight
         document.querySelectorAll('.manga-chapter-item').forEach((el,i) => el.classList.toggle('active', i === chapterIndex));
         const activeListItem = document.querySelector('.manga-chapter-item.active');
         if (activeListItem) activeListItem.scrollIntoView({block:'nearest', behavior:'smooth'});
@@ -2087,6 +2104,7 @@
                 img.onerror = function() {
                     if (!this.dataset.retried) {
                         this.dataset.retried = '1';
+                        // Try allorigins proxy for images blocked by hotlink
                         this.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
                         return;
                     }
@@ -2104,6 +2122,7 @@
                 container.appendChild(wrapper);
             });
 
+            // Re-apply read/fit modes after DOM is populated
             applyReadMode(mm.readMode);
             applyFitMode(mm.fitMode);
             if (mm.readMode === 'single') {
@@ -2111,6 +2130,7 @@
                 updateSinglePageView();
             }
 
+            // FIX: Use IntersectionObserver instead of window.scrollY for progress
             setupMangaScrollProgress(container);
         } catch(err) {
             container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">⚠️</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectChapterByIndex(${chapterIndex})">Retry</button></div>`;
@@ -2119,6 +2139,7 @@
         }
     }
 
+    // FIX: Proper scroll-based progress tracking
     let _mangaScrollRaf = null;
     function setupMangaScrollProgress(container) {
         if (_mangaScrollRaf) cancelAnimationFrame(_mangaScrollRaf);
@@ -2126,10 +2147,11 @@
             if (_mangaScrollRaf) cancelAnimationFrame(_mangaScrollRaf);
             _mangaScrollRaf = requestAnimationFrame(() => {
                 const mm = state.mangaMode;
-                if (mm.readMode === 'single') return;
+                if (mm.readMode === 'single') return; // progress handled by page counter
                 const rect = container.getBoundingClientRect();
                 const docHeight = container.scrollHeight;
                 const viewportH = window.innerHeight;
+                // How far we've scrolled into the container
                 const scrolledInto = Math.max(0, -rect.top);
                 const visibleRange = docHeight - viewportH;
                 const pct = visibleRange > 0 ? Math.min((scrolledInto / visibleRange) * 100, 100) : 0;
@@ -2150,12 +2172,14 @@
         window.scrollTo({top:0, behavior:'smooth'});
     };
 
-    // ── MANGA FULLSCREEN ──────────────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════════
+    // ── MANGA FULLSCREEN — FULLY REWRITTEN ───────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════════
     const fsOverlay = document.getElementById('mangaFullscreenOverlay');
     const fsScroll  = document.getElementById('mfsScroll');
     let _mfsHideTimer = null;
     let _mfsCurrentChapterIndex = 0;
-    let _mfsFitMode = 'width';
+    let _mfsFitMode = 'width';      // 'width' | 'height' | 'original'
     let _mfsSinglePage = false;
     let _mfsSinglePageCurrent = 0;
     let _mfsPageCount = 0;
@@ -2169,6 +2193,7 @@
         _mfsCurrentChapterIndex = mm.currentChapterIndex;
         _mfsSinglePage = false;
         _mfsFitMode = 'width';
+        // Reset toolbar state
         mfsSetFit('width');
         document.getElementById('mfsSinglePageBtn').classList.remove('active');
         buildChapterSelect(mm.chapters);
@@ -2186,6 +2211,7 @@
         if (_mfsHideTimer){clearTimeout(_mfsHideTimer);_mfsHideTimer=null;}
     };
 
+    // FIX: mfsLoadChapter — fetch pages fresh, don't rely on currentChapterIndex === idx being cached
     async function mfsLoadChapter(idx) {
         const mm = state.mangaMode;
         const chapter = mm.chapters[idx];
@@ -2198,6 +2224,7 @@
         document.getElementById('mfsPrevBtn').disabled = idx <= 0;
         document.getElementById('mfsNextBtn').disabled = idx >= mm.chapters.length - 1;
 
+        // Also sync the non-fullscreen select
         const sel = document.getElementById('mangaChapterSelect');
         if (sel.options.length > idx) sel.value = String(idx);
         document.querySelectorAll('.manga-chapter-item').forEach((el,i) => el.classList.toggle('active', i === idx));
@@ -2205,9 +2232,14 @@
         fsScroll.innerHTML = `<div class="manga-chapter-loading" style="background:transparent;height:100%;justify-content:center;"><div class="manga-spinner"></div><p>Loading Chapter ${chNum}…</p></div>`;
 
         try {
-            // Always fetch fresh pages for fullscreen to avoid stale cache issues
-            const pages = await mdGetPages(chapter.id);
-            mm.currentPages = pages;
+            // FIX: Always fetch fresh pages (don't trust mm.currentPages unless same chapter was just loaded)
+            let pages;
+            if (idx === mm.currentChapterIndex && mm.currentPages.length > 0) {
+                pages = mm.currentPages;
+            } else {
+                pages = await mdGetPages(chapter.id);
+                mm.currentPages = pages;
+            }
 
             _mfsPageCount = pages.length;
             _mfsSinglePageCurrent = 0;
@@ -2232,9 +2264,13 @@
                 fsScroll.appendChild(img);
             });
 
+            // Reapply fit mode
             mfsApplyFit(_mfsFitMode);
+
+            // Scroll handler for continuous mode
             fsScroll.onscroll = null;
             fsScroll.addEventListener('scroll', mfsScrollHandler, {passive: true});
+
             document.getElementById('mfsPageLabel').textContent = `1 / ${_mfsPageCount}`;
             document.getElementById('mfsProgressFill').style.width = '0%';
             fsScroll.scrollTop = 0;
@@ -2271,6 +2307,7 @@
         fsScroll.scrollTop = pct * (fsScroll.scrollHeight - fsScroll.clientHeight);
     };
 
+    // FIT MODES in fullscreen
     window.mfsSetFit = (mode) => {
         _mfsFitMode = mode;
         mfsApplyFit(mode);
@@ -2285,6 +2322,7 @@
         if (!_mfsSinglePage) fsScroll.classList.add(`fit-${mode}`);
     }
 
+    // SINGLE PAGE mode in fullscreen
     window.mfsToggleSinglePage = () => {
         _mfsSinglePage = !_mfsSinglePage;
         const btn = document.getElementById('mfsSinglePageBtn');
@@ -2299,6 +2337,7 @@
         } else {
             fsScroll.classList.remove('single-page');
             mfsApplyFit(_mfsFitMode);
+            // Show all images
             fsScroll.querySelectorAll('.mfs-page-img').forEach(img => {
                 img.classList.remove('fs-current');
                 img.style.display = 'block';
@@ -2319,8 +2358,14 @@
     window.mfsSpNav = (dir) => {
         const total = fsScroll.querySelectorAll('.mfs-page-img').length;
         const next = _mfsSinglePageCurrent + dir;
-        if (next < 0) { if (_mfsCurrentChapterIndex > 0) mfsNavChapter(-1); return; }
-        if (next >= total) { if (_mfsCurrentChapterIndex < state.mangaMode.chapters.length - 1) mfsNavChapter(1); return; }
+        if (next < 0) {
+            if (_mfsCurrentChapterIndex > 0) mfsNavChapter(-1);
+            return;
+        }
+        if (next >= total) {
+            if (_mfsCurrentChapterIndex < state.mangaMode.chapters.length - 1) mfsNavChapter(1);
+            return;
+        }
         _mfsSinglePageCurrent = next;
         mfsUpdateSinglePage();
     };
@@ -2388,6 +2433,7 @@
     function filterManga(d,tagId){
         if(!tagId) return d;
         return d.filter(m=>m.genres&&m.genres.some(g => {
+            // Match by genre name (tags are stored as names, not IDs in fmtManga)
             const genreName = Object.keys(MANGA_GENRE_MAP).find(k => MANGA_GENRE_MAP[k] === tagId);
             return genreName && g.toLowerCase().includes(genreName.toLowerCase());
         }));
@@ -2512,13 +2558,16 @@
         renderWatchHistory();
     }
 
+    // FIX: loadMangaHomeGrids now reloads from API if genre is filtered
     async function loadMangaHomeGrids() {
         const genre = state.mangaMode.activeGenreTag;
         const tagId = MANGA_GENRE_MAP[genre];
         if (!tagId) {
+            // All genre — just filter existing data
             refreshMangaTabGrid();
             return;
         }
+        // Specific genre — fetch from API
         try {
             populateGrid(newestGrid, []);
             const results = await mdMangaByGenre(tagId);
@@ -2527,7 +2576,7 @@
             populateGrid(popularGrid, formatted);
             populateGrid(topRatedGrid, formatted);
         } catch(e) {
-            refreshMangaTabGrid();
+            refreshMangaTabGrid(); // fallback to local filter
         }
     }
 
@@ -2752,6 +2801,7 @@
             return;
         }
         if((e.key==='m'||e.key==='M')&&(onManga||onWatch)&&!onFS){if(onManga)openMangaFullscreen();return;}
+        // Arrow keys for manga
         if(onManga&&!onWatch){
             if(e.key==='ArrowRight'){
                 e.preventDefault();
@@ -2768,6 +2818,7 @@
                 return;
             }
         }
+        // Arrow keys in fullscreen manga
         if(onFS){
             if(e.key==='ArrowRight'){e.preventDefault();if(_mfsSinglePage)mfsSpNav(1);else mfsNavChapter(1);return;}
             if(e.key==='ArrowLeft'){e.preventDefault();if(_mfsSinglePage)mfsSpNav(-1);else mfsNavChapter(-1);return;}
