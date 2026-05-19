@@ -133,6 +133,8 @@
         .mode-btn{padding:5px 12px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.73rem;transition:all var(--t) var(--ease);background:transparent;color:var(--text3);}
         .mode-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 14px var(--accent-glow);}
         .mode-btn:hover:not(.active){color:var(--text);}
+        /* Hidden by default; Firebase reveals it if mangavisible=true */
+        #modeBtnManga{display:none;}
 
         /* ── GENRE BAR ── */
         .genre-bar{background:rgba(5,5,15,0.9);border-bottom:1px solid var(--border);position:sticky;top:62px;z-index:150;backdrop-filter:blur(20px);}
@@ -880,20 +882,18 @@
     function applyMangaVisibility(visible) {
         const mangaBtn = document.getElementById('modeBtnManga');
         if (!mangaBtn) return;
-        if (visible === false) {
+        if (visible === true) {
+            mangaBtn.style.display = '';
+        } else {
+            // false or null — keep hidden, boot back to anime if needed
             mangaBtn.style.display = 'none';
-            // If currently in manga mode, switch back to anime
             if (typeof appMode !== 'undefined' && appMode === 'manga') {
                 if (typeof setMode === 'function') setMode('anime');
             }
-        } else {
-            mangaBtn.style.display = '';
         }
     }
     try { db.ref('mangavisible').on('value', s => {
-        const val = s.val();
-        // Treat null (key doesn't exist) as visible=true by default
-        applyMangaVisibility(val === null ? true : val);
+        applyMangaVisibility(s.val());
     }); } catch(e){}
 
     // ── LIVE COUNTER ──────────────────────────────────────────────────────────
