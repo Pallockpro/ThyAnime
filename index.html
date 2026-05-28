@@ -1442,12 +1442,9 @@
         { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS',
           getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`,
           supportsAudio:false, external:false, resumeSupport:'url-start' },
-        { id:'miruro',    name:'Server 4', icon:'S4', color:'#10b981', description:'High quality — new tab',
-          getUrl:(id,s,ep)=>`https://www.miruro.tv/watch/${id}/-/${ep}`,
-          supportsAudio:false, external:true, resumeSupport:'external' },
-        { id:'server5',   name:'Server 5', icon:'S5', color:'#f97316', description:'Direct embed',
+        { id:'server5',   name:'Server 4', icon:'S4', color:'#f97316', description:'Direct embed',
           supportsAudio:false, external:false, resumeSupport:'postmsg' },
-        { id:'server6',   name:'Server 6', icon:'S6', color:'#22c55e', description:'AnimePahe via Vercel',
+        { id:'server6',   name:'Server 5', icon:'S5', color:'#22c55e', description:'AnimePahe via Vercel',
           supportsAudio:false, external:false, resumeSupport:'postmsg' },
     ];
 
@@ -1799,7 +1796,7 @@
             if (!cached) showPlayerLoading('Searching Server 5…',`Looking up "${anime.title}"`);
             else showPlayerLoading('Loading episode…',`Episode ${epNum}`);
             const {animeSession,episodes}=await s5Load(anime.title);
-            if (!cached) renderS5Episodes(episodes,epNum);
+            if (!cached) renderS5Episodes(episodes,epNum,loadS5Stream);
             const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
             if (!ep?.session) throw new Error(`Episode ${epNum} not found`);
             const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
@@ -1830,7 +1827,7 @@
             if (!cached) showPlayerLoading('Searching Server 6…',`Looking up "${anime.title}"`);
             else showPlayerLoading('Loading episode…',`Episode ${epNum}`);
             const {animeSession,episodes}=await s6Load(anime.title);
-            if (!cached) renderS5Episodes(episodes,epNum); // reuse same episode grid renderer
+            if (!cached) renderS5Episodes(episodes,epNum,loadS6Stream);
             const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
             if (!ep?.session) throw new Error(`Episode ${epNum} not found on Server 6`);
             const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
@@ -1863,9 +1860,12 @@
     }
 
     // ── EPISODE RENDERS ───────────────────────────────────────────────────────
-    function renderS5Episodes(episodes,activeEpNum) {
+    function renderS5Episodes(episodes,activeEpNum,serverFn) {
         s5EpGrid.innerHTML='';
+        const lbl=document.getElementById('s5SectionLabel');
+        if(lbl) lbl.textContent=state.selectedProvider.id==='server6'?'Episodes — Server 5':'Episodes — Server 4';
         episodeSection.style.display='none'; s5EpSection.style.display='flex';
+        const _epLoader = serverFn || (state.selectedProvider.id==='server6' ? loadS6Stream : loadS5Stream);
         episodes.forEach((ep,i)=>{
             const num=ep.number||(i+1);
             const label=ep.title&&ep.title!==`Episode ${num}`?ep.title:'';
@@ -1882,8 +1882,8 @@
             card.addEventListener('click',()=>{
                 state.selectedEpisode=num; updateHistory(state.selectedAnime,num);
                 const p=getEpProgress(state.selectedAnime?.id,num);
-                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(num,p.time,p.duration,()=>loadS5Stream(state.selectedAnime,num,p.time),()=>loadS5Stream(state.selectedAnime,num,0));
-                else loadS5Stream(state.selectedAnime,num,0);
+                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(num,p.time,p.duration,()=>_epLoader(state.selectedAnime,num,p.time),()=>_epLoader(state.selectedAnime,num,0));
+                else _epLoader(state.selectedAnime,num,0);
             });
             s5EpGrid.appendChild(card);
         });
@@ -1932,7 +1932,7 @@
         } else if (pid==='server6') {
             if (state.server6.cacheKey===state.selectedAnime?.title&&state.server6.episodes.length){
                 episodeSection.style.display='none'; s5EpSection.style.display='flex';
-                renderS5Episodes(state.server6.episodes,state.selectedEpisode);
+                renderS5Episodes(state.server6.episodes,state.selectedEpisode,loadS6Stream);
             } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
         } else { s5EpSection.style.display='none'; renderStdEpisodes(); }
     }
@@ -2595,12 +2595,50 @@
     }
 
     // ── GENRE / TABS ──────────────────────────────────────────────────────────
-    window.setGenre=(genre,btn)=>{
+    // Jikan MAL genre ID map for anime
+    const ANIME_GENRE_ID_MAP = {
+        'Action':1,'Adventure':2,'Comedy':4,'Drama':8,'Ecchi':9,'Fantasy':10,
+        'Horror':14,'Mahou Shoujo':16,'Mecha':18,'Mystery':7,'Psychological':40,
+        'Romance':22,'Sci-Fi':24,'Slice of Life':36,'Sports':30,'Supernatural':37,'Thriller':41
+    };
+    window.setGenre=async(genre,btn)=>{
         state.activeGenre=genre;
         $$('.genre-btn').forEach(b=>b.classList.remove('active'));
         btn?.classList.add('active');
-        refreshTabGrid();
+        if(genre==='All'){
+            populateGrid(newestGrid,state.trendingData);
+            populateGrid(popularGrid,state.popularData);
+            populateGrid(topRatedGrid,state.topRatedData);
+        } else {
+            await loadAnimeByGenre(genre);
+        }
     };
+    async function loadAnimeByGenre(genre) {
+        populateGrid(newestGrid,[]);
+        try {
+            let results=[];
+            if(_activeSource===DataSource.ANILIST){
+                const d=await alQuery(`query($g:String){Page(perPage:20){media(genre:$g,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`,{g:genre});
+                results=(d.Page?.media||[]).map(m=>fmtAnime(m)).filter(Boolean);
+            }
+            if(!results.length){
+                const genreId=ANIME_GENRE_ID_MAP[genre];
+                if(genreId){
+                    const d=await jikanFetch('/anime',{genres:genreId,limit:20,order_by:'popularity',sort:'asc'});
+                    results=(d.data||[]).map(fmtJikan).filter(Boolean);
+                }
+            }
+            if(!results.length) results=filterByGenre(state.trendingData);
+            populateGrid(newestGrid,results);
+            populateGrid(popularGrid,results);
+            populateGrid(topRatedGrid,results);
+        } catch(e){
+            const filtered=filterByGenre(state.trendingData);
+            populateGrid(newestGrid,filtered);
+            populateGrid(popularGrid,filterByGenre(state.popularData));
+            populateGrid(topRatedGrid,filterByGenre(state.topRatedData));
+        }
+    }
     function filterByGenre(d){return state.activeGenre==='All'?d:d.filter(a=>a.genres?.includes(state.activeGenre));}
     window.setTab=(tab,btn)=>{
         state.activeTab=tab;
@@ -2614,6 +2652,7 @@
     };
     function refreshTabGrid(){
         if (appMode==='manga'){refreshMangaTabGrid();return;}
+        if(state.activeGenre!=='All'){loadAnimeByGenre(state.activeGenre);return;}
         if(state.activeTab==='newest')       populateGrid(newestGrid,  filterByGenre(state.trendingData));
         else if(state.activeTab==='popular') populateGrid(popularGrid, filterByGenre(state.popularData));
         else                                  populateGrid(topRatedGrid,filterByGenre(state.topRatedData));
@@ -2790,6 +2829,7 @@
 
     // ── PAGES ─────────────────────────────────────────────────────────────────
     window.goHome = (skipReload=false) => {
+        state.activeGenre='All';
         stopProgressTracking(); hideLWBanner();
         homePage.classList.remove('hidden');
         watchPage.classList.remove('active');
