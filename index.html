@@ -887,13 +887,18 @@
         } else {
             // false or null — keep hidden, boot back to anime if needed
             mangaBtn.style.display = 'none';
-            if (typeof appMode !== 'undefined' && appMode === 'manga') {
-                if (typeof setMode === 'function') setMode('anime');
-            }
+            // Use setTimeout so appMode/setMode are guaranteed to be in scope
+            setTimeout(() => {
+                if (typeof appMode !== 'undefined' && appMode === 'manga') {
+                    if (typeof setMode === 'function') setMode('anime');
+                }
+            }, 0);
         }
     }
     try { db.ref('mangavisible').on('value', s => {
-        applyMangaVisibility(s.val());
+        // s.val() can be true, false, or null
+        const val = s.val();
+        applyMangaVisibility(val === true);
     }); } catch(e){}
 
     // ── LIVE COUNTER ──────────────────────────────────────────────────────────
@@ -1171,18 +1176,24 @@
     const MD_BASE = 'https://api.mangadex.org';
     const MD_IMG  = 'https://uploads.mangadex.org';
 
-    // FIX: Proper URL builder that handles arrays and nested order objects correctly
+    // Proper URL builder that handles arrays and nested order objects correctly.
+    // Keys may be passed as 'foo[]' or 'foo' — we normalise before appending '[]'
+    // so callers never produce double-brackets like 'foo[][]'.
     function buildMdUrl(path, params = {}) {
         const parts = [];
-        for (const [k, v] of Object.entries(params)) {
+        for (const [rawKey, v] of Object.entries(params)) {
+            // Strip trailing [] from the key name — we add it back ourselves for arrays
+            const k = rawKey.replace(/\[\]$/, '');
             if (Array.isArray(v)) {
-                // e.g. includes[] or contentRating[]
-                for (const item of v) parts.push(`${encodeURIComponent(k+'[]')}=${encodeURIComponent(item)}`);
+                // e.g. translatedLanguage[] → translatedLanguage[]=en
+                for (const item of v) parts.push(`${encodeURIComponent(k)}%5B%5D=${encodeURIComponent(item)}`);
             } else if (v !== null && typeof v === 'object') {
                 // e.g. order → order[latestUploadedChapter]=desc
                 for (const [ok, ov] of Object.entries(v)) parts.push(`${encodeURIComponent('order['+ok+']')}=${encodeURIComponent(ov)}`);
             } else {
-                parts.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+                // Scalar — if the original key had [], preserve as k[] (e.g. single-value tag filters)
+                const suffix = rawKey.endsWith('[]') ? '%5B%5D' : '';
+                parts.push(`${encodeURIComponent(k)}${suffix}=${encodeURIComponent(v)}`);
             }
         }
         return `${MD_BASE}${path}${parts.length ? '?' + parts.join('&') : ''}`;
@@ -1242,33 +1253,33 @@
     }
 
     async function mdSearchManga(query) {
-        const d = await mdFetch('/manga', { title: query, limit: 10, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[relevance]': 'desc' });
+        const d = await mdFetch('/manga', { title: query, limit: 10, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[relevance]': 'desc' });
         return d.data || [];
     }
     async function mdPopularManga() {
-        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[followedCount]': 'desc' });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[followedCount]': 'desc' });
         return d.data || [];
     }
     async function mdLatestManga() {
-        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[latestUploadedChapter]': 'desc' });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[latestUploadedChapter]': 'desc' });
         return d.data || [];
     }
     async function mdTopRatedManga() {
-        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'order[rating]': 'desc' });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[rating]': 'desc' });
         return d.data || [];
     }
     async function mdMangaByGenre(tagId) {
-        const d = await mdFetch('/manga', { limit: 20, 'includes[]': ['cover_art'], 'contentRating[]': ['safe','suggestive'], 'includedTags[]': [tagId], 'order[followedCount]': 'desc' });
+        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], includedTags: [tagId], 'order[followedCount]': 'desc' });
         return d.data || [];
     }
     // FIX: Get all chapters with correct pagination
     async function mdGetChapters(mangaId) {
         const first = await mdFetch('/chapter', {
             manga: mangaId,
-            'translatedLanguage[]': ['en'],
+            translatedLanguage: ['en'],
             limit: 100,
             'order[chapter]': 'asc',
-            'includes[]': ['scanlation_group']
+            includes: ['scanlation_group']
         });
         const total = first.total || 0;
         const firstData = first.data || [];
@@ -1279,11 +1290,11 @@
             promises.push(
                 mdFetch('/chapter', {
                     manga: mangaId,
-                    'translatedLanguage[]': ['en'],
+                    translatedLanguage: ['en'],
                     limit: 100,
                     offset: i * 100,
                     'order[chapter]': 'asc',
-                    'includes[]': ['scanlation_group']
+                    includes: ['scanlation_group']
                 }).then(d => d.data || []).catch(() => [])
             );
         }
