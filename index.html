@@ -883,7 +883,8 @@
         const mangaBtn = document.getElementById('modeBtnManga');
         if (!mangaBtn) return;
         if (visible === true) {
-            mangaBtn.style.display = '';
+            // Must set 'flex' explicitly — clearing '' reverts to CSS `display:none`
+            mangaBtn.style.setProperty('display', 'flex', 'important');
         } else {
             // false or null — keep hidden, boot back to anime if needed
             mangaBtn.style.display = 'none';
@@ -1199,26 +1200,28 @@
         return `${MD_BASE}${path}${parts.length ? '?' + parts.join('&') : ''}`;
     }
 
-    // MangaDex supports CORS for GET from browsers directly — try direct first
-    // then allorigins, then corsproxy.io with correct encoding
+    // MangaDex blocks CORS from custom domains — always use proxies.
+    // Shared proxy list used by both mdFetch and mdGetPages.
+    function _mdProxies(rawUrl) {
+        return [
+            `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rawUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
+            `https://thingproxy.freeboard.io/fetch/${rawUrl}`,
+        ];
+    }
+
     async function mdFetch(path, params = {}) {
         const rawUrl = buildMdUrl(path, params);
-        const proxies = [
-            rawUrl,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
-            // corsproxy.io needs the url NOT double-encoded
-            `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`,
-        ];
         let lastErr;
-        for (const pu of proxies) {
+        for (const pu of _mdProxies(rawUrl)) {
             try {
                 const r = await fetch(pu, {
                     headers: { 'Accept': 'application/json' },
-                    signal: AbortSignal.timeout(14000)
+                    signal: AbortSignal.timeout(15000)
                 });
                 if (!r.ok) { lastErr = new Error(`HTTP ${r.status}`); continue; }
                 const j = await r.json();
-                // MangaDex wraps errors in result:'error'
                 if (j.result === 'error') { lastErr = new Error(j.errors?.[0]?.detail || 'API error'); continue; }
                 return j;
             } catch(e) { lastErr = e; }
@@ -1226,18 +1229,12 @@
         throw lastErr || new Error('MangaDex API unreachable');
     }
 
-    // FIX: mdGetPages also needs proxy rotation for at-home server
     async function mdGetPages(chapterId) {
         const rawUrl = `${MD_BASE}/at-home/server/${chapterId}`;
-        const proxies = [
-            rawUrl,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
-            `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`,
-        ];
         let d;
-        for (const pu of proxies) {
+        for (const pu of _mdProxies(rawUrl)) {
             try {
-                const r = await fetch(pu, { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(14000) });
+                const r = await fetch(pu, { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(15000) });
                 if (!r.ok) continue;
                 d = await r.json();
                 if (d.baseUrl && d.chapter) break;
@@ -1246,7 +1243,6 @@
         if (!d?.baseUrl || !d?.chapter) throw new Error('Could not load page data for this chapter');
         const { baseUrl, chapter } = d;
         const { hash, data: pages, dataSaver } = chapter;
-        // Prefer data-saver to reduce bandwidth
         const pageList = dataSaver || pages;
         const folder = dataSaver ? 'data-saver' : 'data';
         return pageList.map(fn => `${baseUrl}/${folder}/${hash}/${fn}`);
