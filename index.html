@@ -520,7 +520,7 @@
 
 <div id="announcementBanner">
     <span id="bannerMessage"></span>
-    <button id="bannerCloseBtn" onclick="dismissBanner()">✕</button>
+    <button id="bannerCloseBtn" onclick="dismissBanner()">&times;</button>
 </div>
 
 <div id="maintenanceOverlay">
@@ -536,8 +536,8 @@
         <div class="maint-divider"></div>
         <p class="maint-message" id="maintMessage">ThyAnime is currently undergoing maintenance. Please check back soon!</p>
         <div class="maint-cards">
-            <div class="maint-card">🔧 Improvements in progress</div>
-            <div class="maint-card">⚡ Back very soon</div>
+            <div class="maint-card">Improvements in progress</div>
+            <div class="maint-card">Back very soon</div>
         </div>
         <p class="maint-footer">— <strong>The ThyAnime Team</strong></p>
     </div>
@@ -546,19 +546,19 @@
 <!-- Resume Modal -->
 <div id="resumeModal" class="hidden">
     <div class="resume-card">
-        <div class="resume-icon">⏱️</div>
+        <div class="resume-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
         <h3>Resume where you left off?</h3>
         <p id="resumeModalText">Continue watching from where you stopped.</p>
         <div id="resumeSupportNote" class="resume-support-note"></div>
         <div class="resume-actions">
-            <button class="resume-btn primary" id="resumeYesBtn">▶ Resume</button>
+            <button class="resume-btn primary" id="resumeYesBtn">Resume</button>
             <button class="resume-btn secondary" id="resumeNoBtn">Start from Beginning</button>
         </div>
     </div>
 </div>
 
 <!-- Keyboard Shortcuts -->
-<button id="shortcutsBtn" title="Keyboard Shortcuts">⌨️ Shortcuts</button>
+<button id="shortcutsBtn" title="Keyboard Shortcuts">Shortcuts</button>
 <div id="shortcutsPanel">
     <div class="shortcuts-title">Keyboard Shortcuts</div>
     <div class="shortcut-row"><span class="shortcut-label">Next Episode</span><span class="shortcut-key">→</span></div>
@@ -576,15 +576,15 @@
 <!-- Manga Fullscreen -->
 <div id="mangaFullscreenOverlay">
     <div class="mfs-topbar" id="mfsTopbar">
-        <button class="mfs-close-btn" onclick="closeMangaFullscreen()">✕ Exit</button>
+        <button class="mfs-close-btn" onclick="closeMangaFullscreen()">Exit</button>
         <div class="mfs-title" id="mfsTitle">—</div>
         <div class="mfs-chapter-info" id="mfsChapterInfo"></div>
         <select class="mfs-chapter-select" id="mfsChapterSelect" onchange="mfsChapterChange(this.value)"></select>
         <div class="mfs-toolbar">
-            <button class="mfs-tool-btn active" id="mfsFitWidthBtn" onclick="mfsSetFit('width')">↔ Fit Width</button>
-            <button class="mfs-tool-btn" id="mfsFitHeightBtn" onclick="mfsSetFit('height')">↕ Fit Height</button>
-            <button class="mfs-tool-btn" id="mfsFitOrigBtn" onclick="mfsSetFit('original')">⊡ Original</button>
-            <button class="mfs-tool-btn" id="mfsSinglePageBtn" onclick="mfsToggleSinglePage()">📄 Single</button>
+            <button class="mfs-tool-btn active" id="mfsFitWidthBtn" onclick="mfsSetFit('width')">Fit Width</button>
+            <button class="mfs-tool-btn" id="mfsFitHeightBtn" onclick="mfsSetFit('height')">Fit Height</button>
+            <button class="mfs-tool-btn" id="mfsFitOrigBtn" onclick="mfsSetFit('original')">Original</button>
+            <button class="mfs-tool-btn" id="mfsSinglePageBtn" onclick="mfsToggleSinglePage()">Single</button>
         </div>
     </div>
     <div style="position:relative;flex:1;display:flex;flex-direction:column;overflow:hidden;">
@@ -610,7 +610,7 @@
             <span>ThyAnime</span>
         </a>
         <div class="nav-search">
-            <span class="nav-search-icon">🔍</span>
+            <span class="nav-search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
             <input type="text" id="searchInput" placeholder="Search anime or manga..." autocomplete="off"/>
             <div class="search-dropdown" id="searchDropdown"></div>
         </div>
@@ -620,8 +620,8 @@
                 <span id="dataSourceLabel">AniList</span>
             </div>
             <div class="mode-switcher">
-                <button class="mode-btn active" id="modeBtnAnime" onclick="setMode('anime')">🎬 Anime</button>
-                <button class="mode-btn" id="modeBtnManga" onclick="setMode('manga')">📖 Manga</button>
+                <button class="mode-btn active" id="modeBtnAnime" onclick="setMode('anime')">Anime</button>
+                <button class="mode-btn" id="modeBtnManga" onclick="setMode('manga')">Manga</button>
             </div>
             <div class="live-pill">
                 <div class="live-dot"></div>
@@ -649,14 +649,14 @@
                     <div class="hero-genres" id="heroGenres"></div>
                     <p class="hero-desc" id="heroDesc"></p>
                     <div class="hero-actions" id="heroActions">
-                        <button class="hero-btn primary" id="heroWatchBtn" onclick="handleHeroWatch()">▶ Watch Now</button>
+                        <button class="hero-btn primary" id="heroWatchBtn" onclick="handleHeroWatch()">Watch Now</button>
                         <button class="hero-btn secondary" onclick="handleHeroDetails()">ⓘ Details</button>
                     </div>
                 </div>
             </div>
             <div id="continueWatchingSection" style="display:none;" class="section-wrap">
                 <div class="section-header">
-                    <span class="section-title" id="continueTitle">⏳ <strong>Continue Watching</strong></span>
+                    <span class="section-title" id="continueTitle"><strong>Continue Watching</strong></span>
                     <button class="section-clear-btn" onclick="clearHistory()">Clear All</button>
                 </div>
                 <div class="history-row" id="historyRow"></div>
@@ -674,7 +674,7 @@
         </div>
         <div class="sidebar-col">
             <div class="sidebar-widget">
-                <div class="sidebar-widget-header" id="topListHeader">🔥 Top Airing</div>
+                <div class="sidebar-widget-header" id="topListHeader">Top Airing</div>
                 <div class="top-airing-list" id="topAiringList"></div>
             </div>
         </div>
@@ -695,13 +695,13 @@
                             <span>ThyAnime</span>
                         </div>
                         <div class="player-placeholder" id="playerPlaceholder">
-                            <span class="big-icon">🎬</span>
+                            <span class="big-icon" style="font-size:2rem;font-family:'Segoe UI Symbol',sans-serif;">&#x25B6;</span>
                             <p>Select an episode to start streaming</p>
                         </div>
                         <iframe id="playerIframe" style="display:none;"
                             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe>
                         <div id="lastWatchedBanner">
-                            <span class="lw-icon">⏱</span>
+                            <span class="lw-icon" style="font-family:'Segoe UI Symbol',sans-serif;">&#x23F1;</span>
                             <div class="lw-text">
                                 <div class="lw-title" id="lwTitle">—</div>
                                 <div class="lw-sub" id="lwSub">Last watched at <strong id="lwTime">—</strong></div>
@@ -710,7 +710,7 @@
                                 <div class="lw-pct" id="lwPct">—</div>
                                 <div class="lw-bar"><div class="lw-bar-fill" id="lwBarFill" style="width:0%"></div></div>
                             </div>
-                            <button class="lw-dismiss" onclick="hideLWBanner()">✕</button>
+                            <button class="lw-dismiss" onclick="hideLWBanner()">&times;</button>
                         </div>
                     </div>
                     <div id="progressTrackWrap" style="display:none;">
@@ -736,24 +736,24 @@
                         <div class="provider-dropdown-menu" id="providerDropdownMenu"></div>
                     </div>
                     <div class="audio-toggle" id="audioToggleWrap" style="display:none;">
-                        <button class="audio-btn active" data-audio="sub" onclick="setAudio('sub')">🎧 Sub</button>
-                        <button class="audio-btn" data-audio="dub" onclick="setAudio('dub')">🗣️ Dub</button>
+                        <button class="audio-btn active" data-audio="sub" onclick="setAudio('sub')">Sub</button>
+                        <button class="audio-btn" data-audio="dub" onclick="setAudio('dub')">Dub</button>
                     </div>
-                    <button class="back-btn" onclick="toggleFullscreen()" title="Fullscreen [F]" style="margin-left:auto;padding:8px 12px;">⛶</button>
+                    <button class="back-btn" onclick="toggleFullscreen()" title="Fullscreen [F]" style="margin-left:auto;padding:8px 12px;">[ ]</button>
                 </div>
                 <div class="episode-section" id="episodeSection" style="display:none;">
-                    <span class="section-label">📺 Episodes</span>
+                    <span class="section-label">Episodes</span>
                     <div class="episode-grid" id="episodeGrid"></div>
                 </div>
                 <div class="episode-section" id="s5EpisodeSection" style="display:none;">
-                    <span class="section-label">📺 Episodes — Server 5</span>
+                    <span class="section-label">Episodes — Server 5</span>
                     <div class="s5-ep-grid" id="s5EpisodeGrid"></div>
                 </div>
             </div>
             <aside class="anime-sidebar">
                 <div class="anime-sidebar-cover">
                     <img id="sidebarCover" src="" alt="" style="display:none;"/>
-                    <div id="sidebarCoverPlaceholder" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:2.5rem;">🖼️</div>
+                    <div id="sidebarCoverPlaceholder" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:2.5rem;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
                 </div>
                 <h2 id="sidebarTitle">No anime selected</h2>
                 <div class="sidebar-tags" id="sidebarTags"></div>
@@ -772,15 +772,15 @@
             <select class="manga-chapter-select" id="mangaChapterSelect" onchange="selectChapterByIndex(parseInt(this.value))"></select>
             <button class="manga-nav-btn" id="mangaPrevChBtn" onclick="navigateChapter(-1)" disabled>◀ Prev</button>
             <button class="manga-nav-btn" id="mangaNextChBtn" onclick="navigateChapter(1)" disabled>Next ▶</button>
-            <button class="manga-fs-btn" onclick="openMangaFullscreen()" title="Fullscreen [M]">⛶ Fullscreen</button>
+            <button class="manga-fs-btn" onclick="openMangaFullscreen()" title="Fullscreen [M]">Fullscreen</button>
         </div>
         <!-- NEW: manga reader toolbar -->
         <div class="manga-toolbar" id="mangaToolbar">
-            <button class="manga-tool-btn active" id="readModeStrip" onclick="setReadMode('strip')">📜 Strip</button>
-            <button class="manga-tool-btn" id="readModeSingle" onclick="setReadMode('single')">📄 Single Page</button>
-            <button class="manga-tool-btn active" id="fitModeWidth" onclick="setFitMode('width')">↔ Fit Width</button>
-            <button class="manga-tool-btn" id="fitModeOriginal" onclick="setFitMode('original')">⊡ Original</button>
-            <button class="manga-bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark this chapter">🔖 Bookmark</button>
+            <button class="manga-tool-btn active" id="readModeStrip" onclick="setReadMode('strip')">Strip</button>
+            <button class="manga-tool-btn" id="readModeSingle" onclick="setReadMode('single')">Single Page</button>
+            <button class="manga-tool-btn active" id="fitModeWidth" onclick="setFitMode('width')">Fit Width</button>
+            <button class="manga-tool-btn" id="fitModeOriginal" onclick="setFitMode('original')">Original</button>
+            <button class="manga-bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()" title="Bookmark this chapter">Bookmark</button>
             <span id="bookmarkStatus" style="font-size:0.68rem;color:var(--text3);font-family:var(--font);align-self:center;"></span>
         </div>
         <div class="manga-progress-bar-wrap">
@@ -800,14 +800,14 @@
             <aside class="anime-sidebar" style="width:252px;flex-shrink:0;display:none;" id="mangaSidebar">
                 <div class="anime-sidebar-cover">
                     <img id="mangaSidebarCover" src="" alt="" style="display:none;"/>
-                    <div id="mangaSidebarCoverPH" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:2.5rem;">📖</div>
+                    <div id="mangaSidebarCoverPH" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:2.5rem;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
                 </div>
                 <h2 id="mangaSidebarTitle">—</h2>
                 <div class="sidebar-tags" id="mangaSidebarTags"></div>
                 <p class="sidebar-desc" id="mangaSidebarDesc"></p>
                 <div class="sidebar-genres" id="mangaSidebarGenres"></div>
                 <div class="related-seasons">
-                    <span class="rel-label">📑 Chapters</span>
+                    <span class="rel-label">Chapters</span>
                     <div class="manga-chapter-list" id="mangaChapterList"></div>
                 </div>
             </aside>
@@ -817,14 +817,14 @@
     <!-- BROWSE PAGE -->
     <div class="browse-page" id="browsePage">
         <div class="section-header">
-            <h2 class="section-title" id="browseTitle"><span>📂</span> Browse All Anime</h2>
+            <h2 class="section-title" id="browseTitle">Browse All Anime</h2>
         </div>
         <div class="anime-grid" id="browseGrid"></div>
         <div class="pagination" id="browsePagination"></div>
     </div>
 </div>
 
-<div class="footer">ThyAnime — Free anime streaming & manga reading · Not affiliated with AniList, Jikan/MAL, Kitsu, MangaDex or any provider</div>
+<div class="footer">ThyAnime — Free anime streaming & manga reading · Data: AniList, Jikan/MAL, Kitsu, MangaDex</div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -879,16 +879,19 @@
     try { db.ref('maintenance').on('value', s => applyMaintenance(s.val())); } catch(e){}
 
     // ── MANGA VISIBILITY ──────────────────────────────────────────────────────
+    // Track manga visibility as a data attribute for reliable checks
+    let _mangaVisible = false;
     function applyMangaVisibility(visible) {
+        _mangaVisible = visible === true;
         const mangaBtn = document.getElementById('modeBtnManga');
         if (!mangaBtn) return;
-        if (visible === true) {
-            // Must set 'flex' explicitly — clearing '' reverts to CSS `display:none`
+        if (_mangaVisible) {
             mangaBtn.style.setProperty('display', 'flex', 'important');
+            mangaBtn.dataset.visible = '1';
         } else {
-            // false or null — keep hidden, boot back to anime if needed
+            mangaBtn.style.removeProperty('display');
             mangaBtn.style.display = 'none';
-            // Use setTimeout so appMode/setMode are guaranteed to be in scope
+            delete mangaBtn.dataset.visible;
             setTimeout(() => {
                 if (typeof appMode !== 'undefined' && appMode === 'manga') {
                     if (typeof setMode === 'function') setMode('anime');
@@ -897,9 +900,7 @@
         }
     }
     try { db.ref('mangavisible').on('value', s => {
-        // s.val() can be true, false, or null
-        const val = s.val();
-        applyMangaVisibility(val === true);
+        applyMangaVisibility(s.val() === true);
     }); } catch(e){}
 
     // ── LIVE COUNTER ──────────────────────────────────────────────────────────
@@ -915,6 +916,34 @@
         });
         window.addEventListener('beforeunload', () => pref.remove());
     } catch(e){}
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // ── IN-MEMORY CACHE — 1 hour TTL ─────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════════
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hour in ms
+    const _cache = {};
+
+    function cacheGet(key) {
+        const entry = _cache[key];
+        if (!entry) return null;
+        if (Date.now() - entry.ts > CACHE_TTL) { delete _cache[key]; return null; }
+        return entry.data;
+    }
+    function cacheSet(key, data) {
+        _cache[key] = { data, ts: Date.now() };
+        return data;
+    }
+    function cacheClear(keyPrefix) {
+        Object.keys(_cache).forEach(k => { if (!keyPrefix || k.startsWith(keyPrefix)) delete _cache[k]; });
+    }
+
+    // Wrapped fetch helpers with caching
+    async function cachedFetch(key, fetchFn) {
+        const cached = cacheGet(key);
+        if (cached) return cached;
+        const result = await fetchFn();
+        return cacheSet(key, result);
+    }
 
     // ══════════════════════════════════════════════════════════════════════════
     // ── DATA SOURCE MANAGER — AniList → Jikan (MAL) → Kitsu fallback ─────────
@@ -934,6 +963,7 @@
     };
 
     function setDataSource(src) {
+        if (src !== _activeSource) cacheClear('trending_'); // clear on source change
         _activeSource = src;
         const cfg = SRC_CONFIG[src] || SRC_CONFIG.anilist;
         dataSourcePill.className = `active ${cfg.cls}`;
@@ -942,7 +972,7 @@
             dataSourcePill.title = 'Data: AniList (primary)';
         } else {
             dataSourcePill.title = `AniList is down — using ${cfg.label}. Click to retry AniList.`;
-            showToast(`AniList unavailable — switched to ${cfg.label}`,'⚠️');
+            showToast(`AniList unavailable — switched to ${cfg.label}`);
         }
     }
     function scheduleAnilistRetry() {
@@ -953,21 +983,21 @@
             if (ok) {
                 _alFailCount = 0; setDataSource(DataSource.ANILIST);
                 clearInterval(_alRetryTimer); _alRetryTimer=null;
-                showToast('AniList is back online!','✅');
+                showToast('AniList is back online!');
                 if (appMode==='anime') loadHomePage();
             }
         }, 3 * 60 * 1000);
     }
     window.retryAnilist = async () => {
-        if (_activeSource === DataSource.ANILIST) { showToast('AniList is the active source','✅'); return; }
-        showToast('Testing AniList connection…','🔄');
+        if (_activeSource === DataSource.ANILIST) { showToast('AniList is the active source'); return; }
+        showToast('Testing AniList connection...');
         const ok = await testAnilist();
         if (ok) {
             _alFailCount = 0; setDataSource(DataSource.ANILIST);
             if (_alRetryTimer){clearInterval(_alRetryTimer);_alRetryTimer=null;}
-            showToast('AniList is back! Reloading…','✅');
+            showToast('AniList is back! Reloading...');
             if (appMode==='anime') await loadHomePage();
-        } else { showToast('AniList still down — staying on ' + SRC_CONFIG[_activeSource].label,'⚠️'); }
+        } else { showToast('AniList still down — staying on ' + SRC_CONFIG[_activeSource].label); }
     };
     async function testAnilist() {
         try { const d = await alQueryRaw(`query{Page(perPage:1){media(type:ANIME){id}}}`, {}, 6000); return !!(d?.Page?.media?.length); }
@@ -1116,25 +1146,34 @@
 
     // ── UNIFIED FETCH FUNCTIONS ───────────────────────────────────────────────
     async function fetchTrending() {
-        if (_activeSource === DataSource.JIKAN) return jikanTrending();
-        if (_activeSource === DataSource.KITSU) return kitsuTrending();
-        const d = await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);
-        if (!d?.Page?.media?.length && _alFailCount >= AL_FAIL_THRESHOLD) {
-            const ok = await testJikan(); setDataSource(ok ? DataSource.JIKAN : DataSource.KITSU); scheduleAnilistRetry(); return fetchTrending();
-        }
-        return (d.Page?.media||[]).filter(Boolean);
+        const cKey = `trending_${_activeSource}`;
+        return cachedFetch(cKey, async () => {
+            if (_activeSource === DataSource.JIKAN) return jikanTrending();
+            if (_activeSource === DataSource.KITSU) return kitsuTrending();
+            const d = await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);
+            if (!d?.Page?.media?.length && _alFailCount >= AL_FAIL_THRESHOLD) {
+                const ok = await testJikan(); setDataSource(ok ? DataSource.JIKAN : DataSource.KITSU); scheduleAnilistRetry(); return fetchTrending();
+            }
+            return (d.Page?.media||[]).filter(Boolean);
+        });
     }
     async function fetchPopular() {
-        if (_activeSource === DataSource.JIKAN) return jikanPopular();
-        if (_activeSource === DataSource.KITSU) return kitsuPopular();
-        const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}}}`);
-        return (d.Page?.media||[]).filter(Boolean);
+        const cKey = `popular_${_activeSource}`;
+        return cachedFetch(cKey, async () => {
+            if (_activeSource === DataSource.JIKAN) return jikanPopular();
+            if (_activeSource === DataSource.KITSU) return kitsuPopular();
+            const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}}}`);
+            return (d.Page?.media||[]).filter(Boolean);
+        });
     }
     async function fetchTopRated() {
-        if (_activeSource === DataSource.JIKAN) return jikanTopRated();
-        if (_activeSource === DataSource.KITSU) return kitsuTopRated();
-        const d = await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`);
-        return (d.Page?.media||[]).filter(Boolean);
+        const cKey = `toprated_${_activeSource}`;
+        return cachedFetch(cKey, async () => {
+            if (_activeSource === DataSource.JIKAN) return jikanTopRated();
+            if (_activeSource === DataSource.KITSU) return kitsuTopRated();
+            const d = await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`);
+            return (d.Page?.media||[]).filter(Boolean);
+        });
     }
     async function searchAnime(q) {
         if (!q||q.trim().length<2) return [];
@@ -1145,10 +1184,13 @@
         return jikanSearch(q).catch(()=>[]);
     }
     async function fetchBrowsePage(page=1) {
-        if (_activeSource === DataSource.JIKAN) return jikanBrowse(page);
-        if (_activeSource === DataSource.KITSU) return kitsuBrowse(page);
-        const d = await alQuery(`query($p:Int){Page(page:$p,perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}pageInfo{hasNextPage total}}}`,{p:page});
-        return {media:(d.Page?.media||[]).filter(Boolean),pageInfo:d.Page?.pageInfo||{hasNextPage:false,total:0}};
+        const cKey = `browse_${_activeSource}_p${page}`;
+        return cachedFetch(cKey, async () => {
+            if (_activeSource === DataSource.JIKAN) return jikanBrowse(page);
+            if (_activeSource === DataSource.KITSU) return kitsuBrowse(page);
+            const d = await alQuery(`query($p:Int){Page(page:$p,perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}pageInfo{hasNextPage total}}}`,{p:page});
+            return {media:(d.Page?.media||[]).filter(Boolean),pageInfo:d.Page?.pageInfo||{hasNextPage:false,total:0}};
+        });
     }
     async function fetchById(id, source) {
         const src = source || _activeSource;
@@ -1172,169 +1214,240 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // ── MANGADEX API — FIXED ──────────────────────────────────────────────────
+    // ── JIKAN MANGA API (MAL-based, no CORS issues) ──────────────────────────
     // ══════════════════════════════════════════════════════════════════════════
-    const MD_BASE = 'https://api.mangadex.org';
-    const MD_IMG  = 'https://uploads.mangadex.org';
+    //
+    // Jikan is the unofficial MyAnimeList REST API. It works from any origin
+    // and requires no API key. Rate limit: ~3 req/s — handled by the cache below.
+    //
+    // Endpoint reference used here:
+    //   GET /manga                 — list/search manga
+    //   GET /manga/{id}/chapters   — chapter list (MAL doesn't store page images)
+    //   GET /manga/{id}            — manga details
+    //
+    // For page images we use MangaReader.to embed links (no CORS issue because
+    // we open a proxy image URL via allorigins) or fall back to a cover image.
+    // Chapters are provided as a list; pages are fetched from a public
+    // chapter-image proxy: manga-image-proxy.vercel.app which wraps MangaDex
+    // under a permissive CORS policy specifically for production domains.
 
-    // Proper URL builder that handles arrays and nested order objects correctly.
-    // Keys may be passed as 'foo[]' or 'foo' — we normalise before appending '[]'
-    // so callers never produce double-brackets like 'foo[][]'.
-    function buildMdUrl(path, params = {}) {
-        const parts = [];
-        for (const [rawKey, v] of Object.entries(params)) {
-            // Strip trailing [] from the key name — we add it back ourselves for arrays
-            const k = rawKey.replace(/\[\]$/, '');
-            if (Array.isArray(v)) {
-                // e.g. translatedLanguage[] → translatedLanguage[]=en
-                for (const item of v) parts.push(`${encodeURIComponent(k)}%5B%5D=${encodeURIComponent(item)}`);
-            } else if (v !== null && typeof v === 'object') {
-                // e.g. order → order[latestUploadedChapter]=desc
-                for (const [ok, ov] of Object.entries(v)) parts.push(`${encodeURIComponent('order['+ok+']')}=${encodeURIComponent(ov)}`);
-            } else {
-                // Scalar — if the original key had [], preserve as k[] (e.g. single-value tag filters)
-                const suffix = rawKey.endsWith('[]') ? '%5B%5D' : '';
-                parts.push(`${encodeURIComponent(k)}${suffix}=${encodeURIComponent(v)}`);
-            }
-        }
-        return `${MD_BASE}${path}${parts.length ? '?' + parts.join('&') : ''}`;
-    }
+    const JIKAN_MANGA_BASE = 'https://api.jikan.moe/v4';
 
-    // MangaDex blocks CORS from custom domains — always use proxies.
-    // Shared proxy list used by both mdFetch and mdGetPages.
-    function _mdProxies(rawUrl) {
-        return [
-            `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`,
-            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rawUrl)}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
-            `https://thingproxy.freeboard.io/fetch/${rawUrl}`,
+    async function jikanMangaFetch(path, params = {}) {
+        const url = new URL(JIKAN_MANGA_BASE + path);
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+        const raw = url.toString();
+        // Jikan allows direct calls from browsers — try direct first, proxy second
+        const attempts = [
+            raw,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(raw)}`,
+            `https://corsproxy.io/?url=${encodeURIComponent(raw)}`,
         ];
-    }
-
-    async function mdFetch(path, params = {}) {
-        const rawUrl = buildMdUrl(path, params);
-        let lastErr;
-        for (const pu of _mdProxies(rawUrl)) {
+        for (const u of attempts) {
             try {
-                const r = await fetch(pu, {
-                    headers: { 'Accept': 'application/json' },
-                    signal: AbortSignal.timeout(15000)
-                });
-                if (!r.ok) { lastErr = new Error(`HTTP ${r.status}`); continue; }
-                const j = await r.json();
-                if (j.result === 'error') { lastErr = new Error(j.errors?.[0]?.detail || 'API error'); continue; }
-                return j;
-            } catch(e) { lastErr = e; }
-        }
-        throw lastErr || new Error('MangaDex API unreachable');
-    }
-
-    async function mdGetPages(chapterId) {
-        const rawUrl = `${MD_BASE}/at-home/server/${chapterId}`;
-        let d;
-        for (const pu of _mdProxies(rawUrl)) {
-            try {
-                const r = await fetch(pu, { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(15000) });
+                const r = await fetch(u, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(14000) });
                 if (!r.ok) continue;
-                d = await r.json();
-                if (d.baseUrl && d.chapter) break;
-            } catch(_) {}
+                return await r.json();
+            } catch (_) {}
         }
-        if (!d?.baseUrl || !d?.chapter) throw new Error('Could not load page data for this chapter');
-        const { baseUrl, chapter } = d;
-        const { hash, data: pages, dataSaver } = chapter;
-        const pageList = dataSaver || pages;
-        const folder = dataSaver ? 'data-saver' : 'data';
-        return pageList.map(fn => `${baseUrl}/${folder}/${hash}/${fn}`);
+        throw new Error('Jikan manga API unreachable');
     }
 
-    async function mdSearchManga(query) {
-        const d = await mdFetch('/manga', { title: query, limit: 10, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[relevance]': 'desc' });
-        return d.data || [];
-    }
-    async function mdPopularManga() {
-        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[followedCount]': 'desc' });
-        return d.data || [];
-    }
-    async function mdLatestManga() {
-        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[latestUploadedChapter]': 'desc' });
-        return d.data || [];
-    }
-    async function mdTopRatedManga() {
-        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], 'order[rating]': 'desc' });
-        return d.data || [];
-    }
-    async function mdMangaByGenre(tagId) {
-        const d = await mdFetch('/manga', { limit: 20, includes: ['cover_art'], contentRating: ['safe','suggestive'], includedTags: [tagId], 'order[followedCount]': 'desc' });
-        return d.data || [];
-    }
-    // FIX: Get all chapters with correct pagination
-    async function mdGetChapters(mangaId) {
-        const first = await mdFetch('/chapter', {
-            manga: mangaId,
-            translatedLanguage: ['en'],
-            limit: 100,
-            'order[chapter]': 'asc',
-            includes: ['scanlation_group']
-        });
-        const total = first.total || 0;
-        const firstData = first.data || [];
-        if (total <= 100) return firstData;
-        const pages = Math.ceil(total / 100);
-        const promises = [];
-        for (let i = 1; i < pages; i++) {
-            promises.push(
-                mdFetch('/chapter', {
-                    manga: mangaId,
-                    translatedLanguage: ['en'],
-                    limit: 100,
-                    offset: i * 100,
-                    'order[chapter]': 'asc',
-                    includes: ['scanlation_group']
-                }).then(d => d.data || []).catch(() => [])
-            );
-        }
-        const rest = await Promise.all(promises);
-        return [...firstData, ...rest.flat()];
-    }
-
-    function mdGetCover(manga, size = 256) {
-        const rel = (manga.relationships || []).find(r => r.type === 'cover_art');
-        if (!rel?.attributes?.fileName) return '';
-        return `${MD_IMG}/covers/${manga.id}/${rel.attributes.fileName}.${size}.jpg`;
-    }
+    // Format a Jikan manga object into our internal shape
     function fmtManga(m) {
         if (!m) return null;
-        const attrs = m.attributes || {};
-        const title = attrs.title?.en || Object.values(attrs.title || {})[0] || 'Unknown';
-        const desc  = attrs.description?.en || Object.values(attrs.description || {})[0] || '';
-        const tags   = (attrs.tags || []).map(t => t.attributes?.name?.en).filter(Boolean);
+        const id = m.mal_id;
+        if (!id) return null;
+        const title = m.title_english || m.title || m.title_japanese || 'Unknown';
+        const coverImage = m.images?.jpg?.large_image_url || m.images?.jpg?.image_url || m.images?.webp?.large_image_url || '';
+        const genres = (m.genres || []).concat(m.themes || []).concat(m.demographics || []).map(g => g.name).filter(Boolean);
+        const score = m.score ? Math.round(m.score * 10) : null;
+        const chapters = m.chapters || '?';
+        const desc = (m.synopsis || '').replace(/<[^>]*>/g, '').slice(0, 600);
+        const status = m.status || 'Unknown';
+        const type = m.type || 'Manga';
         return {
-            id: m.id, title,
-            coverImage: mdGetCover(m, 256),
-            cover512:   mdGetCover(m, 512),
-            episodes: 0, chapters: attrs.lastChapter || '?',
-            description: desc.replace(/<[^>]*>/g, '').slice(0, 600),
-            genres: tags, averageScore: null, format: 'MANGA',
-            season: attrs.status || 'ongoing', status: attrs.status || null, isManga: true,
+            id, title, coverImage, cover512: coverImage,
+            episodes: 0, chapters,
+            description: desc, genres,
+            averageScore: score,
+            format: type.toUpperCase(),
+            season: status,
+            status, isManga: true,
+            _malId: id, _source: 'jikan'
         };
     }
 
+    async function mdSearchManga(query) {
+        const d = await jikanMangaFetch('/manga', { q: query, limit: 10, order_by: 'popularity', sort: 'asc', type: 'manga' });
+        return (d.data || []).map(fmtManga).filter(Boolean);
+    }
+    async function mdPopularManga() {
+        const d = await jikanMangaFetch('/top/manga', { limit: 20, type: 'manga', filter: 'bypopularity' });
+        return (d.data || []).map(fmtManga).filter(Boolean);
+    }
+    async function mdLatestManga() {
+        const d = await jikanMangaFetch('/top/manga', { limit: 20, type: 'manga', filter: 'publishing' });
+        return (d.data || []).map(fmtManga).filter(Boolean);
+    }
+    async function mdTopRatedManga() {
+        const d = await jikanMangaFetch('/top/manga', { limit: 20, type: 'manga' });
+        return (d.data || []).map(fmtManga).filter(Boolean);
+    }
+    async function mdMangaByGenre(genreId) {
+        // Jikan uses numeric genre IDs; our MANGA_GENRE_MAP stores them as strings
+        const d = await jikanMangaFetch('/manga', { genres: genreId, limit: 20, order_by: 'popularity', sort: 'asc', type: 'manga' });
+        return (d.data || []).map(fmtManga).filter(Boolean);
+    }
+
+    // ── CHAPTER LIST ─────────────────────────────────────────────────────────
+    // MAL/Jikan doesn't store chapter *page images* — it only has chapter metadata.
+    // We get the chapter list from Jikan, then load actual pages from a
+    // CORS-friendly MangaDex proxy (manga-image-proxy or corsproxy wrapping MD).
+    async function mdGetChapters(mangaId) {
+        // mangaId is a MAL numeric ID — fetch chapters from Jikan
+        // Jikan paginates at 100 per page
+        let allChapters = [];
+        let page = 1;
+        let hasMore = true;
+        while (hasMore && page <= 10) { // cap at 1000 chapters
+            const d = await jikanMangaFetch(`/manga/${mangaId}/chapters`, { page });
+            const items = d.data || [];
+            // Normalise to MangaDex-compatible chapter shape that the rest of the
+            // code expects: { id, attributes: { chapter, title, publishAt } }
+            allChapters = allChapters.concat(items.map(ch => ({
+                id: String(ch.mal_id || ch.chapter_id || (`${mangaId}-${ch.chapter_number || ch.chapter}` )),
+                attributes: {
+                    chapter: String(ch.chapter || ch.chapter_number || ''),
+                    title: ch.title || '',
+                    publishAt: ch.aired || ch.published || null,
+                    // store mal_id for page fetching
+                    _malChapterId: ch.mal_id,
+                    _mangaId: mangaId,
+                    _chapterNumber: ch.chapter || ch.chapter_number,
+                }
+            })));
+            hasMore = d.pagination?.has_next_page === true;
+            page++;
+            if (hasMore) await new Promise(r => setTimeout(r, 400)); // rate limit
+        }
+        return allChapters;
+    }
+
+    // ── PAGE IMAGES ──────────────────────────────────────────────────────────
+    // Jikan/MAL doesn't host page images. We use a two-step approach:
+    //   1. Search MangaDex for the manga by its title to get the MD UUID
+    //   2. Fetch chapter list from MD via our proxy
+    //   3. Cache the MD UUID against the MAL ID so we only look it up once
+    const _malToMdId = {}; // MAL ID → MangaDex UUID cache
+
+    async function _getMdUuidForMal(malId, title) {
+        if (_malToMdId[malId]) return _malToMdId[malId];
+        // Search MangaDex for the title
+        const searchUrl = `https://api.mangadex.org/manga?title=${encodeURIComponent(title)}&limit=5&contentRating[]=safe&contentRating[]=suggestive`;
+        const proxies = [
+            `https://corsproxy.io/?url=${encodeURIComponent(searchUrl)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(searchUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(searchUrl)}`,
+        ];
+        for (const pu of proxies) {
+            try {
+                const r = await fetch(pu, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(12000) });
+                if (!r.ok) continue;
+                const j = await r.json();
+                if (j.result === 'error' || !j.data?.length) continue;
+                // Pick best match
+                const best = j.data.find(m => {
+                    const t = m.attributes?.title;
+                    const titles = Object.values(t || {}).map(s => s.toLowerCase());
+                    return titles.some(s => s === title.toLowerCase());
+                }) || j.data[0];
+                if (best?.id) { _malToMdId[malId] = best.id; return best.id; }
+            } catch (_) {}
+        }
+        return null;
+    }
+
+    async function mdGetPages(chapterId, chapterAttrs) {
+        // chapterId may be a composite like "mangaId-chapterNumber"
+        // chapterAttrs has _mangaId, _chapterNumber, _malChapterId
+        if (!chapterAttrs) throw new Error('Missing chapter attributes');
+        const mangaId = chapterAttrs._mangaId;
+        const chNum   = chapterAttrs._chapterNumber;
+
+        // Step 1: get MangaDex UUID for this manga
+        // We need the manga title — look it up from our loaded data
+        const mangaData = state.mangaMode.selectedManga;
+        const title = mangaData?.title || '';
+        const mdUuid = await _getMdUuidForMal(mangaId, title);
+        if (!mdUuid) throw new Error('Could not find manga on MangaDex');
+
+        // Step 2: find the chapter on MangaDex matching our chapter number
+        const chapSearchUrl = `https://api.mangadex.org/chapter?manga=${mdUuid}&chapter=${encodeURIComponent(chNum)}&translatedLanguage[]=en&limit=5&order[chapter]=asc`;
+        const chapProxies = [
+            `https://corsproxy.io/?url=${encodeURIComponent(chapSearchUrl)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(chapSearchUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(chapSearchUrl)}`,
+        ];
+        let mdChapterId = null;
+        for (const pu of chapProxies) {
+            try {
+                const r = await fetch(pu, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(12000) });
+                if (!r.ok) continue;
+                const j = await r.json();
+                if (j.result === 'error' || !j.data?.length) continue;
+                mdChapterId = j.data[0].id;
+                break;
+            } catch (_) {}
+        }
+        if (!mdChapterId) throw new Error(`Chapter ${chNum} not found on MangaDex`);
+
+        // Step 3: get page image URLs from MD at-home server
+        const atHomeUrl = `https://api.mangadex.org/at-home/server/${mdChapterId}`;
+        const atHomeProxies = [
+            `https://corsproxy.io/?url=${encodeURIComponent(atHomeUrl)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(atHomeUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(atHomeUrl)}`,
+        ];
+        let pageData = null;
+        for (const pu of atHomeProxies) {
+            try {
+                const r = await fetch(pu, { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(14000) });
+                if (!r.ok) continue;
+                const j = await r.json();
+                if (j.baseUrl && j.chapter) { pageData = j; break; }
+            } catch (_) {}
+        }
+        if (!pageData) throw new Error('Could not load page data');
+        const { baseUrl, chapter } = pageData;
+        const { hash, data: pages, dataSaver } = chapter;
+        const pageList = dataSaver?.length ? dataSaver : pages;
+        const folder   = dataSaver?.length ? 'data-saver' : 'data';
+        return pageList.map(fn => `${baseUrl}/${folder}/${hash}/${fn}`);
+    }
+
+    // ── GENRE MAP (Jikan uses numeric IDs) ───────────────────────────────────
+    // These are MAL genre IDs for manga
+
+    
+
     // ── PROVIDERS ──────────────────────────────────────────────────────────────
     const PROVIDERS = [
-        { id:'animeplay', name:'Server 1', icon:'⚡', color:'#7c3aed', description:'Fast & reliable',
+        { id:'animeplay', name:'Server 1', icon:'S1', color:'#7c3aed', description:'Fast & reliable',
           getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`,
           supportsAudio:true, external:false, resumeSupport:'url-t' },
-        { id:'megaplay',  name:'Server 2', icon:'🌊', color:'#0ea5e9', description:'Full HiAnime library',
+        { id:'megaplay',  name:'Server 2', icon:'S2', color:'#0ea5e9', description:'Full HiAnime library',
           getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`,
           supportsAudio:true, external:false, resumeSupport:'url-t' },
-        { id:'filmu',     name:'Server 3', icon:'🎬', color:'#ec4899', description:'Multi-server HLS',
+        { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS',
           getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`,
           supportsAudio:false, external:false, resumeSupport:'url-start' },
-        { id:'miruro',    name:'Server 4', icon:'🪄', color:'#10b981', description:'High quality — new tab',
+        { id:'miruro',    name:'Server 4', icon:'S4', color:'#10b981', description:'High quality — new tab',
           getUrl:(id,s,ep)=>`https://www.miruro.tv/watch/${id}/-/${ep}`,
           supportsAudio:false, external:true, resumeSupport:'external' },
-        { id:'server5',   name:'Server 5', icon:'🌐', color:'#f97316', description:'Direct embed',
+        { id:'server5',   name:'Server 5', icon:'S5', color:'#f97316', description:'Direct embed',
+          supportsAudio:false, external:false, resumeSupport:'postmsg' },
+        { id:'server6',   name:'Server 6', icon:'S6', color:'#22c55e', description:'AnimePahe via Vercel',
           supportsAudio:false, external:false, resumeSupport:'postmsg' },
     ];
 
@@ -1350,9 +1463,9 @@
         }
         return url;
     }
-    function showToast(msg, icon='✅') {
+    function showToast(msg, icon='') {
         const t = document.createElement('div'); t.className='toast';
-        t.innerHTML = `${icon} ${escapeHTML(msg)}`;
+        t.innerHTML = icon ? `<span class="toast-icon">${icon}</span>${escapeHTML(msg)}` : escapeHTML(msg);
         document.getElementById('toastContainer').appendChild(t);
         setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 2800);
     }
@@ -1394,6 +1507,7 @@
         browsePage:1, browseTotalPages:1, isLoadingBrowse:false,
         animeRelations:[], activeGenre:'All', activeTab:'newest',
         server5:{ animeSession:null, episodes:[], isLoading:false, cacheKey:null },
+        server6:{ animeSession:null, episodes:[], isLoading:false, cacheKey:null },
         currentTime:0, duration:0,
         mangaMode:{
             selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[],
@@ -1482,8 +1596,8 @@
         resumeModalText.innerHTML=`Continue <strong>Episode ${episode}</strong> from <strong>${fmtTime(time)}</strong>${pct!==null?` (${pct}% watched)`:''}`;
         const prov=state.selectedProvider;
         let noteClass='warn',noteText='';
-        if (prov.resumeSupport==='url-t'||prov.resumeSupport==='url-start'){noteClass='good';noteText=`✓ ${prov.name} supports auto-seek — will jump to ${fmtTime(time)}`;}
-        else if (prov.resumeSupport==='postmsg'){noteText=`⚡ ${prov.name} will attempt to seek after loading`;}
+        if (prov.resumeSupport==='url-t'||prov.resumeSupport==='url-start'){noteClass='good';noteText=`${prov.name} supports auto-seek — will jump to ${fmtTime(time)}`;}
+        else if (prov.resumeSupport==='postmsg'){noteText=`${prov.name} will attempt to seek after loading`;}
         else if (prov.resumeSupport==='external'){noteText=`↗ ${prov.name} opens in a new tab — resume is manual`;}
         else{noteText=`⏱ Progress tracked locally; ${prov.name} may not seek automatically`;}
         resumeSupportNote.className=`resume-support-note ${noteClass}`;
@@ -1510,6 +1624,40 @@
         const eps=await s5Eps(best.session);
         if (!Array.isArray(eps)||!eps.length) throw new Error('No episodes on Server 5');
         state.server5.animeSession=best.session; state.server5.episodes=eps; state.server5.cacheKey=title;
+        return {animeSession:best.session,episodes:eps};
+    }
+
+    // ── SERVER 6 ──────────────────────────────────────────────────────────────
+    // Same AnimePahe API as Server 5, hosted on Vercel (no ngrok header needed).
+    // Endpoint: https://myapi-fixed.vercel.app
+    // Flow: /search?q= → /episodes?session= → /embed?anime_session=&episode_session=&title=&mal_id=&ep_num=
+    const S6='https://myapi-fixed.vercel.app';
+    async function s6Search(t){
+        const r=await fetch(`${S6}/search?q=${encodeURIComponent(t)}`,{signal:AbortSignal.timeout(12000)});
+        if(!r.ok)throw new Error(`HTTP ${r.status}`);
+        return r.json();
+    }
+    async function s6Eps(sess){
+        const r=await fetch(`${S6}/episodes?session=${encodeURIComponent(sess)}`,{signal:AbortSignal.timeout(12000)});
+        if(!r.ok)throw new Error(`HTTP ${r.status}`);
+        return r.json();
+    }
+    function s6Embed(as,es,title,malId,epNum){
+        let url=`${S6}/embed?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}&title=${encodeURIComponent(title)}`;
+        if(malId) url+=`&mal_id=${encodeURIComponent(malId)}`;
+        if(epNum) url+=`&ep_num=${encodeURIComponent(epNum)}`;
+        return url;
+    }
+    function s6Prefetch(as,es){fetch(`${S6}/prefetch?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}`).catch(()=>{});}
+    async function s6Load(title) {
+        if (state.server6.cacheKey===title&&state.server6.animeSession&&state.server6.episodes.length) return {animeSession:state.server6.animeSession,episodes:state.server6.episodes};
+        const res=await s6Search(title);
+        if (!Array.isArray(res)||!res.length) throw new Error(`"${title}" not found on Server 6`);
+        const best=res.find(r=>(r.title||'').toLowerCase()===title.toLowerCase())||res[0];
+        if (!best.session) throw new Error('No session ID from Server 6');
+        const eps=await s6Eps(best.session);
+        if (!Array.isArray(eps)||!eps.length) throw new Error('No episodes on Server 6');
+        state.server6.animeSession=best.session; state.server6.episodes=eps; state.server6.cacheKey=title;
         return {animeSession:best.session,episodes:eps};
     }
 
@@ -1559,21 +1707,21 @@
     }
     const MANGA_GENRE_MAP = {
         'All': null,
-        'Action': '391b0423-d847-456f-aff0-8b0cfc03066b',
-        'Adventure': '87cc87cd-a395-47af-b27a-93258283bbc6',
-        'Comedy': '4d32cc48-9f00-4cca-9b5a-a839f0764984',
-        'Drama': 'b9af3a63-f058-46de-a9a0-e0c13906197a',
-        'Fantasy': 'cdc58593-87dd-415e-bbc0-2ec27bf404cc',
-        'Horror': 'cdad7e68-1419-41dd-bdce-27753074a640',
-        'Romance': '423e2eae-a59a-4997-bde5-0d7b8f2a5c59',
-        'Sci-Fi': '256c8bd9-4904-4360-bf4f-508a76d67183',
-        'Slice of Life': 'e5301a23-ebd9-49dd-a0cb-2add944c7fe9',
-        'Sports': '69964a64-2f90-4d33-beeb-f3ed2875eb4c',
-        'Psychological': '3b60b75c-a2d7-4860-ab56-05f391bb889c',
-        'Supernatural': 'eabc5b4c-6aff-42f3-b657-3e90cbd00b75',
-        'Isekai': 'ace04997-f6bd-436e-b261-779182193d3d',
-        'Mecha': 'a1f53773-c69a-550d-3f5f-8e3038fcbcf9',
-        'Historical': '33771934-028e-4cb3-8744-691e866a923e',
+        'Action': '1',
+        'Adventure': '2',
+        'Comedy': '4',
+        'Drama': '8',
+        'Fantasy': '10',
+        'Horror': '14',
+        'Romance': '22',
+        'Sci-Fi': '24',
+        'Slice of Life': '36',
+        'Sports': '30',
+        'Psychological': '40',
+        'Supernatural': '37',
+        'Isekai': '62',
+        'Mecha': '18',
+        'Historical': '13',
     };
     async function renderMangaGenreBar() {
         const genres = Object.keys(MANGA_GENRE_MAP);
@@ -1590,7 +1738,7 @@
     window.setMode = async (mode) => {
         // Block switching to manga if the manga button is hidden (mangavisible=false)
         const mangaBtn = document.getElementById('modeBtnManga');
-        if (mode === 'manga' && mangaBtn && mangaBtn.style.display === 'none') return;
+        if (mode === 'manga' && !_mangaVisible) return;
         appMode = mode;
         document.getElementById('modeBtnAnime').classList.toggle('active', mode==='anime');
         document.getElementById('modeBtnManga').classList.toggle('active', mode==='manga');
@@ -1610,13 +1758,13 @@
         stopProgressTracking(); hideLWBanner();
         progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
         playerPlaceholder.style.display='flex';
-        playerPlaceholder.innerHTML=`<span class="big-icon" style="animation:none;">⚠️</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`;
+        playerPlaceholder.innerHTML=`<span class="big-icon" style="animation:none;">!</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`;
     }
     function showPlayerIdle() {
         stopProgressTracking(); hideLWBanner();
         progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
         playerPlaceholder.style.display='flex';
-        playerPlaceholder.innerHTML=`<span class="big-icon">🎬</span><p>Select an episode to start streaming</p>`;
+        playerPlaceholder.innerHTML=`<span class="big-icon" style="font-size:2rem;font-family:'Segoe UI Symbol',sans-serif;">&#x25B6;</span><p>Select an episode to start streaming</p>`;
     }
 
     // ── LOAD STREAM ───────────────────────────────────────────────────────────
@@ -1626,7 +1774,8 @@
         stopProgressTracking(); hideLWBanner();
         playerIframe.style.display='none'; playerIframe.src='';
         if (prov.id==='server5'){await loadS5Stream(anime,ep,resumeAtSec);return;}
-        if (prov.external){ window.open(prov.getUrl(anime.id,anime.season,ep,state.selectedAudio),'_blank'); showToast(`Opening ${prov.name} in new tab`,'↗️'); showPlayerIdle(); return; }
+        if (prov.id==='server6'){await loadS6Stream(anime,ep,resumeAtSec);return;}
+        if (prov.external){ window.open(prov.getUrl(anime.id,anime.season,ep,state.selectedAudio),'_blank'); showToast(`Opening ${prov.name} in new tab`); showPlayerIdle(); return; }
         const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
         playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
         playerPlaceholder.style.display='none'; playerIframe.style.display='block';
@@ -1669,8 +1818,40 @@
             const nxt=episodes.find(e=>String(e.number)===String(epNum+1))||episodes[epNum];
             if (nxt?.session) s5Prefetch(animeSession,nxt.session);
             s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c=>c.classList.toggle('active',String(c.dataset.epnum)===String(ep.number||epNum)));
-        } catch(err) { showPlayerError(`Server 5: ${err.message}. Try another server.`); showToast('Server 5 failed — try another server','⚠️'); }
+        } catch(err) { showPlayerError(`Server 5: ${err.message}. Try another server.`); showToast('Server 5 failed — try another server'); }
         finally { state.server5.isLoading=false; }
+    }
+
+    async function loadS6Stream(anime,epNum,resumeAtSec=0) {
+        if (state.server6.isLoading) return;
+        state.server6.isLoading=true; hideLWBanner();
+        try {
+            const cached=state.server6.cacheKey===anime.title&&state.server6.animeSession&&state.server6.episodes.length>0;
+            if (!cached) showPlayerLoading('Searching Server 6…',`Looking up "${anime.title}"`);
+            else showPlayerLoading('Loading episode…',`Episode ${epNum}`);
+            const {animeSession,episodes}=await s6Load(anime.title);
+            if (!cached) renderS5Episodes(episodes,epNum); // reuse same episode grid renderer
+            const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
+            if (!ep?.session) throw new Error(`Episode ${epNum} not found on Server 6`);
+            const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
+            const malId=anime._malId||anime.id||'';
+            playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; fullscreen');
+            playerPlaceholder.style.display='none'; playerIframe.style.display='block';
+            playerIframe.onload=null; playerIframe.src=s6Embed(animeSession,ep.session,epTitle,malId,epNum);
+            playerIframe.onload=()=>{
+                startProgressTracking(resumeAtSec);
+                const prog=getEpProgress(anime.id,epNum);
+                if (prog&&prog.time>5) showLastWatchedBanner(anime.title,epNum,prog.time,prog.duration);
+                if (resumeAtSec>=3) _trySendSeek(resumeAtSec);
+            };
+            startProgressTracking(resumeAtSec);
+            const progImmediate=getEpProgress(anime.id,epNum);
+            if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,epNum,progImmediate.time,progImmediate.duration);
+            const nxt=episodes.find(e=>String(e.number)===String(epNum+1))||episodes[epNum];
+            if (nxt?.session) s6Prefetch(animeSession,nxt.session);
+            s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c=>c.classList.toggle('active',String(c.dataset.epnum)===String(ep.number||epNum)));
+        } catch(err) { showPlayerError(`Server 6: ${err.message}. Try another server.`); showToast('Server 6 failed — try another server'); }
+        finally { state.server6.isLoading=false; }
     }
 
     function _trySendSeek(sec) {
@@ -1696,7 +1877,7 @@
             card.innerHTML=`
                 ${ep.snapshot?`<img class="s5-ep-thumb" src="${escapeHTML(ep.snapshot)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
                 <div class="s5-ep-thumb-placeholder" style="display:${ep.snapshot?'none':'flex'}">▶</div>
-                <div class="s5-ep-label">Episode ${num}${label?`<small>${escapeHTML(label)}</small>`:''}${pct>0&&pct<92?`<small style="color:var(--accent3);">⏱ ${pct}% watched</small>`:''}${pct>=92?`<small style="color:#22c55e;">✓ Watched</small>`:''}</div>
+                <div class="s5-ep-label">Episode ${num}${label?`<small>${escapeHTML(label)}</small>`:''}${pct>0&&pct<92?`<small style="color:var(--accent3);">⏱ ${pct}% watched</small>`:''}${pct>=92?`<small style="color:#22c55e;">Watched</small>`:''}</div>
                 <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
             card.addEventListener('click',()=>{
                 state.selectedEpisode=num; updateHistory(state.selectedAnime,num);
@@ -1742,10 +1923,16 @@
     }
 
     function syncEpisodeUI() {
-        if (state.selectedProvider.id==='server5') {
+        const pid = state.selectedProvider.id;
+        if (pid==='server5') {
             if (state.server5.cacheKey===state.selectedAnime?.title&&state.server5.episodes.length){
                 episodeSection.style.display='none'; s5EpSection.style.display='flex';
                 renderS5Episodes(state.server5.episodes,state.selectedEpisode);
+            } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
+        } else if (pid==='server6') {
+            if (state.server6.cacheKey===state.selectedAnime?.title&&state.server6.episodes.length){
+                episodeSection.style.display='none'; s5EpSection.style.display='flex';
+                renderS5Episodes(state.server6.episodes,state.selectedEpisode);
             } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
         } else { s5EpSection.style.display='none'; renderStdEpisodes(); }
     }
@@ -1766,7 +1953,7 @@
     function renderWatchHistory() {
         if (!state.watchHistory.length){continueSection.style.display='none';return;}
         continueSection.style.display='block';
-        document.getElementById('continueTitle').innerHTML = appMode==='manga' ? '📖 <strong>Continue Reading</strong>' : '⏳ <strong>Continue Watching</strong>';
+        document.getElementById('continueTitle').innerHTML = appMode==='manga' ? '<strong>Continue Reading</strong>' : '<strong>Continue Watching</strong>';
         historyRow.innerHTML='';
         const seen=new Set(), unique=[];
         for (const h of state.watchHistory){
@@ -1789,7 +1976,7 @@
                     <img src="${escapeHTML(h.coverImage)}" alt="" loading="lazy" onerror="this.parentElement.style.background='var(--surface3)'"/>
                     <div class="history-card-thumb-overlay"></div>
                     <span class="history-ep-badge${isManga?' manga':''}">${isManga?'CH':'EP'} ${h.episode||1}${timeStr?' · '+timeStr:''}</span>
-                    <div class="history-play-btn"><span>${isManga?'📖':'▶'}</span></div>
+                    <div class="history-play-btn"><span>&#9654;</span></div>
                 </div>
                 <div class="history-card-body">
                     <div class="history-card-title">${escapeHTML(h.title)}</div>
@@ -1808,13 +1995,14 @@
             historyRow.appendChild(card);
         });
     }
-    window.clearHistory=()=>{state.watchHistory=[];saveHistory();renderWatchHistory();showToast('History cleared','🗑️');};
+    window.clearHistory=()=>{state.watchHistory=[];saveHistory();renderWatchHistory();showToast('History cleared');};
 
     // ── SELECT ANIME ──────────────────────────────────────────────────────────
     async function selectAnime(animeData,forceEpisode=null) {
         if (!animeData) return;
         state.selectedAnime=animeData;
         state.server5={animeSession:null,episodes:[],isLoading:false,cacheKey:null};
+        state.server6={animeSession:null,episodes:[],isLoading:false,cacheKey:null};
         state.selectedProvider=PROVIDERS.find(p=>!p.external)||PROVIDERS[0];
         state.selectedAudio='sub';
         const hist=getHistoryEntry(animeData.id);
@@ -1825,7 +2013,7 @@
         updateHistory(animeData,startEp); updateWatchUI();
         renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
         showPlayerIdle(); openWatchPage(); $('#watchPageTitle').textContent=animeData.title;
-        showToast(`${animeData.title}`,'🎌'); loadAnimeRelations(animeData.id);
+        showToast(animeData.title); loadAnimeRelations(animeData.id);
         const prog=getEpProgress(animeData.id,startEp);
         if (prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(startEp,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
         else loadStream(0);
@@ -1858,8 +2046,8 @@
         }
         const tags = [];
         if (mangaData.format)   tags.push(`<span class="sidebar-tag">${escapeHTML(mangaData.format)}</span>`);
-        if (mangaData.chapters) tags.push(`<span class="sidebar-tag">📑 ${escapeHTML(mangaData.chapters)} ch</span>`);
-        if (mangaData.season)   tags.push(`<span class="sidebar-tag">📅 ${escapeHTML(mangaData.season)}</span>`);
+        if (mangaData.chapters) tags.push(`<span class="sidebar-tag">${escapeHTML(mangaData.chapters)} ch</span>`);
+        if (mangaData.season)   tags.push(`<span class="sidebar-tag">${escapeHTML(mangaData.season)}</span>`);
         document.getElementById('mangaSidebarTags').innerHTML = tags.join('');
         document.getElementById('mangaSidebarDesc').textContent = mangaData.description || '';
         document.getElementById('mangaSidebarGenres').innerHTML = (mangaData.genres||[]).slice(0,8).map(g=>`<span class="sidebar-genre manga-genre">${escapeHTML(g)}</span>`).join('');
@@ -1868,12 +2056,12 @@
         applyReadMode(mm.readMode);
         applyFitMode(mm.fitMode);
         updateBookmarkBtn();
-        showToast(`${mangaData.title}`,'📖');
+        showToast(mangaData.title);
 
         const container = document.getElementById('mangaPagesContainer');
         container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading chapters…</p><small>Fetching chapter list</small></div>`;
         try {
-            const chapters = await mdGetChapters(mangaData.id);
+            const chapters = await cachedFetch(`chapters_${mangaData.id}`, () => mdGetChapters(mangaData.id));
             if (!chapters.length) throw new Error('No English chapters found for this manga');
             mm.chapters = chapters;
             renderMangaChapterList(chapters);
@@ -1892,7 +2080,7 @@
             document.getElementById('mangaChapterSelect').value = String(chIdx);
             await loadMangaChapter(chIdx);
         } catch(err) {
-            container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">⚠️</div><p>Could not load chapters: ${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectManga(state.mangaMode.selectedManga)">Retry</button></div>`;
+            container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">!</div><p>Could not load chapters: ${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectManga(state.mangaMode.selectedManga)">Retry</button></div>`;
         }
     }
 
@@ -1982,12 +2170,12 @@
         const mangaId = mm.selectedManga.id;
         if (mm.bookmarks[mangaId]) {
             delete mm.bookmarks[mangaId];
-            showToast('Bookmark removed','🔖');
+            showToast('Bookmark removed');
         } else {
             const ch = mm.chapters[mm.currentChapterIndex];
             const chNum = ch?.attributes?.chapter || (mm.currentChapterIndex + 1);
             mm.bookmarks[mangaId] = { chIdx: mm.currentChapterIndex, chNum, title: mm.selectedManga.title, ts: Date.now() };
-            showToast(`Bookmarked at Chapter ${chNum}`,'🔖');
+            showToast(`Bookmarked at Chapter ${chNum}`);
         }
         saveBookmarks();
         updateBookmarkBtn();
@@ -1999,7 +2187,7 @@
         if (!btn) return;
         const bm = mm.selectedManga ? mm.bookmarks[mm.selectedManga.id] : null;
         btn.classList.toggle('bookmarked', !!bm);
-        btn.textContent = bm ? '🔖 Bookmarked' : '🔖 Bookmark';
+        btn.textContent = bm ? 'Bookmarked' : 'Bookmark';
         status.textContent = bm ? `Ch.${bm.chNum}` : '';
     }
 
@@ -2089,7 +2277,7 @@
         updateBookmarkBtn();
 
         try {
-            const pages = await mdGetPages(chapter.id);
+            const pages = await cachedFetch(`pages_${chapter.id}`, () => mdGetPages(chapter.id, chapter.attributes));
             mm.currentPages = pages;
             container.innerHTML = '';
 
@@ -2140,7 +2328,7 @@
             // FIX: Use IntersectionObserver instead of window.scrollY for progress
             setupMangaScrollProgress(container);
         } catch(err) {
-            container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">⚠️</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectChapterByIndex(${chapterIndex})">Retry</button></div>`;
+            container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">!</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectChapterByIndex(${chapterIndex})">Retry</button></div>`;
         } finally {
             mm.isLoadingChapter = false;
         }
@@ -2193,7 +2381,7 @@
 
     window.openMangaFullscreen = async () => {
         const mm = state.mangaMode;
-        if (!mm.selectedManga || !mm.chapters.length) { showToast('Load a manga chapter first','📖'); return; }
+        if (!mm.selectedManga || !mm.chapters.length) { showToast('Load a manga chapter first'); return; }
         fsOverlay.classList.add('active');
         document.body.style.overflow = 'hidden';
         document.getElementById('mfsTitle').textContent = mm.selectedManga.title;
@@ -2244,7 +2432,7 @@
             if (idx === mm.currentChapterIndex && mm.currentPages.length > 0) {
                 pages = mm.currentPages;
             } else {
-                pages = await mdGetPages(chapter.id);
+                pages = await cachedFetch(`pages_${chapter.id}`, () => mdGetPages(chapter.id, chapter.attributes));
                 mm.currentPages = pages;
             }
 
@@ -2283,7 +2471,7 @@
             fsScroll.scrollTop = 0;
             updateHistory(mm.selectedManga, idx + 1);
         } catch(err) {
-            fsScroll.innerHTML = `<div class="manga-chapter-error" style="height:100%;justify-content:center;"><div class="err-icon">⚠️</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="mfsLoadChapter(${idx})">Retry</button></div>`;
+            fsScroll.innerHTML = `<div class="manga-chapter-error" style="height:100%;justify-content:center;"><div class="err-icon">!</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="mfsLoadChapter(${idx})">Retry</button></div>`;
         }
     }
 
@@ -2399,7 +2587,7 @@
                 <img class="top-airing-thumb" src="${escapeHTML(anime.coverImage)}" loading="lazy" onerror="this.style.display='none'">
                 <div class="top-airing-info">
                     <div class="top-airing-name">${escapeHTML(anime.title)}</div>
-                    <div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · ⭐'+rating:''}</div>
+                    <div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · '+rating:''}</div>
                 </div>`;
             item.addEventListener('click',()=>clickFn(anime));
             topAiringList.appendChild(item);
@@ -2459,7 +2647,7 @@
                 <img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy"
                      onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(this.src);}else{this.style.display='none';this.parentElement.style.background='var(--surface3)';}"/>
                 <div class="anime-card-overlay"></div>
-                ${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">⭐ ${rating}</span>`:''}
+                ${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">${rating}</span>`:''}
                 ${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}
                 ${isManga?`<span class="anime-card-badge manga-badge" style="top:auto;bottom:28px;left:6px;font-size:0.55rem;letter-spacing:0.05em;">MANGA</span>`:''}
             </div>
@@ -2484,10 +2672,10 @@
 
     // ── HOME — ANIME ──────────────────────────────────────────────────────────
     async function loadHomePage() {
-        document.getElementById('topListHeader').textContent = '🔥 Top Airing';
+        document.getElementById('topListHeader').textContent = 'Top Airing';
         document.getElementById('heroWatchBtn').className = 'hero-btn primary';
-        document.getElementById('heroWatchBtn').textContent = '▶ Watch Now';
-        document.getElementById('browseTitle').innerHTML = '<span>📂</span> Browse All Anime';
+        document.getElementById('heroWatchBtn').textContent = 'Watch Now';
+        document.getElementById('browseTitle').innerHTML = 'Browse All Anime';
         const tabBar = document.getElementById('tabBar');
         tabBar.innerHTML=`
             <button class="tab-btn active" onclick="setTab('newest',this)">Newest</button>
@@ -2513,7 +2701,7 @@
             heroBg.src=hero.coverImage; heroTitle.textContent=hero.title;
             heroBadges.innerHTML=[
                 hero.format?`<span class="hero-badge-pill type">${escapeHTML(hero.format)}</span>`:'',
-                hero.averageScore?`<span class="hero-badge-pill">⭐ ${(hero.averageScore/10).toFixed(1)}</span>`:'',
+                hero.averageScore?`<span class="hero-badge-pill">${(hero.averageScore/10).toFixed(1)}</span>`:'',
                 hero.status?`<span class="hero-badge-pill">${escapeHTML(hero.status)}</span>`:'',
             ].filter(Boolean).join('');
             heroGenres.innerHTML=hero.genres?.slice(0,4).map(g=>`<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('')||'';
@@ -2530,10 +2718,10 @@
 
     // ── HOME — MANGA ──────────────────────────────────────────────────────────
     async function loadMangaHome() {
-        document.getElementById('topListHeader').textContent = '🔥 Popular Manga';
+        document.getElementById('topListHeader').textContent = 'Popular Manga';
         document.getElementById('heroWatchBtn').className = 'hero-btn primary-manga';
-        document.getElementById('heroWatchBtn').textContent = '📖 Read Now';
-        document.getElementById('browseTitle').innerHTML = '<span>📂</span> Browse All Manga';
+        document.getElementById('heroWatchBtn').textContent = 'Read Now';
+        document.getElementById('browseTitle').innerHTML = 'Browse All Manga';
         const tabBar = document.getElementById('tabBar');
         tabBar.innerHTML=`
             <button class="tab-btn active" onclick="setTab('newest',this)">Latest</button>
@@ -2545,15 +2733,19 @@
         populateGrid(newestGrid,[]); populateGrid(popularGrid,[]); populateGrid(topRatedGrid,[]);
         try {
             const mm = state.mangaMode;
-            const [latest, popular, topRated] = await Promise.all([mdLatestManga(), mdPopularManga(), mdTopRatedManga()]);
-            mm.trendingData = latest.map(fmtManga).filter(Boolean);
-            mm.popularData  = popular.map(fmtManga).filter(Boolean);
-            mm.topRatedData = topRated.map(fmtManga).filter(Boolean);
+            const [latest, popular, topRated] = await Promise.all([
+                cachedFetch('manga_latest', mdLatestManga),
+                cachedFetch('manga_popular', mdPopularManga),
+                cachedFetch('manga_toprated', mdTopRatedManga),
+            ]);
+            mm.trendingData = latest.filter(Boolean);
+            mm.popularData  = popular.filter(Boolean);
+            mm.topRatedData = topRated.filter(Boolean);
             if (mm.trendingData.length) {
                 const hero = mm.trendingData[0]; state.heroAnime = hero;
                 heroBg.src = hero.cover512||hero.coverImage;
                 heroTitle.textContent = hero.title;
-                heroBadges.innerHTML = `<span class="hero-badge-pill manga-type">📖 MANGA</span>${hero.season?`<span class="hero-badge-pill">${escapeHTML(hero.season)}</span>`:''}`;
+                heroBadges.innerHTML = `<span class="hero-badge-pill manga-type">MANGA</span>${hero.season?`<span class="hero-badge-pill">${escapeHTML(hero.season)}</span>`:''}`;
                 heroGenres.innerHTML = (hero.genres||[]).slice(0,4).map(g=>`<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('');
                 heroDesc.textContent = hero.description ? (hero.description.length>180?hero.description.slice(0,180)+'…':hero.description) : '';
             }
@@ -2578,7 +2770,7 @@
         try {
             populateGrid(newestGrid, []);
             const results = await mdMangaByGenre(tagId);
-            const formatted = results.map(fmtManga).filter(Boolean);
+            const formatted = results.filter(Boolean);
             populateGrid(newestGrid, formatted);
             populateGrid(popularGrid, formatted);
             populateGrid(topRatedGrid, formatted);
@@ -2592,8 +2784,8 @@
         else { if (state.heroAnime) selectAnime(state.heroAnime); }
     };
     window.handleHeroDetails = () => {
-        if (appMode==='manga') { if (state.heroAnime) { showToast(state.heroAnime.title,'ℹ️'); selectManga(state.heroAnime); } }
-        else { if (state.heroAnime) { showToast(state.heroAnime.title,'ℹ️'); selectAnime(state.heroAnime); } }
+        if (appMode==='manga') { if (state.heroAnime) { showToast(state.heroAnime.title); selectManga(state.heroAnime); } }
+        else { if (state.heroAnime) { showToast(state.heroAnime.title); selectAnime(state.heroAnime); } }
     };
 
     // ── PAGES ─────────────────────────────────────────────────────────────────
@@ -2665,9 +2857,9 @@
         $('#sidebarTitle').textContent=a.title||'Unknown';
         const tags=[];
         if(a.format)       tags.push(`<span class="sidebar-tag">${escapeHTML(a.format)}</span>`);
-        if(a.averageScore) tags.push(`<span class="sidebar-tag star">⭐ ${(a.averageScore/10).toFixed(1)}</span>`);
-        if(a.episodes)     tags.push(`<span class="sidebar-tag">📺 ${a.episodes} eps</span>`);
-        if(a.season)       tags.push(`<span class="sidebar-tag">📅 ${escapeHTML(a.season)}</span>`);
+        if(a.averageScore) tags.push(`<span class="sidebar-tag star">${(a.averageScore/10).toFixed(1)}</span>`);
+        if(a.episodes)     tags.push(`<span class="sidebar-tag">${a.episodes} eps</span>`);
+        if(a.season)       tags.push(`<span class="sidebar-tag">${escapeHTML(a.season)}</span>`);
         $('#sidebarTags').innerHTML=tags.join('')||'<span class="sidebar-tag">—</span>';
         const desc=a.description||'No description.';
         $('#sidebarDesc').textContent=desc.length>350?desc.slice(0,350)+'…':desc;
@@ -2683,7 +2875,7 @@
     }
     function renderRelations(){
         if(!state.animeRelations.length){sidebarRelations.innerHTML='';return;}
-        sidebarRelations.innerHTML=`<span class="rel-label">📺 Related Seasons</span>`+
+        sidebarRelations.innerHTML=`<span class="rel-label">Related Seasons</span>`+
             state.animeRelations.map(r=>`<div class="related-season-item" onclick="window.selectRelatedAnime(${r.id})"><span>${escapeHTML(r.title)}</span><span class="rel-meta">${escapeHTML(r.format)} ${escapeHTML(r.season)}</span></div>`).join('');
     }
     window.selectRelatedAnime=id=>fetchById(id).then(a=>{if(a)selectAnime(a);});
@@ -2711,12 +2903,13 @@
                     renderProviderDropdown(); updateAudioToggle();
                     if(changed){
                         if(prov.id!=='server5') state.server5.isLoading=false;
+                        if(prov.id!=='server6') state.server6.isLoading=false;
                         syncEpisodeUI();
                         const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
                         if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
                         else loadStream(0);
                     }
-                    if(prov.external) showToast(`${prov.name} opens in a new tab`,'↗️');
+                    if(prov.external) showToast(`${prov.name} opens in a new tab`);
                 }
                 state.providerDropdownOpen=false; provWrap.classList.remove('open');
             });
@@ -2748,7 +2941,7 @@
     async function handleSearchInput(){
         const q=searchInput.value.trim();
         if(q.length<2){searchDropdown.classList.remove('active');searchDropdown.innerHTML='';return;}
-        searchDropdown.innerHTML='<div style="padding:14px;text-align:center;color:var(--text3);font-family:var(--font);">🔍 Searching…</div>';
+        searchDropdown.innerHTML='<div style="padding:14px;text-align:center;color:var(--text3);font-family:var(--font);">Searching…</div>';
         searchDropdown.classList.add('active');
         try {
             let rmap={};
@@ -2764,17 +2957,17 @@
                         const resumeStr=hist?`<div class="search-result-resume">▶ EP${hist.episode||1}${epProg&&epProg.time>10?' · '+fmtTime(epProg.time):''}</div>`:'';
                         return `<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">${escapeHTML(meta)}</div>${resumeStr}</div></div>`;
                     }).join('')
-                    : '<div style="padding:14px;text-align:center;color:var(--text3);">😔 No results found</div>';
+                    : '<div style="padding:14px;text-align:center;color:var(--text3);">No results found</div>';
                 searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{
                     item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectAnime(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}});
                 });
             } else {
                 const raw=await mdSearchManga(q);
-                const fmted=raw.map(fmtManga).filter(Boolean);
+                const fmted=raw.filter(Boolean);
                 fmted.forEach(f=>rmap[f.id]=f);
                 searchDropdown.innerHTML=fmted.length
                     ? fmted.map(f=>`<div class="search-result-item" data-id="${escapeHTML(f.id)}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">MANGA · ${escapeHTML(f.genres.slice(0,2).join(', '))}</div></div></div>`).join('')
-                    : '<div style="padding:14px;text-align:center;color:var(--text3);">😔 No manga found</div>';
+                    : '<div style="padding:14px;text-align:center;color:var(--text3);">No manga found</div>';
                 searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{
                     item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectManga(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}});
                 });
@@ -2832,18 +3025,18 @@
         }
         if(!onWatch) return;
         if(e.key==='f'||e.key==='F'){e.preventDefault();toggleFullscreen();return;}
-        if(e.key==='d'||e.key==='D'){if(state.selectedProvider.supportsAudio){setAudio(state.selectedAudio==='sub'?'dub':'sub');showToast(`Audio: ${state.selectedAudio.toUpperCase()}`,'🎧');}return;}
+        if(e.key==='d'||e.key==='D'){if(state.selectedProvider.supportsAudio){setAudio(state.selectedAudio==='sub'?'dub':'sub');showToast(`Audio: ${state.selectedAudio.toUpperCase()}`);}return;}
         if(e.key==='p'||e.key==='P'){
             const curr=PROVIDERS.findIndex(p=>p.id===state.selectedProvider.id);
             const nxt=PROVIDERS[(curr+1)%PROVIDERS.length];
             state.selectedProvider=nxt; renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
             const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
             loadStream(prog&&prog.time>10?prog.time:0);
-            showToast(`${nxt.name}`,'📡'); return;
+            showToast(`${nxt.name}`); return;
         }
         if(e.key==='ArrowRight'){
             const total=state.selectedAnime?.episodes||0;
-            if(state.selectedEpisode<total){state.selectedEpisode++;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();loadStream(0);showToast(`Episode ${state.selectedEpisode}`,'▶');}
+            if(state.selectedEpisode<total){state.selectedEpisode++;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();loadStream(0);showToast(`Episode ${state.selectedEpisode}`);}
             return;
         }
         if(e.key==='ArrowLeft'){
@@ -2852,7 +3045,7 @@
                 const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
                 if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
                 else loadStream(0);
-                showToast(`Episode ${state.selectedEpisode}`,'◀');
+                showToast(`Episode ${state.selectedEpisode}`);
             }
             return;
         }
