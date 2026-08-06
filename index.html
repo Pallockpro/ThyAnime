@@ -797,7 +797,7 @@
                     <div class="episode-grid" id="episodeGrid"></div>
                 </div>
                 <div class="episode-section" id="s5EpisodeSection" style="display:none;">
-                    <span class="section-label">Episodes — Server 5</span>
+                    <span class="section-label" id="s5SectionLabel">Episodes — Server 4</span>
                     <div class="s5-ep-grid" id="s5EpisodeGrid"></div>
                 </div>
             </div>
@@ -1493,10 +1493,8 @@
         { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS',
           getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`,
           supportsAudio:false, external:false, resumeSupport:'url-start' },
-        { id:'server5',   name:'Server 4', icon:'S4', color:'#f97316', description:'Direct embed',
-          supportsAudio:false, external:false, resumeSupport:'postmsg' },
-        { id:'server6',   name:'Server 5', icon:'S5', color:'#22c55e', description:'AnimePahe via Vercel',
-          supportsAudio:false, external:false, resumeSupport:'postmsg' },
+        { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)',
+          supportsAudio:false, external:false, resumeSupport:'none' },
     ];
 
     // ── HELPERS ───────────────────────────────────────────────────────────────
@@ -1554,8 +1552,7 @@
         watchHistory:[], providerDropdownOpen:false,
         browsePage:1, browseTotalPages:1, isLoadingBrowse:false,
         animeRelations:[], activeGenre:'All', activeTab:'newest',
-        server5:{ animeSession:null, episodes:[], isLoading:false, cacheKey:null },
-        server6:{ animeSession:null, episodes:[], isLoading:false, cacheKey:null },
+        anistream:{ slug:null, epData:[], isLoading:false, cacheKey:null, targetSeason:1, allSeasons:[] },
         currentTime:0, duration:0,
         mangaMode:{
             selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[],
@@ -1656,57 +1653,167 @@
     }
     resumeModal.addEventListener('click',e=>{if(e.target===resumeModal)resumeModal.classList.add('hidden');});
 
-    // ── SERVER 5 ──────────────────────────────────────────────────────────────
-    const S5='https://ungodly-think-cassette.ngrok-free.dev';
-    const S5H={headers:{'ngrok-skip-browser-warning':'1'}};
-    async function s5Search(t){const r=await fetch(`${S5}/search?q=${encodeURIComponent(t)}`,S5H);if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}
-    async function s5Eps(sess){const r=await fetch(`${S5}/episodes?session=${encodeURIComponent(sess)}`,S5H);if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}
-    function s5Embed(as,es,title){return `${S5}/embed?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}&title=${encodeURIComponent(title)}&ngrok-skip-browser-warning=1`;}
-    function s5Prefetch(as,es){fetch(`${S5}/prefetch?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}`,S5H).catch(()=>{});}
-    async function s5Load(title) {
-        if (state.server5.cacheKey===title&&state.server5.animeSession&&state.server5.episodes.length) return {animeSession:state.server5.animeSession,episodes:state.server5.episodes};
-        const res=await s5Search(title);
-        if (!Array.isArray(res)||!res.length) throw new Error(`"${title}" not found on Server 5`);
-        const best=res.find(r=>(r.title||'').toLowerCase()===title.toLowerCase())||res[0];
-        if (!best.session) throw new Error('No session ID');
-        const eps=await s5Eps(best.session);
-        if (!Array.isArray(eps)||!eps.length) throw new Error('No episodes on Server 5');
-        state.server5.animeSession=best.session; state.server5.episodes=eps; state.server5.cacheKey=title;
-        return {animeSession:best.session,episodes:eps};
+    // ── SERVER 4 (ANISTREAM — aniblossoms Server 3) ──────────────────────────
+    const ANIMEAPI_BASE = 'https://appetite-barrette-empirical.ngrok-free.dev';
+    function getAnimeApiBase() { return ANIMEAPI_BASE; }
+
+    // Convert an anime title to a URL slug matching the API's slugify()
+    function titleToSlug(title) {
+        if (!title) return '';
+        return title.toLowerCase().trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_]+/g, '-')
+            .replace(/-+/g, '-');
     }
 
-    // ── SERVER 6 ──────────────────────────────────────────────────────────────
-    // Same AnimePahe API as Server 5, hosted on Vercel (no ngrok header needed).
-    // Endpoint: https://myapi-fixed.vercel.app
-    // Flow: /search?q= → /episodes?session= → /embed?anime_session=&episode_session=&title=&mal_id=&ep_num=
-    const S6='https://myapi-fixed.vercel.app';
-    async function s6Search(t){
-        const r=await fetch(`${S6}/search?q=${encodeURIComponent(t)}`,{signal:AbortSignal.timeout(12000)});
-        if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    // Fetch with ngrok browser-warning bypass header
+    async function animeApiFetch(path) {
+        const url = getAnimeApiBase() + path;
+        const r = await fetch(url, { headers: { 'ngrok-skip-browser-warning': '1' } });
+        if (!r.ok) throw new Error(`AnimeAPI HTTP ${r.status}`);
         return r.json();
     }
-    async function s6Eps(sess){
-        const r=await fetch(`${S6}/episodes?session=${encodeURIComponent(sess)}`,{signal:AbortSignal.timeout(12000)});
-        if(!r.ok)throw new Error(`HTTP ${r.status}`);
-        return r.json();
+
+    // Extract season number from title like "... Season 4" / "... Part 2" / "... 2nd Season"
+    function extractSeasonFromTitle(title) {
+        if (!title) return { cleanTitle: title, season: null };
+        let season = null, clean = title;
+        const mSeason = clean.match(/\bSeason\s+(\d+)\b/i);
+        if (mSeason) { season = parseInt(mSeason[1], 10); clean = clean.replace(mSeason[0], '').trim(); }
+        if (!season) {
+            const mOrd = clean.match(/\b(\d+)(?:st|nd|rd|th)\s+Season\b/i);
+            if (mOrd) { season = parseInt(mOrd[1], 10); clean = clean.replace(mOrd[0], '').trim(); }
+        }
+        if (!season) {
+            const mPart = clean.match(/\bPart\s+(\d+)\b/i);
+            if (mPart) { season = parseInt(mPart[1], 10); clean = clean.replace(mPart[0], '').trim(); }
+        }
+        if (!season) {
+            const romans = { II:2, III:3, IV:4, V:5, VI:6, VII:7, VIII:8 };
+            const mRoman = clean.match(/\b(II|III|IV|V|VI|VII|VIII)\s*$/);
+            if (mRoman && romans[mRoman[1]]) { season = romans[mRoman[1]]; clean = clean.replace(mRoman[0], '').trim(); }
+        }
+        clean = clean.replace(/[\s\-:]+$/, '').trim();
+        return { cleanTitle: clean, season };
     }
-    function s6Embed(as,es,title,malId,epNum){
-        let url=`${S6}/embed?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}&title=${encodeURIComponent(title)}`;
-        if(malId) url+=`&mal_id=${encodeURIComponent(malId)}`;
-        if(epNum) url+=`&ep_num=${encodeURIComponent(epNum)}`;
-        return url;
+
+    // Cache for anistream results
+    const anistreamCache = {};
+
+    async function anistreamFindSession(anime) {
+        const engRaw = anime.title?.english || anime.title || '';
+        const romRaw = anime.title?.romaji  || '';
+        const { cleanTitle: engClean, season: engSeason } = extractSeasonFromTitle(typeof anime.title === 'string' ? anime.title : engRaw);
+        const { cleanTitle: romClean, season: romSeason  } = extractSeasonFromTitle(romRaw);
+        const detectedSeason = engSeason || romSeason || null;
+        const candidates = [
+            engClean, romClean, engRaw, romRaw,
+            engClean && engClean.replace(/\s*[\(:].*/,'').trim(),
+            romClean && romClean.replace(/\s*[\(:].*/,'').trim(),
+        ].filter((t, i, arr) => t && arr.indexOf(t) === i);
+        for (const t of candidates) {
+            const slug = titleToSlug(t);
+            if (!slug) continue;
+            try {
+                const results = await animeApiFetch('/search?q=' + encodeURIComponent(t));
+                if (!results || !results.length) continue;
+                const lower = t.toLowerCase();
+                const best = results.find(r => (r.title||'').toLowerCase() === lower)
+                          || results.find(r => r.slug === slug)
+                          || results.find(r => (r.title||'').toLowerCase().startsWith(lower.split(' ')[0]))
+                          || results[0];
+                if (best) return { slug: best.slug, season: detectedSeason };
+            } catch(_) { continue; }
+        }
+        throw new Error('Not found on Server 4 for "' + (engRaw || romRaw) + '"');
     }
-    function s6Prefetch(as,es){fetch(`${S6}/prefetch?anime_session=${encodeURIComponent(as)}&episode_session=${encodeURIComponent(es)}`).catch(()=>{});}
-    async function s6Load(title) {
-        if (state.server6.cacheKey===title&&state.server6.animeSession&&state.server6.episodes.length) return {animeSession:state.server6.animeSession,episodes:state.server6.episodes};
-        const res=await s6Search(title);
-        if (!Array.isArray(res)||!res.length) throw new Error(`"${title}" not found on Server 6`);
-        const best=res.find(r=>(r.title||'').toLowerCase()===title.toLowerCase())||res[0];
-        if (!best.session) throw new Error('No session ID from Server 6');
-        const eps=await s6Eps(best.session);
-        if (!Array.isArray(eps)||!eps.length) throw new Error('No episodes on Server 6');
-        state.server6.animeSession=best.session; state.server6.episodes=eps; state.server6.cacheKey=title;
-        return {animeSession:best.session,episodes:eps};
+
+    async function anistreamFetchEpisodes(slug, filterSeason) {
+        const data = await animeApiFetch('/api/anime/' + encodeURIComponent(slug));
+        const eps = data.episodes || [];
+        const seasons = {};
+        eps.forEach(ep => { const s = ep.season || 1; if (!seasons[s]) seasons[s] = []; seasons[s].push(ep); });
+        const allSeasonNums = Object.keys(seasons).map(Number).sort((a,b) => a - b);
+        let targetSeason = 1;
+        if (filterSeason && allSeasonNums.includes(filterSeason)) targetSeason = filterSeason;
+        else if (filterSeason && allSeasonNums.length >= filterSeason) targetSeason = allSeasonNums[filterSeason - 1] || allSeasonNums[0];
+        else targetSeason = allSeasonNums[0] || 1;
+        const seasonEps = (seasons[targetSeason] || []).slice().sort((a,b) => (a.episode||0) - (b.episode||0));
+        return {
+            episodes: seasonEps.map(ep => ({ number: ep.episode || 1, season: targetSeason, title: ep.title || `Episode ${ep.episode}`, snapshot: null })),
+            targetSeason,
+            allSeasons: allSeasonNums,
+        };
+    }
+
+    function anistreamEmbedUrl(slug, season, epNumber) {
+        return `${getAnimeApiBase()}/embed?anime=${encodeURIComponent(slug)}&s=${season}&ep=${epNumber}`;
+    }
+
+    async function loadAnistreamPlayer(anime, epNum, resumeAtSec=0) {
+        if (state.anistream.isLoading) return;
+        state.anistream.isLoading = true; hideLWBanner();
+        try {
+            const cacheKey = String(anime.id);
+            const cached = state.anistream.cacheKey === cacheKey && state.anistream.slug && state.anistream.epData.length > 0;
+            if (!cached) showPlayerLoading('Searching Server 4…', `Looking up "${anime.title?.english || anime.title}"`);
+            else showPlayerLoading('Loading episode…', `Episode ${epNum}`);
+            if (!anistreamCache[cacheKey]) {
+                const { slug, season: detectedSeason } = await anistreamFindSession(anime);
+                const { episodes, targetSeason, allSeasons } = await anistreamFetchEpisodes(slug, detectedSeason);
+                anistreamCache[cacheKey] = { slug, epData: episodes, targetSeason, allSeasons };
+            }
+            const c = anistreamCache[cacheKey];
+            state.anistream.slug = c.slug; state.anistream.epData = c.epData;
+            state.anistream.targetSeason = c.targetSeason; state.anistream.allSeasons = c.allSeasons;
+            state.anistream.cacheKey = cacheKey;
+            renderAnistreamEpSidebar(c.epData, epNum);
+            const epObj = c.epData.find(e => e.number === epNum) || c.epData[epNum - 1] || c.epData[0];
+            if (!epObj) throw new Error(`Episode ${epNum} not found on Server 4`);
+            playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
+            playerPlaceholder.style.display='none'; playerIframe.style.display='block';
+            playerIframe.onload = null;
+            playerIframe.src = anistreamEmbedUrl(c.slug, epObj.season, epObj.number);
+            playerIframe.onload = () => {
+                startProgressTracking(resumeAtSec);
+                const prog = getEpProgress(anime.id, epNum);
+                if (prog && prog.time > 5) showLastWatchedBanner(anime.title?.english || anime.title, epNum, prog.time, prog.duration);
+            };
+            startProgressTracking(resumeAtSec);
+            const progImmediate = getEpProgress(anime.id, epNum);
+            if (progImmediate && progImmediate.time > 5) showLastWatchedBanner(anime.title?.english || anime.title, epNum, progImmediate.time, progImmediate.duration);
+        } catch(err) { showPlayerError(`Server 4: ${err.message}. Try another server.`); showToast('Server 4 failed — try another server'); }
+        finally { state.anistream.isLoading = false; }
+    }
+
+    function renderAnistreamEpSidebar(epData, activeEpNum) {
+        s5EpGrid.innerHTML = '';
+        const lbl = document.getElementById('s5SectionLabel');
+        if (lbl) lbl.textContent = 'Episodes — Server 4';
+        episodeSection.style.display = 'none'; s5EpSection.style.display = 'flex';
+        epData.forEach((ep, i) => {
+            const num = ep.number || (i + 1);
+            const label = ep.title && ep.title !== `Episode ${num}` ? ep.title : '';
+            const prog = getEpProgress(state.selectedAnime?.id, num);
+            const pct = prog && prog.duration > 0 ? Math.round((prog.time / prog.duration) * 100) : 0;
+            const card = document.createElement('div');
+            card.className = 's5-ep-card' + (String(num) === String(activeEpNum) ? ' active' : '');
+            card.dataset.epnum = num;
+            card.innerHTML = `
+                <div class="s5-ep-thumb-placeholder" style="display:flex">▶</div>
+                <div class="s5-ep-label">Episode ${num}${label ? `<small>${escapeHTML(label)}</small>` : ''}${pct > 0 && pct < 92 ? `<small style="color:var(--accent3);">⏱ ${pct}% watched</small>` : ''}${pct >= 92 ? `<small style="color:#22c55e;">Watched</small>` : ''}</div>
+                <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
+            card.addEventListener('click', () => {
+                state.selectedEpisode = num; updateHistory(state.selectedAnime, num);
+                const p = getEpProgress(state.selectedAnime?.id, num);
+                if (p && p.time > 10 && p.duration > 0 && (p.time / p.duration) < 0.92)
+                    showResumeModal(num, p.time, p.duration, () => loadAnistreamPlayer(state.selectedAnime, num, p.time), () => loadAnistreamPlayer(state.selectedAnime, num, 0));
+                else loadAnistreamPlayer(state.selectedAnime, num, 0);
+            });
+            s5EpGrid.appendChild(card);
+        });
+        const ac = s5EpGrid.querySelector('.s5-ep-card.active');
+        if (ac) ac.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     // ── DOM REFS ──────────────────────────────────────────────────────────────
@@ -1829,8 +1936,7 @@
         const prov=state.selectedProvider, anime=state.selectedAnime, ep=state.selectedEpisode;
         stopProgressTracking(); hideLWBanner();
         playerIframe.style.display='none'; playerIframe.src='';
-        if (prov.id==='server5'){await loadS5Stream(anime,ep,resumeAtSec);return;}
-        if (prov.id==='server6'){await loadS6Stream(anime,ep,resumeAtSec);return;}
+        if (prov.id==='anistream'){await loadAnistreamPlayer(anime,ep,resumeAtSec);return;}
         if (prov.external){ window.open(prov.getUrl(anime.id,anime.season,ep,state.selectedAudio),'_blank'); showToast(`Opening ${prov.name} in new tab`); showPlayerIdle(); return; }
         const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
         playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
@@ -1840,116 +1946,14 @@
             startProgressTracking(resumeAtSec);
             const prog=getEpProgress(anime.id,ep);
             if (prog&&prog.time>5) showLastWatchedBanner(anime.title,ep,prog.time,prog.duration);
-            if (prov.resumeSupport==='postmsg'&&resumeAtSec>=3) _trySendSeek(resumeAtSec);
+
         };
         startProgressTracking(resumeAtSec);
         const progImmediate=getEpProgress(anime.id,ep);
         if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,ep,progImmediate.time,progImmediate.duration);
     }
 
-    async function loadS5Stream(anime,epNum,resumeAtSec=0) {
-        if (state.server5.isLoading) return;
-        state.server5.isLoading=true; hideLWBanner();
-        try {
-            const cached=state.server5.cacheKey===anime.title&&state.server5.animeSession&&state.server5.episodes.length>0;
-            if (!cached) showPlayerLoading('Searching Server 5…',`Looking up "${anime.title}"`);
-            else showPlayerLoading('Loading episode…',`Episode ${epNum}`);
-            const {animeSession,episodes}=await s5Load(anime.title);
-            if (!cached) renderS5Episodes(episodes,epNum,loadS5Stream);
-            const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
-            if (!ep?.session) throw new Error(`Episode ${epNum} not found`);
-            const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
-            playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; fullscreen');
-            playerPlaceholder.style.display='none'; playerIframe.style.display='block';
-            playerIframe.onload=null; playerIframe.src=s5Embed(animeSession,ep.session,epTitle);
-            playerIframe.onload=()=>{
-                startProgressTracking(resumeAtSec);
-                const prog=getEpProgress(anime.id,epNum);
-                if (prog&&prog.time>5) showLastWatchedBanner(anime.title,epNum,prog.time,prog.duration);
-                if (resumeAtSec>=3) _trySendSeek(resumeAtSec);
-            };
-            startProgressTracking(resumeAtSec);
-            const progImmediate=getEpProgress(anime.id,epNum);
-            if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,epNum,progImmediate.time,progImmediate.duration);
-            const nxt=episodes.find(e=>String(e.number)===String(epNum+1))||episodes[epNum];
-            if (nxt?.session) s5Prefetch(animeSession,nxt.session);
-            s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c=>c.classList.toggle('active',String(c.dataset.epnum)===String(ep.number||epNum)));
-        } catch(err) { showPlayerError(`Server 5: ${err.message}. Try another server.`); showToast('Server 5 failed — try another server'); }
-        finally { state.server5.isLoading=false; }
-    }
-
-    async function loadS6Stream(anime,epNum,resumeAtSec=0) {
-        if (state.server6.isLoading) return;
-        state.server6.isLoading=true; hideLWBanner();
-        try {
-            const cached=state.server6.cacheKey===anime.title&&state.server6.animeSession&&state.server6.episodes.length>0;
-            if (!cached) showPlayerLoading('Searching Server 6…',`Looking up "${anime.title}"`);
-            else showPlayerLoading('Loading episode…',`Episode ${epNum}`);
-            const {animeSession,episodes}=await s6Load(anime.title);
-            if (!cached) renderS5Episodes(episodes,epNum,loadS6Stream);
-            const ep=episodes.find(e=>String(e.number)===String(epNum))||episodes[epNum-1]||episodes[0];
-            if (!ep?.session) throw new Error(`Episode ${epNum} not found on Server 6`);
-            const epTitle=ep.title&&ep.title!==`Episode ${ep.number||epNum}`?ep.title:`${anime.title} Ep ${ep.number||epNum}`;
-            const malId=anime._malId||anime.id||'';
-            playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; fullscreen');
-            playerPlaceholder.style.display='none'; playerIframe.style.display='block';
-            playerIframe.onload=null; playerIframe.src=s6Embed(animeSession,ep.session,epTitle,malId,epNum);
-            playerIframe.onload=()=>{
-                startProgressTracking(resumeAtSec);
-                const prog=getEpProgress(anime.id,epNum);
-                if (prog&&prog.time>5) showLastWatchedBanner(anime.title,epNum,prog.time,prog.duration);
-                if (resumeAtSec>=3) _trySendSeek(resumeAtSec);
-            };
-            startProgressTracking(resumeAtSec);
-            const progImmediate=getEpProgress(anime.id,epNum);
-            if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,epNum,progImmediate.time,progImmediate.duration);
-            const nxt=episodes.find(e=>String(e.number)===String(epNum+1))||episodes[epNum];
-            if (nxt?.session) s6Prefetch(animeSession,nxt.session);
-            s5EpGrid.querySelectorAll('.s5-ep-card').forEach(c=>c.classList.toggle('active',String(c.dataset.epnum)===String(ep.number||epNum)));
-        } catch(err) { showPlayerError(`Server 6: ${err.message}. Try another server.`); showToast('Server 6 failed — try another server'); }
-        finally { state.server6.isLoading=false; }
-    }
-
-    function _trySendSeek(sec) {
-        const t=Math.floor(sec);
-        const tries=[{type:'seek',time:t},{event:'command',func:'seekTo',args:[t]},{event:'seek',time:t},{action:'seek',time:t}];
-        [500,1500,3000].forEach(delay=>{
-            setTimeout(()=>{ tries.forEach(msg=>{ try{playerIframe.contentWindow?.postMessage(msg,'*');}catch(_){} try{playerIframe.contentWindow?.postMessage(JSON.stringify(msg),'*');}catch(_){} }); },delay);
-        });
-    }
-
     // ── EPISODE RENDERS ───────────────────────────────────────────────────────
-    function renderS5Episodes(episodes,activeEpNum,serverFn) {
-        s5EpGrid.innerHTML='';
-        const lbl=document.getElementById('s5SectionLabel');
-        if(lbl) lbl.textContent=state.selectedProvider.id==='server6'?'Episodes — Server 5':'Episodes — Server 4';
-        episodeSection.style.display='none'; s5EpSection.style.display='flex';
-        const _epLoader = serverFn || (state.selectedProvider.id==='server6' ? loadS6Stream : loadS5Stream);
-        episodes.forEach((ep,i)=>{
-            const num=ep.number||(i+1);
-            const label=ep.title&&ep.title!==`Episode ${num}`?ep.title:'';
-            const prog=getEpProgress(state.selectedAnime?.id,num);
-            const pct=prog&&prog.duration>0?Math.round((prog.time/prog.duration)*100):0;
-            const card=document.createElement('div');
-            card.className='s5-ep-card'+(String(num)===String(activeEpNum)?' active':'');
-            card.dataset.epnum=num;
-            card.innerHTML=`
-                ${ep.snapshot?`<img class="s5-ep-thumb" src="${escapeHTML(ep.snapshot)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
-                <div class="s5-ep-thumb-placeholder" style="display:${ep.snapshot?'none':'flex'}">▶</div>
-                <div class="s5-ep-label">Episode ${num}${label?`<small>${escapeHTML(label)}</small>`:''}${pct>0&&pct<92?`<small style="color:var(--accent3);">⏱ ${pct}% watched</small>`:''}${pct>=92?`<small style="color:#22c55e;">Watched</small>`:''}</div>
-                <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
-            card.addEventListener('click',()=>{
-                state.selectedEpisode=num; updateHistory(state.selectedAnime,num);
-                const p=getEpProgress(state.selectedAnime?.id,num);
-                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(num,p.time,p.duration,()=>_epLoader(state.selectedAnime,num,p.time),()=>_epLoader(state.selectedAnime,num,0));
-                else _epLoader(state.selectedAnime,num,0);
-            });
-            s5EpGrid.appendChild(card);
-        });
-        const ac=s5EpGrid.querySelector('.s5-ep-card.active');
-        if (ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
-    }
-
     function renderStdEpisodes() {
         if (!state.selectedAnime?.episodes){episodeSection.style.display='none';return;}
         episodeSection.style.display='flex';
@@ -1983,15 +1987,11 @@
 
     function syncEpisodeUI() {
         const pid = state.selectedProvider.id;
-        if (pid==='server5') {
-            if (state.server5.cacheKey===state.selectedAnime?.title&&state.server5.episodes.length){
+        if (pid==='anistream') {
+            const cKey = String(state.selectedAnime?.id);
+            if (state.anistream.cacheKey===cKey && state.anistream.epData.length) {
                 episodeSection.style.display='none'; s5EpSection.style.display='flex';
-                renderS5Episodes(state.server5.episodes,state.selectedEpisode);
-            } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
-        } else if (pid==='server6') {
-            if (state.server6.cacheKey===state.selectedAnime?.title&&state.server6.episodes.length){
-                episodeSection.style.display='none'; s5EpSection.style.display='flex';
-                renderS5Episodes(state.server6.episodes,state.selectedEpisode,loadS6Stream);
+                renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode);
             } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
         } else { s5EpSection.style.display='none'; renderStdEpisodes(); }
     }
@@ -2066,8 +2066,7 @@
     async function selectAnime(animeData,forceEpisode=null) {
         if (!animeData) return;
         state.selectedAnime=animeData;
-        state.server5={animeSession:null,episodes:[],isLoading:false,cacheKey:null};
-        state.server6={animeSession:null,episodes:[],isLoading:false,cacheKey:null};
+        state.anistream={slug:null,epData:[],isLoading:false,cacheKey:null,targetSeason:1,allSeasons:[]};
         state.selectedProvider=PROVIDERS.find(p=>!p.external)||PROVIDERS[0];
         state.selectedAudio='sub';
         const hist=getHistoryEntry(animeData.id);
@@ -3045,8 +3044,7 @@
                     if(idx>=0){state.watchHistory[idx].lastProvider=prov.id;saveHistory();}
                     renderProviderDropdown(); updateAudioToggle();
                     if(changed){
-                        if(prov.id!=='server5') state.server5.isLoading=false;
-                        if(prov.id!=='server6') state.server6.isLoading=false;
+                        if(prov.id!=='anistream') state.anistream.isLoading=false;
                         syncEpisodeUI();
                         const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
                         if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
