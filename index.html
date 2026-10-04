@@ -572,7 +572,7 @@
         </a>
         <div class="nav-search">
             <span class="nav-search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
-            <input type="text" id="searchInput" placeholder="Search anime or webtoons..." autocomplete="off"/>
+            <input type="text" id="searchInput" placeholder="Search anime or manga..." autocomplete="off"/>
             <span class="nav-kbd-hint">/</span>
             <div class="search-dropdown" id="searchDropdown"></div>
         </div>
@@ -800,7 +800,7 @@
     </div>
 </div>
 
-<div class="footer">ThyAnime — Free anime & webtoon streaming</div>
+<div class="footer">ThyAnime — Free anime & manga streaming</div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -1087,117 +1087,114 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // ── WEBTOON API (proxy: public-reach-trend.ngrok-free.dev) ─────────────
+    // ── MANGA API (proxied through MangaProx) ─────────────────────────────────
     // ══════════════════════════════════════════════════════════════════════════
-    const WEBTOON_API = 'https://public-reach-trend.ngrok-free.dev';
+    const MANGA_API = 'https://mangaprox.vercel.app';
 
-    // Rewrite image URLs that point at the proxy's own localhost to go
-    // through the public ngrok URL instead. The Flask proxy generates URLs
-    // via `request.host_url`, which behind ngrok's forwarding can end up
-    // as `http://127.0.0.1:8765/...` — those only resolve on the server.
-    function fixWebtoonUrl(url) {
+    function fixMangaUrl(url) {
         if (!url || typeof url !== 'string') return url || '';
+        // The API should return absolute public proxy URLs already. This keeps
+        // older cached/local URLs from breaking if one is still present.
         if (url.includes('127.0.0.1:8765') || url.includes('localhost:8765')) {
             try {
                 const u = new URL(url);
-                return WEBTOON_API + u.pathname + u.search;
-            } catch(_) { return url; }
+                return MANGA_API + u.pathname + u.search;
+            } catch(_) {}
         }
+        if (url.startsWith('/api/')) return MANGA_API + url;
         return url;
     }
 
-    // Robust fetch: direct first, then fall through public CORS proxies.
-    // Sends no custom headers (so no preflight); falls back gracefully when
-    // the ngrok CORS layer blocks the direct call.
-    async function webtoonFetch(path) {
-        const rawUrl = WEBTOON_API + path;
-        const attempts = [
-            // Direct — no custom headers means no CORS preflight
-            { url: rawUrl, headers: { 'Accept': 'application/json' } },
-            // Public CORS mirrors as backup
-            { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`, headers: { 'Accept': 'application/json' } },
-            { url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rawUrl)}`, headers: { 'Accept': 'application/json' } },
-            { url: `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`, headers: { 'Accept': 'application/json' } },
-        ];
-        let lastErr = null;
-        for (const a of attempts) {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 25000);
-            try {
-                const r = await fetch(a.url, {
-                    method: 'GET',
-                    headers: a.headers,
-                    signal: controller.signal,
-                    cache: 'no-store',
-                    mode: 'cors',
-                });
-                clearTimeout(timer);
-                if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                const text = await r.text();
-                const trimmed = text.trim();
-                if (trimmed.startsWith('<')) throw new Error('HTML interstitial / ngrok warning');
-                try { return JSON.parse(trimmed); }
-                catch(_) { throw new Error('Invalid JSON from proxy'); }
-            } catch(e) {
-                clearTimeout(timer);
-                lastErr = e;
+    async function mangaFetch(path) {
+        const rawUrl = MANGA_API + path;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 30000);
+        try {
+            const r = await fetch(rawUrl, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' },
+                signal: controller.signal,
+                cache: 'no-store',
+                mode: 'cors',
+            });
+            if (!r.ok) {
+                let detail = '';
+                try {
+                    const body = await r.json();
+                    detail = body?.error || body?.details || '';
+                } catch(_) {}
+                throw new Error(`Manga API HTTP ${r.status}${detail ? ` — ${detail}` : ''}`);
             }
+            const body = await r.text();
+            const trimmed = body.trim();
+            if (!trimmed) throw new Error('Empty response from Manga API');
+            if (trimmed.startsWith('<')) throw new Error('Manga API returned HTML instead of JSON');
+            try { return JSON.parse(trimmed); }
+            catch(_) { throw new Error('Invalid JSON from Manga API'); }
+        } finally {
+            clearTimeout(timer);
         }
-        throw new Error(`WEBTOON API unreachable: ${lastErr?.message || 'unknown'}`);
     }
 
     function fmtManga(card) {
         if (!card || !card.title_no) return null;
-        const cover = fixWebtoonUrl(card.image_proxy_url || card.image_url || '');
+        const cover = fixMangaUrl(card.image_proxy_url || card.image_url || '');
         const subtitle = card.subtitle || '';
+        const episodeCount = Number(card.episode_count || card.episodes || 0);
         return {
             id: String(card.title_no),
             title: card.title || 'Unknown',
             coverImage: cover,
             cover512: cover,
-            episodes: 0,
-            chapters: '?',
-            description: subtitle,
-            genres: subtitle ? [subtitle] : [],
+            episodes: episodeCount,
+            chapters: episodeCount ? String(episodeCount) : '?',
+            description: card.description || subtitle,
+            genres: Array.isArray(card.genres) ? card.genres : (subtitle ? [subtitle] : []),
             averageScore: null,
-            format: 'WEBTOON',
+            format: 'Manga',
             season: '',
-            status: '',
+            status: card.status || '',
             isManga: true,
             _url: card.url || '',
-            _source: 'webtoon',
+            _source: 'mangaprox',
         };
     }
+
     async function mdLatestManga() {
-        const d = await webtoonFetch('/api/home');
+        const d = await mangaFetch('/api/home');
         const featured = d.sections?.featured || [];
         const trending = d.sections?.trending || [];
         const list = featured.length ? featured : trending;
         return list.map(fmtManga).filter(Boolean);
     }
+
     async function mdPopularManga() {
-        const d = await webtoonFetch('/api/home');
+        const d = await mangaFetch('/api/home');
         return (d.sections?.trending || []).map(fmtManga).filter(Boolean);
     }
+
     async function mdTopRatedManga() {
-        const d = await webtoonFetch('/api/home');
+        const d = await mangaFetch('/api/home');
         return (d.sections?.trending || []).map(fmtManga).filter(Boolean);
     }
+
     async function mdSearchManga(query) {
-        const d = await webtoonFetch('/api/search?q=' + encodeURIComponent(query));
+        const d = await mangaFetch('/api/search?q=' + encodeURIComponent(query));
         return (d.results || []).map(fmtManga).filter(Boolean);
     }
+
     async function mdGetSeries(seriesUrl) {
-        if (!seriesUrl) throw new Error('Missing WEBTOON series URL');
-        return await webtoonFetch('/api/series?url=' + encodeURIComponent(seriesUrl));
+        if (!seriesUrl) throw new Error('Missing manga series URL');
+        return await mangaFetch('/api/series?url=' + encodeURIComponent(seriesUrl));
     }
+
     async function mdGetPages(chapterId, chapterAttrs) {
         const epUrl = chapterAttrs?._url;
-        if (!epUrl) throw new Error('Missing WEBTOON episode URL');
-        const d = await webtoonFetch('/api/episode?url=' + encodeURIComponent(epUrl));
+        if (!epUrl) throw new Error('Missing manga episode URL');
+        const d = await mangaFetch('/api/episode?url=' + encodeURIComponent(epUrl));
         const imgs = d.images || [];
         if (!imgs.length) throw new Error('No pages in this episode');
-        return imgs.map(i => fixWebtoonUrl(i.proxy_url || i.url));
+        return imgs.map(i => fixMangaUrl(i.proxy_url || i.url)).filter(Boolean);
     }
 
     // ── PROVIDERS ─────────────────────────────────────────────────────────────
@@ -1605,7 +1602,7 @@
         else loadStream(0);
     }
 
-    // ── SELECT MANGA (WEBTOON) ────────────────────────────────────────────────
+    // ── SELECT MANGA (Manga) ────────────────────────────────────────────────
     async function selectManga(mangaData, forceChapter=null) {
         if (!mangaData) return;
         const mm = state.mangaMode;
@@ -1623,20 +1620,20 @@
             document.getElementById('mangaSidebarCover').style.display = 'block';
             document.getElementById('mangaSidebarCoverPH').style.display = 'none';
         }
-        document.getElementById('mangaSidebarTags').innerHTML = `<span class="sidebar-tag">WEBTOON</span>`;
+        document.getElementById('mangaSidebarTags').innerHTML = `<span class="sidebar-tag">Manga</span>`;
         document.getElementById('mangaSidebarDesc').textContent = mangaData.description || '';
         document.getElementById('mangaSidebarGenres').innerHTML = '';
         applyReadMode(mm.readMode); applyFitMode(mm.fitMode); updateBookmarkBtn();
         showToast(mangaData.title);
         const container = document.getElementById('mangaPagesContainer');
-        container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading episodes…</p><small>Fetching from WEBTOON</small></div>`;
+        container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading episodes…</p><small>Fetching manga</small></div>`;
         try {
             const seriesUrl = mangaData._url;
-            if (!seriesUrl) throw new Error('Missing WEBTOON series URL');
+            if (!seriesUrl) throw new Error('Missing manga series URL');
             const series = await cachedFetch(`series_${mangaData.id}`, () => mdGetSeries(seriesUrl));
             const chapters = (series.episodes || []).map(ep => ({
                 id: String(ep.episode_no ?? ep.url),
-                attributes: { chapter: String(ep.episode_no ?? ''), title: ep.title || '', publishAt: ep.date || null, _url: ep.url, _thumbnail: fixWebtoonUrl(ep.thumbnail_proxy_url || ep.thumbnail_url || '') },
+                attributes: { chapter: String(ep.episode_no ?? ''), title: ep.title || '', publishAt: ep.date || null, _url: ep.url, _thumbnail: fixMangaUrl(ep.thumbnail_proxy_url || ep.thumbnail_url || '') },
             }));
             if (!chapters.length) throw new Error('No episodes found for this series');
             mm.chapters = chapters;
@@ -1648,7 +1645,7 @@
             if (series.description) document.getElementById('mangaSidebarDesc').textContent = series.description;
             const genresList = String(series.genre || '').split(',').map(s=>s.trim()).filter(Boolean);
             document.getElementById('mangaSidebarGenres').innerHTML = genresList.slice(0,8).map(g=>`<span class="sidebar-genre manga-genre">${escapeHTML(g)}</span>`).join('');
-            if (series.image_proxy_url && !mangaData.coverImage) document.getElementById('mangaSidebarCover').src = fixWebtoonUrl(series.image_proxy_url);
+            if (series.image_proxy_url && !mangaData.coverImage) document.getElementById('mangaSidebarCover').src = fixMangaUrl(series.image_proxy_url);
             renderMangaChapterList(chapters); buildChapterSelect(chapters);
             const hist = getHistoryEntry(mangaData.id);
             let chIdx = 0;
@@ -1781,7 +1778,7 @@
         const chapter = mm.chapters[chapterIndex];
         if (!chapter) { mm.isLoadingChapter=false; return; }
         const chNum = chapter.attributes?.chapter || (chapterIndex+1);
-        container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading Episode ${chNum}…</p><small>Fetching pages from WEBTOON</small></div>`;
+        container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading Episode ${chNum}…</p><small>Fetching manga pages</small></div>`;
         const prevBtns = [document.getElementById('mangaPrevChBtn'), document.getElementById('mangaPrevChBtn2')];
         const nextBtns = [document.getElementById('mangaNextChBtn'), document.getElementById('mangaNextChBtn2')];
         prevBtns.forEach(b => { if(b) b.disabled = chapterIndex <= 0; });
@@ -1813,7 +1810,7 @@
                 img.referrerPolicy = 'no-referrer';
                 img.onload  = () => img.classList.remove('loading');
                 img.onerror = function() {
-                    if (!this.dataset.retried) { this.dataset.retried = '1'; this.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; return; }
+                    if (!this.dataset.retried) { this.dataset.retried = '1'; this.src = url; return; }
                     this.classList.remove('loading'); this.style.display = 'none';
                     const fallback = document.createElement('div');
                     fallback.style.cssText = 'width:100%;min-height:200px;display:flex;align-items:center;justify-content:center;background:var(--surface3);color:var(--text3);font-family:var(--font);font-size:0.8rem;border-radius:6px;';
@@ -1874,7 +1871,7 @@
 
     window.openMangaFullscreen = async () => {
         const mm = state.mangaMode;
-        if (!mm.selectedManga || !mm.chapters.length) { showToast('Load a webtoon episode first'); return; }
+        if (!mm.selectedManga || !mm.chapters.length) { showToast('Load a manga episode first'); return; }
         fsOverlay.classList.add('active');
         document.body.style.overflow = 'hidden';
         document.getElementById('mfsTitle').textContent = mm.selectedManga.title;
@@ -1921,7 +1918,7 @@
                 img.dataset.idx = i;
                 if (_mfsSinglePage) { if (i === 0) img.classList.add('fs-current'); }
                 else img.style.display = 'block';
-                img.onerror = function() { if (!this.dataset.retried) { this.dataset.retried='1'; this.src=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; } };
+                img.onerror = function() { if (!this.dataset.retried) { this.dataset.retried='1'; this.src=url; } };
                 img.src = url;
                 fsScroll.appendChild(img);
             });
@@ -2060,7 +2057,7 @@
         const epText=isManga?(item.chapters&&item.chapters!=='?'?`${item.chapters} ep`:''):(item.episodes?`${item.episodes} eps`:'');
         const div=document.createElement('div');
         div.className='anime-card'+(isManga?' manga-card':'');
-        div.innerHTML=`<div class="anime-card-img-wrap"><img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(this.src);}else{this.style.display='none';this.parentElement.style.background='var(--surface3)';}"/><div class="anime-card-overlay"></div>${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">${rating}</span>`:''}${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}${isManga?`<span class="anime-card-badge manga-badge" style="top:auto;bottom:28px;left:6px;font-size:0.55rem;letter-spacing:0.05em;">WEBTOON</span>`:''}</div><div class="anime-card-info"><span class="anime-card-title">${escapeHTML(item.title)}</span><span class="anime-card-sub">${escapeHTML(item.format)} · ${escapeHTML((item.genres||[]).slice(0,2).join(', '))}</span></div>`;
+        div.innerHTML=`<div class="anime-card-img-wrap"><img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(this.src);}else{this.style.display='none';this.parentElement.style.background='var(--surface3)';}"/><div class="anime-card-overlay"></div>${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">${rating}</span>`:''}${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}${isManga?`<span class="anime-card-badge manga-badge" style="top:auto;bottom:28px;left:6px;font-size:0.55rem;letter-spacing:0.05em;">Manga</span>`:''}</div><div class="anime-card-info"><span class="anime-card-title">${escapeHTML(item.title)}</span><span class="anime-card-sub">${escapeHTML(item.format)} · ${escapeHTML((item.genres||[]).slice(0,2).join(', '))}</span></div>`;
         div.addEventListener('click',()=>{ if (isManga) selectManga(item); else selectAnime(item); });
         return div;
     }
@@ -2074,7 +2071,7 @@
         if (!hero) return;
         heroBg.src = isManga ? (hero.cover512||hero.coverImage) : hero.coverImage;
         heroTitle.textContent = hero.title;
-        if (isManga) heroBadges.innerHTML = `<span class="hero-badge-pill manga-type">WEBTOON</span>${hero.season?`<span class="hero-badge-pill">${escapeHTML(hero.season)}</span>`:''}`;
+        if (isManga) heroBadges.innerHTML = `<span class="hero-badge-pill manga-type">Manga</span>${hero.season?`<span class="hero-badge-pill">${escapeHTML(hero.season)}</span>`:''}`;
         else heroBadges.innerHTML=[hero.format?`<span class="hero-badge-pill type">${escapeHTML(hero.format)}</span>`:'', hero.averageScore?`<span class="hero-badge-pill">★ ${(hero.averageScore/10).toFixed(1)}</span>`:'', hero.episodes?`<span class="hero-badge-pill">⏱ ${hero.episodes} ep</span>`:''].filter(Boolean).join('');
         heroGenres.innerHTML=(hero.genres||[]).slice(0,4).map(g=>`<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('');
         heroDesc.textContent=hero.description?(hero.description.length>180?hero.description.slice(0,180)+'…':hero.description):'';
@@ -2113,10 +2110,10 @@
     }
 
     async function loadMangaHome() {
-        document.getElementById('topListHeader').textContent = 'Popular Webtoons';
+        document.getElementById('topListHeader').textContent = 'Popular Manga';
         document.getElementById('heroWatchBtn').className = 'hero-btn primary-manga';
         document.getElementById('heroWatchBtn').textContent = 'Read Now';
-        document.getElementById('browseTitle').innerHTML = 'Browse All Webtoons';
+        document.getElementById('browseTitle').innerHTML = 'Browse All Manga';
         const tabBar = document.getElementById('tabBar');
         tabBar.innerHTML=`<button class="tab-btn active" onclick="setTab('newest',this)">Latest</button><button class="tab-btn" onclick="setTab('popular',this)">Trending</button><button class="tab-btn" onclick="setTab('toprated',this)">Popular</button>`;
         ['newestGrid','popularGrid','topRatedGrid'].forEach(id=>{ const g=document.getElementById(id); if(g) g.className='manga-grid'; });
@@ -2124,8 +2121,8 @@
         try {
             const mm = state.mangaMode;
             // Fetch once and derive all three tabs from the same payload —
-            // avoids hammering ngrok's free tier with 3 parallel calls.
-            const homePayload = await cachedFetch('webtoon_home', () => webtoonFetch('/api/home'));
+            // avoids making three parallel API calls.
+            const homePayload = await cachedFetch('webtoon_home', () => mangaFetch('/api/home'));
             const featured  = (homePayload.sections?.featured  || []).map(fmtManga).filter(Boolean);
             const trending  = (homePayload.sections?.trending  || []).map(fmtManga).filter(Boolean);
             // Latest = featured if available, otherwise trending
@@ -2143,13 +2140,13 @@
             populateGrid(topRatedGrid,mm.topRatedData);
             renderTopAiring(mm.popularData, selectManga);
         } catch(e) {
-            console.error('[ThyAnime webtoon]', e);
-            heroTitle.textContent = 'Could not load WEBTOON feed';
+            console.error('[ThyAnime manga]', e);
+            heroTitle.textContent = 'Could not load manga feed';
             heroPagination.style.display='none';
             heroAiringBadge.style.display='none';
-            showToast('WEBTOON API error — check the proxy');
+            showToast('Manga API error — check the proxy');
             // Show a helpful error in the grids
-            const msg = `<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;font-family:var(--font);font-size:0.85rem;">Failed to load WEBTOON feed.<br><span style="color:var(--text3);font-size:0.72rem;">${escapeHTML(e.message||'')}</span></div>`;
+            const msg = `<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;font-family:var(--font);font-size:0.85rem;">Failed to load manga feed.<br><span style="color:var(--text3);font-size:0.72rem;">${escapeHTML(e.message||'')}</span></div>`;
             newestGrid.innerHTML = msg;
         }
         renderWatchHistory();
@@ -2282,8 +2279,8 @@
                 const fmted=raw.filter(Boolean);
                 fmted.forEach(f=>rmap[String(f.id)]=f);
                 searchDropdown.innerHTML=fmted.length
-                    ? fmted.map(f=>`<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" referrerpolicy="no-referrer" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">WEBTOON${f.genres?.[0] ? ' · ' + escapeHTML(f.genres[0]) : ''}</div></div></div>`).join('')
-                    : '<div style="padding:14px;text-align:center;color:var(--text3);">No webtoon found</div>';
+                    ? fmted.map(f=>`<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" referrerpolicy="no-referrer" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">MANGA${f.genres?.[0] ? ' · ' + escapeHTML(f.genres[0]) : ''}</div></div></div>`).join('')
+                    : '<div style="padding:14px;text-align:center;color:var(--text3);">No manga found</div>';
                 searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{ item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectManga(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}}); });
             }
         } catch(e) {
