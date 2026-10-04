@@ -12,32 +12,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --bg:#000000;
-            --surface:#0a0a0a;
-            --surface2:#111111;
-            --surface3:#161616;
-            --surface4:#1f1f1f;
-            --text:#ffffff;
-            --text2:#9a9a9a;
-            --text3:#5a5a5a;
-            --accent:#dc2626;
-            --accent2:#ef4444;
-            --accent3:#f87171;
-            --accent-dim:rgba(220,38,38,0.15);
-            --accent-glow:rgba(220,38,38,0.35);
-            --cyan:#dc2626;
-            --cyan-dim:rgba(220,38,38,0.12);
-            --pink:#ec4899;
-            --pink-dim:rgba(236,72,153,0.12);
-            --border:rgba(255,255,255,0.07);
-            --border2:rgba(255,255,255,0.12);
-            --radius:16px;
-            --radius-sm:12px;
-            --radius-xs:10px;
-            --ease:cubic-bezier(0.4,0,0.2,1);
-            --t:0.2s;
-            --font:'Outfit',system-ui,sans-serif;
-            --font-body:'DM Sans',system-ui,sans-serif;
+            --bg:#000000;--surface:#0a0a0a;--surface2:#111111;--surface3:#161616;--surface4:#1f1f1f;
+            --text:#ffffff;--text2:#9a9a9a;--text3:#5a5a5a;
+            --accent:#dc2626;--accent2:#ef4444;--accent3:#f87171;
+            --accent-dim:rgba(220,38,38,0.15);--accent-glow:rgba(220,38,38,0.35);
+            --cyan:#dc2626;--cyan-dim:rgba(220,38,38,0.12);
+            --pink:#ec4899;--pink-dim:rgba(236,72,153,0.12);
+            --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+            --radius:16px;--radius-sm:12px;--radius-xs:10px;
+            --ease:cubic-bezier(0.4,0,0.2,1);--t:0.2s;
+            --font:'Outfit',system-ui,sans-serif;--font-body:'DM Sans',system-ui,sans-serif;
         }
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
         html{scroll-behavior:smooth;}
@@ -50,13 +34,13 @@
         ::-webkit-scrollbar-track{background:transparent;}
         ::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:10px;}
 
-        #announcementBanner{display:none;align-items:center;justify-content:center;gap:12px;padding:10px 24px;background:linear-gradient(135deg,rgba(220,38,38,0.18),rgba(220,38,38,0.07));border-bottom:1px solid rgba(220,38,38,0.35);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.86rem;letter-spacing:0.01em;position:fixed;top:0;left:0;right:0;z-index:3000;backdrop-filter:blur(12px);animation:bannerIn 0.3s var(--ease);}
+        #announcementBanner{display:none;align-items:center;justify-content:center;gap:12px;padding:10px 24px;background:linear-gradient(135deg,rgba(220,38,38,0.18),rgba(220,38,38,0.07));border-bottom:1px solid rgba(220,38,38,0.35);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.86rem;position:fixed;top:0;left:0;right:0;z-index:3000;backdrop-filter:blur(12px);animation:bannerIn 0.3s var(--ease);}
         @keyframes bannerIn{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
         #announcementBanner span{flex:1;text-align:center;line-height:1.4;}
-        #bannerCloseBtn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text2);cursor:pointer;padding:4px 9px;font-size:0.82rem;font-weight:700;line-height:1;transition:all 0.15s var(--ease);flex-shrink:0;}
+        #bannerCloseBtn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text2);cursor:pointer;padding:4px 9px;font-size:0.82rem;font-weight:700;line-height:1;transition:all 0.15s var(--ease);}
         #bannerCloseBtn:hover{background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(220,38,38,0.5);}
 
-        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:9999;background:#05050f;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:24px;text-align:center;font-family:var(--font);overflow:hidden;}
+        #maintenanceOverlay{display:none;position:fixed;inset:0;z-index:9999;background:#05050f;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:var(--font);overflow:hidden;}
         #maintenanceOverlay.visible{display:flex;}
         .maint-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 20% 10%,rgba(220,38,38,0.15) 0%,transparent 55%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(6,182,212,0.08) 0%,transparent 55%);pointer-events:none;}
         .maint-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
@@ -75,7 +59,7 @@
         @keyframes badgeBlink{0%,100%{opacity:1}50%{opacity:0.2}}
         .maint-heading{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-0.04em;line-height:1.05;background:linear-gradient(135deg,#fff 25%,var(--accent3) 65%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
         .maint-divider{width:52px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.7;}
-        .maint-message{color:var(--text2);font-size:1rem;line-height:1.75;font-family:var(--font-body);max-width:380px;}
+        .maint-message{color:var(--text2);font-size:1rem;line-height:1.75;max-width:380px;}
         .maint-cards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
         .maint-card{background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:12px;padding:11px 16px;display:flex;align-items:center;gap:9px;font-size:0.78rem;color:var(--text2);font-weight:500;font-family:var(--font);}
         .maint-footer{font-size:0.72rem;color:var(--text3);letter-spacing:0.04em;margin-top:4px;}
@@ -87,27 +71,24 @@
         #dataSourcePill.src-anilist{color:var(--accent3);border-color:rgba(220,38,38,0.3);background:rgba(220,38,38,0.07);}
         #dataSourcePill.src-jikan{color:#f59e0b;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.07);}
         #dataSourcePill.src-kitsu{color:#06b6d4;border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.07);}
-        #dataSourcePill.src-error{color:#ef4444;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.07);}
         .src-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
         .src-anilist .src-dot{background:var(--accent);box-shadow:0 0 6px var(--accent);}
         .src-jikan .src-dot{background:#f59e0b;box-shadow:0 0 6px #f59e0b;}
         .src-kitsu .src-dot{background:#06b6d4;box-shadow:0 0 6px #06b6d4;}
-        .src-error .src-dot{background:#ef4444;}
 
         .nav{position:sticky;top:0;z-index:200;background:rgba(0,0,0,0.94);backdrop-filter:blur(24px) saturate(1.3);border-bottom:1px solid var(--border);}
         .nav-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:16px;height:62px;padding:0 28px;}
         .nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font);font-weight:800;font-size:1.28rem;letter-spacing:-0.02em;color:#fff;cursor:pointer;text-decoration:none;flex-shrink:0;user-select:none;}
         .nav-logo-icon{width:35px;height:35px;border-radius:11px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,0.15),0 4px 18px rgba(0,0,0,0.5);}
         .nav-logo-icon img{width:100%;height:100%;object-fit:cover;}
-        .nav-logo span{color:#fff;}
         .nav-search{position:relative;flex:1;max-width:400px;margin-left:8px;}
-        .nav-search input{width:100%;padding:9px 40px 9px 42px;border-radius:999px;border:1px solid var(--border2);background:rgba(255,255,255,0.045);color:var(--text);font-size:0.84rem;outline:none;transition:all var(--t) var(--ease);font-family:var(--font-body);}
+        .nav-search input{width:100%;padding:9px 40px 9px 42px;border-radius:999px;border:1px solid var(--border2);background:rgba(255,255,255,0.045);color:var(--text);font-size:0.84rem;outline:none;transition:all var(--t) var(--ease);}
         .nav-search input::placeholder{color:var(--text3);}
         .nav-search input:focus{border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.07);box-shadow:0 0 0 3px rgba(255,255,255,0.06);}
         .nav-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:0.82rem;color:var(--text3);pointer-events:none;}
         .nav-kbd-hint{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:26px;height:22px;border-radius:6px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);color:var(--text3);font-size:0.68rem;font-weight:700;pointer-events:none;}
         .nav-icon-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t);flex-shrink:0;}
-        .nav-icon-btn:hover{background:rgba(255,255,255,0.1);color:#fff;border-color:var(--border2);}
+        .nav-icon-btn:hover{background:rgba(255,255,255,0.1);color:#fff;}
         .nav-avatar{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-weight:800;font-size:0.85rem;cursor:pointer;flex-shrink:0;}
         .search-dropdown{position:absolute;top:calc(100% + 9px);left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);max-height:430px;overflow-y:auto;z-index:300;box-shadow:0 28px 70px rgba(0,0,0,0.8);display:none;}
         .search-dropdown.active{display:block;animation:dropIn 0.16s var(--ease);}
@@ -119,7 +100,6 @@
         .search-result-info{flex:1;min-width:0;}
         .search-result-title{font-family:var(--font);font-weight:700;font-size:0.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .search-result-meta{font-size:0.69rem;color:var(--text3);margin-top:2px;}
-        .search-result-resume{font-size:0.64rem;color:var(--cyan);margin-top:3px;display:flex;align-items:center;gap:4px;}
         .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
         .live-pill{display:flex;align-items:center;gap:7px;padding:6px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:999px;font-family:var(--font);font-size:0.71rem;font-weight:600;color:var(--text2);white-space:nowrap;}
         .live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 7px rgba(34,197,94,0.9);position:relative;}
@@ -140,7 +120,7 @@
         .genre-scroll-arrow:hover{background:rgba(255,255,255,0.12);color:#fff;}
         .genre-btn{padding:7px 16px;border-radius:10px;border:none;background:rgba(255,255,255,0.045);color:var(--text2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.75rem;white-space:nowrap;transition:all var(--t) var(--ease);}
         .genre-btn:hover{color:var(--text);background:rgba(255,255,255,0.09);}
-        .genre-btn.active{background:#fff;color:#000;box-shadow:none;}
+        .genre-btn.active{background:#fff;color:#000;}
 
         .tab-bar-row{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:20px;}
         .tab-bar{display:flex;gap:0;}
@@ -149,7 +129,7 @@
         .grid-page-arrow:hover:not(:disabled){background:rgba(255,255,255,0.12);color:#fff;}
         .grid-page-arrow:disabled{opacity:0.35;cursor:default;}
         .grid-page-label{font-family:var(--font);font-weight:700;font-size:0.76rem;color:var(--text);min-width:14px;text-align:center;}
-        .tab-btn{padding:10px 22px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:700;font-size:0.86rem;letter-spacing:0.01em;transition:all var(--t) var(--ease);border-bottom:2px solid transparent;margin-bottom:-1px;}
+        .tab-btn{padding:10px 22px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:700;font-size:0.86rem;transition:all var(--t) var(--ease);border-bottom:2px solid transparent;margin-bottom:-1px;}
         .tab-btn:hover{color:var(--text2);}
         .tab-btn.active{color:var(--accent3);border-bottom-color:var(--accent);}
 
@@ -159,7 +139,7 @@
         .main-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:0;}
         .sidebar-col{width:252px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;padding-top:22px;}
 
-        .hero-section{position:relative;overflow:hidden;aspect-ratio:21/8;min-height:270px;cursor:default;margin:0 -28px;border-bottom:1px solid var(--border);}
+        .hero-section{position:relative;overflow:hidden;aspect-ratio:21/8;min-height:270px;margin:0 -28px;border-bottom:1px solid var(--border);}
         .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.2) brightness(0.9);}
         .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.35) 45%,rgba(0,0,0,0.15) 65%,rgba(0,0,0,0.5) 100%);}
         .hero-topbar{position:absolute;top:18px;left:32px;right:32px;z-index:3;display:flex;align-items:center;justify-content:space-between;}
@@ -170,7 +150,7 @@
         .hero-page-label{padding:6px 12px;border-radius:8px;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);font-family:var(--font);font-weight:700;font-size:0.7rem;color:#fff;}
         .hero-content{position:relative;z-index:2;padding:34px 32px 78px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px;height:100%;justify-content:center;max-width:640px;margin:0 auto;}
         .hero-badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;}
-        .hero-badge-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-family:var(--font);font-weight:600;font-size:0.72rem;letter-spacing:0.01em;border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.08);backdrop-filter:blur(6px);}
+        .hero-badge-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-family:var(--font);font-weight:600;font-size:0.72rem;border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.08);backdrop-filter:blur(6px);}
         .hero-badge-pill.type{background:rgba(0,0,0,0.5);border-color:rgba(255,255,255,0.2);color:#fff;}
         .hero-badge-pill.manga-type{background:rgba(236,72,153,0.18);border-color:rgba(236,72,153,0.4);color:#f9a8d4;}
         .hero-title{font-family:var(--font);font-size:2.3rem;font-weight:800;letter-spacing:-0.03em;line-height:1.08;color:#fff;}
@@ -188,7 +168,7 @@
 
         .section-wrap{padding:22px 0;}
         .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-        .section-title{font-family:var(--font);font-size:1rem;font-weight:700;letter-spacing:-0.01em;color:var(--text);display:flex;align-items:center;gap:8px;}
+        .section-title{font-family:var(--font);font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
         .section-clear-btn{font-size:0.72rem;color:var(--text3);cursor:pointer;font-family:var(--font);font-weight:500;background:none;border:none;transition:color var(--t);padding:4px 8px;border-radius:6px;}
         .section-clear-btn:hover{color:#fff;background:rgba(255,255,255,0.08);}
 
@@ -201,7 +181,7 @@
         .history-card-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.35s var(--ease);}
         .history-card:hover .history-card-thumb img{transform:scale(1.06);}
         .history-card-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 40%,rgba(0,0,0,0.25) 100%);}
-        .history-ep-badge{position:absolute;top:7px;left:7px;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:3px 7px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:2;}
+        .history-ep-badge{position:absolute;top:7px;left:7px;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);color:#fff;font-family:var(--font);font-weight:700;font-size:0.61rem;padding:3px 7px;border-radius:6px;white-space:nowrap;z-index:2;}
         .history-ep-badge.manga{background:linear-gradient(135deg,#be185d,var(--pink));}
         .history-time-badge{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);color:rgba(255,255,255,0.85);font-family:var(--font);font-weight:600;font-size:0.6rem;padding:2px 6px;border-radius:5px;z-index:2;}
         .history-remove-btn{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:0.65rem;display:flex;align-items:center;justify-content:center;z-index:3;opacity:0;transition:opacity 0.2s,background 0.2s;}
@@ -266,7 +246,7 @@
         .watch-top-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:22px;}
         .back-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.81rem;transition:all var(--t) var(--ease);}
         .back-btn:hover{background:rgba(255,255,255,0.09);border-color:rgba(220,38,38,0.5);}
-        .watch-title-bar{font-family:var(--font);font-weight:700;font-size:1rem;letter-spacing:-0.02em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 200px);}
+        .watch-title-bar{font-family:var(--font);font-weight:700;font-size:1rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 200px);}
         .watch-layout{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start;}
         @media(max-width:960px){.watch-layout{grid-template-columns:1fr;}}
 
@@ -307,14 +287,12 @@
         .lw-dismiss{flex-shrink:0;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text2);cursor:pointer;padding:4px 9px;font-size:0.78rem;font-weight:700;transition:all 0.15s;font-family:var(--font);}
         .lw-dismiss:hover{background:rgba(220,38,38,0.18);border-color:rgba(220,38,38,0.5);color:#fff;}
 
-        #resumeModal{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);animation:fadeIn 0.2s var(--ease);}
+        #resumeModal{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);}
         #resumeModal.hidden{display:none;}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        .resume-card{background:var(--surface2);border:1px solid rgba(220,38,38,0.3);border-radius:var(--radius);padding:30px 34px;display:flex;flex-direction:column;gap:16px;max-width:440px;width:90%;box-shadow:0 36px 90px rgba(0,0,0,0.85),0 0 48px rgba(220,38,38,0.14);animation:slideUp 0.22s var(--ease);}
-        @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+        .resume-card{background:var(--surface2);border:1px solid rgba(220,38,38,0.3);border-radius:var(--radius);padding:30px 34px;display:flex;flex-direction:column;gap:16px;max-width:440px;width:90%;box-shadow:0 36px 90px rgba(0,0,0,0.85),0 0 48px rgba(220,38,38,0.14);}
         .resume-icon{font-size:2rem;line-height:1;}
         .resume-card h3{font-family:var(--font);font-weight:800;font-size:1.12rem;letter-spacing:-0.03em;}
-        .resume-card p{font-size:0.84rem;color:var(--text2);line-height:1.6;font-family:var(--font-body);}
+        .resume-card p{font-size:0.84rem;color:var(--text2);line-height:1.6;}
         .resume-card p strong{color:var(--accent3);font-weight:700;}
         .resume-support-note{font-size:0.71rem;color:var(--text3);font-family:var(--font);padding:8px 11px;background:rgba(255,255,255,0.04);border-radius:7px;border-left:2px solid var(--accent);line-height:1.5;}
         .resume-support-note.good{border-left-color:#22c55e;color:#86efac;}
@@ -370,7 +348,6 @@
         .s5-ep-card{background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all var(--t) var(--ease);}
         .s5-ep-card:hover{border-color:rgba(220,38,38,0.6);transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,0.45);}
         .s5-ep-card.active{border-color:var(--accent);box-shadow:0 0 18px var(--accent-glow);}
-        .s5-ep-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--surface3);}
         .s5-ep-thumb-placeholder{width:100%;aspect-ratio:16/9;background:var(--surface3);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:1.2rem;}
         .s5-ep-label{padding:5px 7px;font-family:var(--font);font-size:0.68rem;font-weight:600;color:var(--text);}
         .s5-ep-label small{display:block;color:var(--text3);font-weight:400;font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
@@ -407,7 +384,7 @@
         .footer{text-align:center;padding:24px;color:var(--text3);font-size:0.71rem;border-top:1px solid var(--border);margin-top:40px;font-family:var(--font);}
 
         .manga-top-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0 10px;border-bottom:1px solid var(--border);}
-        .manga-chapter-select{padding:8px 12px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,0.05);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.79rem;outline:none;cursor:pointer;transition:border-color var(--t);max-width:220px;}
+        .manga-chapter-select{padding:8px 12px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,0.05);color:var(--text);font-family:var(--font);font-weight:600;font-size:0.79rem;outline:none;cursor:pointer;max-width:220px;}
         .manga-chapter-select:focus{border-color:rgba(236,72,153,0.5);}
         .manga-chapter-select option{background:var(--surface2);}
         .manga-nav-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.79rem;transition:all var(--t) var(--ease);}
@@ -829,12 +806,11 @@
 <script>
 (async function () {
 
-    // ── FIREBASE ──────────────────────────────────────────────────────────────
     const firebaseConfig = { databaseURL: "https://thyanime-88d67-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ── ANNOUNCEMENT BANNER ───────────────────────────────────────────────────
+    // ── BANNER ────────────────────────────────────────────────────────────────
     const bannerEl    = document.getElementById('announcementBanner');
     const bannerMsgEl = document.getElementById('bannerMessage');
     const mainNav     = document.getElementById('mainNav');
@@ -864,7 +840,6 @@
     try { db.ref('banner').on('value', s => updateBanner(s.val())); } catch(e){}
     window.dismissBanner = () => { bannerEl.style.display = 'none'; adjustLayoutForBanner(false); };
 
-    // ── MAINTENANCE ───────────────────────────────────────────────────────────
     const maintOverlay = document.getElementById('maintenanceOverlay');
     const maintMsgEl   = document.getElementById('maintMessage');
     function applyMaintenance(data) {
@@ -877,32 +852,21 @@
     }
     try { db.ref('maintenance').on('value', s => applyMaintenance(s.val())); } catch(e){}
 
-    // ── MANGA VISIBILITY ──────────────────────────────────────────────────────
-    // Manga tab is ON by default. Firebase can still explicitly disable it
-    // by writing mangavisible:false, and can re-enable with mangavisible:true.
     let _mangaVisible = true;
     function applyMangaVisibility(visible) {
         _mangaVisible = visible === true;
         const mangaBtn = document.getElementById('modeBtnManga');
         if (!mangaBtn) return;
-        if (_mangaVisible) {
-            mangaBtn.style.setProperty('display', 'flex', 'important');
-        } else {
+        if (_mangaVisible) mangaBtn.style.setProperty('display', 'flex', 'important');
+        else {
             mangaBtn.style.removeProperty('display');
             mangaBtn.style.display = 'none';
-            setTimeout(() => {
-                if (typeof appMode !== 'undefined' && appMode === 'manga') {
-                    if (typeof setMode === 'function') setMode('anime');
-                }
-            }, 0);
+            setTimeout(() => { if (typeof appMode !== 'undefined' && appMode === 'manga') setMode('anime'); }, 0);
         }
     }
     applyMangaVisibility(true);
-    try { db.ref('mangavisible').on('value', s => {
-        if (s.exists()) applyMangaVisibility(s.val() === true);
-    }); } catch(e){}
+    try { db.ref('mangavisible').on('value', s => { if (s.exists()) applyMangaVisibility(s.val() === true); }); } catch(e){}
 
-    // ── LIVE COUNTER ──────────────────────────────────────────────────────────
     try {
         const sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
         const pref = db.ref('presence/' + sid);
@@ -916,48 +880,24 @@
         window.addEventListener('beforeunload', () => pref.remove());
     } catch(e){}
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ── IN-MEMORY CACHE — 1 hour TTL ─────────────────────────────────────────
-    // ══════════════════════════════════════════════════════════════════════════
+    // ── CACHE ─────────────────────────────────────────────────────────────────
     const CACHE_TTL = 60 * 60 * 1000;
     const _cache = {};
+    function cacheGet(k){const e=_cache[k];if(!e)return null;if(Date.now()-e.ts>CACHE_TTL){delete _cache[k];return null;}return e.data;}
+    function cacheSet(k,d){_cache[k]={data:d,ts:Date.now()};return d;}
+    function cacheClear(p){Object.keys(_cache).forEach(k=>{if(!p||k.startsWith(p))delete _cache[k];});}
+    async function cachedFetch(key, fn) { const c = cacheGet(key); if (c) return c; const r = await fn(); return cacheSet(key, r); }
 
-    function cacheGet(key) {
-        const entry = _cache[key];
-        if (!entry) return null;
-        if (Date.now() - entry.ts > CACHE_TTL) { delete _cache[key]; return null; }
-        return entry.data;
-    }
-    function cacheSet(key, data) {
-        _cache[key] = { data, ts: Date.now() };
-        return data;
-    }
-    function cacheClear(keyPrefix) {
-        Object.keys(_cache).forEach(k => { if (!keyPrefix || k.startsWith(keyPrefix)) delete _cache[k]; });
-    }
-    async function cachedFetch(key, fetchFn) {
-        const cached = cacheGet(key);
-        if (cached) return cached;
-        const result = await fetchFn();
-        return cacheSet(key, result);
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // ── DATA SOURCE MANAGER — AniList → Jikan (MAL) → Kitsu fallback ─────────
-    // ══════════════════════════════════════════════════════════════════════════
-    const DataSource = { ANILIST: 'anilist', JIKAN: 'jikan', KITSU: 'kitsu' };
-    let _activeSource   = DataSource.ANILIST;
-    let _alFailCount    = 0;
+    // ── DATA SOURCE ───────────────────────────────────────────────────────────
+    const DataSource = { ANILIST:'anilist', JIKAN:'jikan', KITSU:'kitsu' };
+    let _activeSource = DataSource.ANILIST;
+    let _alFailCount = 0;
     const AL_FAIL_THRESHOLD = 2;
-    let _alRetryTimer   = null;
+    let _alRetryTimer = null;
 
     const dataSourcePill  = document.getElementById('dataSourcePill');
     const dataSourceLabel = document.getElementById('dataSourceLabel');
-    const SRC_CONFIG = {
-        anilist: { label: 'AniList',    cls: 'src-anilist' },
-        jikan:   { label: 'Jikan/MAL',  cls: 'src-jikan'   },
-        kitsu:   { label: 'Kitsu',      cls: 'src-kitsu'    },
-    };
+    const SRC_CONFIG = { anilist:{label:'AniList',cls:'src-anilist'}, jikan:{label:'Jikan/MAL',cls:'src-jikan'}, kitsu:{label:'Kitsu',cls:'src-kitsu'} };
 
     function setDataSource(src) {
         if (src !== _activeSource) cacheClear('trending_');
@@ -965,63 +905,35 @@
         const cfg = SRC_CONFIG[src] || SRC_CONFIG.anilist;
         dataSourcePill.className = `active ${cfg.cls}`;
         dataSourceLabel.textContent = cfg.label;
-        if (src === DataSource.ANILIST) {
-            dataSourcePill.title = 'Data: AniList (primary)';
-        } else {
-            dataSourcePill.title = `AniList is down — using ${cfg.label}. Click to retry AniList.`;
-            showToast(`AniList unavailable — switched to ${cfg.label}`);
-        }
+        dataSourcePill.title = src === DataSource.ANILIST ? 'Data: AniList (primary)' : `AniList is down — using ${cfg.label}. Click to retry.`;
     }
     function scheduleAnilistRetry() {
         if (_alRetryTimer) return;
         _alRetryTimer = setInterval(async () => {
             if (_activeSource === DataSource.ANILIST) { clearInterval(_alRetryTimer); _alRetryTimer=null; return; }
             const ok = await testAnilist();
-            if (ok) {
-                _alFailCount = 0; setDataSource(DataSource.ANILIST);
-                clearInterval(_alRetryTimer); _alRetryTimer=null;
-                showToast('AniList is back online!');
-                if (appMode==='anime') loadHomePage();
-            }
-        }, 3 * 60 * 1000);
+            if (ok) { _alFailCount=0; setDataSource(DataSource.ANILIST); clearInterval(_alRetryTimer); _alRetryTimer=null; showToast('AniList is back online!'); if (appMode==='anime') loadHomePage(); }
+        }, 3*60*1000);
     }
     window.retryAnilist = async () => {
         if (_activeSource === DataSource.ANILIST) { showToast('AniList is the active source'); return; }
         showToast('Testing AniList connection...');
         const ok = await testAnilist();
-        if (ok) {
-            _alFailCount = 0; setDataSource(DataSource.ANILIST);
-            if (_alRetryTimer){clearInterval(_alRetryTimer);_alRetryTimer=null;}
-            showToast('AniList is back! Reloading...');
-            if (appMode==='anime') await loadHomePage();
-        } else { showToast('AniList still down — staying on ' + SRC_CONFIG[_activeSource].label); }
+        if (ok) { _alFailCount=0; setDataSource(DataSource.ANILIST); if (_alRetryTimer){clearInterval(_alRetryTimer);_alRetryTimer=null;} showToast('AniList is back!'); if (appMode==='anime') await loadHomePage(); }
+        else showToast('AniList still down — staying on ' + SRC_CONFIG[_activeSource].label);
     };
-    async function testAnilist() {
-        try { const d = await alQueryRaw(`query{Page(perPage:1){media(type:ANIME){id}}}`, {}, 6000); return !!(d?.Page?.media?.length); }
-        catch(_){ return false; }
-    }
+    async function testAnilist() { try { const d = await alQueryRaw(`query{Page(perPage:1){media(type:ANIME){id}}}`, {}, 6000); return !!(d?.Page?.media?.length); } catch(_){ return false; } }
 
-    // ── ANILIST ───────────────────────────────────────────────────────────────
     const AL_URL = 'https://graphql.anilist.co';
-    const PROXIES = [
-        u => u,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-        u => `https://thingproxy.freeboard.io/fetch/${u}`,
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-        u => `https://cors-anywhere.herokuapp.com/${u}`,
-    ];
+    const PROXIES = [u=>u, u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, u=>`https://thingproxy.freeboard.io/fetch/${u}`, u=>`https://corsproxy.io/?${encodeURIComponent(u)}`, u=>`https://cors-anywhere.herokuapp.com/${u}`];
     let _pi = 0;
-
-    async function alQueryRaw(query, variables = {}, timeoutMs = 10000) {
+    async function alQueryRaw(query, variables={}, timeoutMs=10000) {
         const body = JSON.stringify({query, variables});
         const hdrs = {'Content-Type':'application/json','Accept':'application/json'};
-        const order = [_pi, ...[...PROXIES.keys()].filter(i => i !== _pi)];
+        const order = [_pi, ...[...PROXIES.keys()].filter(i=>i!==_pi)];
         for (const idx of order) {
             try {
-                const r = await fetch(PROXIES[idx](AL_URL), {
-                    method:'POST', headers:hdrs, body,
-                    signal: AbortSignal.timeout(timeoutMs)
-                });
+                const r = await fetch(PROXIES[idx](AL_URL), { method:'POST', headers:hdrs, body, signal: AbortSignal.timeout(timeoutMs) });
                 if (!r.ok) throw 0;
                 const j = await r.json();
                 if (j.errors) throw 0;
@@ -1031,15 +943,11 @@
         }
         throw new Error('AniList unreachable');
     }
-
-    async function alQuery(query, variables = {}) {
+    async function alQuery(query, variables={}) {
         try {
             const data = await alQueryRaw(query, variables);
             _alFailCount = 0;
-            if (_activeSource !== DataSource.ANILIST) {
-                setDataSource(DataSource.ANILIST);
-                if (_alRetryTimer){ clearInterval(_alRetryTimer); _alRetryTimer=null; }
-            }
+            if (_activeSource !== DataSource.ANILIST) { setDataSource(DataSource.ANILIST); if (_alRetryTimer){clearInterval(_alRetryTimer);_alRetryTimer=null;} }
             return data;
         } catch(err) {
             _alFailCount++;
@@ -1052,30 +960,18 @@
         }
     }
 
-    // ── JIKAN ─────────────────────────────────────────────────────────────────
     const JIKAN_BASE = 'https://api.jikan.moe/v4';
-    const JIKAN_PROXIES = [
-        u => u,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    ];
-    async function jikanFetch(path, params = {}) {
+    const JIKAN_PROXIES = [u=>u, u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, u=>`https://corsproxy.io/?${encodeURIComponent(u)}`];
+    async function jikanFetch(path, params={}) {
         const url = new URL(JIKAN_BASE + path);
-        Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+        Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
         const raw = url.toString();
         for (const proxy of JIKAN_PROXIES) {
-            try {
-                const r = await fetch(proxy(raw), { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(12000) });
-                if (!r.ok) throw 0;
-                return await r.json();
-            } catch(_) {}
+            try { const r = await fetch(proxy(raw), { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(12000) }); if (!r.ok) throw 0; return await r.json(); } catch(_) {}
         }
         throw new Error('Jikan API unreachable');
     }
-    async function testJikan() {
-        try { const d = await jikanFetch('/top/anime', { limit: 1 }); return !!(d?.data?.length); }
-        catch(_){ return false; }
-    }
+    async function testJikan() { try { const d = await jikanFetch('/top/anime',{limit:1}); return !!(d?.data?.length); } catch(_){ return false; } }
     function fmtJikan(item) {
         if (!item) return null;
         const img = item.images?.webp?.large_image_url || item.images?.jpg?.large_image_url || '';
@@ -1086,33 +982,21 @@
         const season = item.season && item.year ? `${item.season.toUpperCase()} ${item.year}` : (item.year||'');
         return { id:item.mal_id, title:item.title_english||item.title||'Unknown', coverImage:img, episodes:item.episodes||0, description:(item.synopsis||'').replace(/<[^>]*>/g,''), genres, averageScore:score, format, season:String(season), status:item.status||null, isManga:false, _source:'jikan', _malId:item.mal_id };
     }
-    async function jikanTrending() { const d = await jikanFetch('/top/anime', { filter:'airing', limit:20 }); return (d.data||[]).map(fmtJikan).filter(Boolean); }
-    async function jikanPopular()  { const d = await jikanFetch('/top/anime', { filter:'bypopularity', limit:20 }); return (d.data||[]).map(fmtJikan).filter(Boolean); }
-    async function jikanTopRated() { const d = await jikanFetch('/top/anime', { limit:20 }); return (d.data||[]).map(fmtJikan).filter(Boolean); }
-    async function jikanSearch(q)  { const d = await jikanFetch('/anime', { q, limit:10, order_by:'popularity', sort:'asc' }); return (d.data||[]).map(fmtJikan).filter(Boolean); }
+    async function jikanTrending() { const d = await jikanFetch('/top/anime',{filter:'airing',limit:20}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
+    async function jikanPopular()  { const d = await jikanFetch('/top/anime',{filter:'bypopularity',limit:20}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
+    async function jikanTopRated() { const d = await jikanFetch('/top/anime',{limit:20}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
+    async function jikanSearch(q)  { const d = await jikanFetch('/anime',{q,limit:10,order_by:'popularity',sort:'asc'}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
     async function jikanById(id)   { const d = await jikanFetch(`/anime/${id}`); return d.data ? fmtJikan(d.data) : null; }
-    async function jikanBrowse(page=1) {
-        const d = await jikanFetch('/top/anime', { filter:'bypopularity', limit:20, page });
-        return { media:(d.data||[]).map(fmtJikan).filter(Boolean), pageInfo:{ hasNextPage:d.pagination?.has_next_page??false, total:d.pagination?.items?.total||0 } };
-    }
+    async function jikanBrowse(page=1) { const d = await jikanFetch('/top/anime',{filter:'bypopularity',limit:20,page}); return {media:(d.data||[]).map(fmtJikan).filter(Boolean),pageInfo:{hasNextPage:d.pagination?.has_next_page??false,total:d.pagination?.items?.total||0}}; }
 
-    // ── KITSU ─────────────────────────────────────────────────────────────────
     const KITSU_BASE = 'https://kitsu.io/api/edge';
-    const KITSU_PROXIES = [
-        u => u,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    ];
-    async function kitsuFetch(path, params = {}) {
+    const KITSU_PROXIES = [u=>u, u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, u=>`https://corsproxy.io/?${encodeURIComponent(u)}`];
+    async function kitsuFetch(path, params={}) {
         const url = new URL(KITSU_BASE + path);
-        Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+        Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
         const raw = url.toString();
         for (const proxy of KITSU_PROXIES) {
-            try {
-                const r = await fetch(proxy(raw), { headers:{'Accept':'application/vnd.api+json','Content-Type':'application/vnd.api+json'}, signal:AbortSignal.timeout(12000) });
-                if (!r.ok) throw 0;
-                return await r.json();
-            } catch(_) {}
+            try { const r = await fetch(proxy(raw), { headers:{'Accept':'application/vnd.api+json','Content-Type':'application/vnd.api+json'}, signal:AbortSignal.timeout(12000) }); if (!r.ok) throw 0; return await r.json(); } catch(_) {}
         }
         throw new Error('Kitsu API unreachable');
     }
@@ -1128,40 +1012,35 @@
         const seasonYear = a.startDate ? a.startDate.slice(0,4) : '';
         return { id:item.id, title, coverImage:img, episodes:a.episodeCount||0, description:(a.synopsis||'').replace(/<[^>]*>/g,''), genres:[], averageScore:score, format, season:seasonYear, status:a.status||null, isManga:false, _source:'kitsu' };
     }
-    async function kitsuTrending() { const d = await kitsuFetch('/trending/anime', {'page[limit]':20}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
-    async function kitsuPopular()  { const d = await kitsuFetch('/anime', {sort:'-userCount','page[limit]':20}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
-    async function kitsuTopRated() { const d = await kitsuFetch('/anime', {sort:'-averageRating','page[limit]':20}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
-    async function kitsuSearch(q)  { const d = await kitsuFetch('/anime', {'filter[text]':q,'page[limit]':10}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
+    async function kitsuTrending() { const d = await kitsuFetch('/trending/anime',{'page[limit]':20}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
+    async function kitsuPopular()  { const d = await kitsuFetch('/anime',{sort:'-userCount','page[limit]':20}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
+    async function kitsuTopRated() { const d = await kitsuFetch('/anime',{sort:'-averageRating','page[limit]':20}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
+    async function kitsuSearch(q)  { const d = await kitsuFetch('/anime',{'filter[text]':q,'page[limit]':10}); return (d.data||[]).map(fmtKitsu).filter(Boolean); }
     async function kitsuById(id)   { const d = await kitsuFetch(`/anime/${id}`); return d.data ? fmtKitsu(d.data) : null; }
     async function kitsuBrowse(page=1) {
         const offset = (page-1)*20;
-        const d = await kitsuFetch('/anime', {sort:'-userCount','page[limit]':20,'page[offset]':offset});
+        const d = await kitsuFetch('/anime',{sort:'-userCount','page[limit]':20,'page[offset]':offset});
         const items = (d.data||[]).map(fmtKitsu).filter(Boolean);
         const total = d.meta?.count || items.length;
         return { media:items, pageInfo:{ hasNextPage:offset+20<total, total } };
     }
 
-    // ── UNIFIED FETCH FUNCTIONS ───────────────────────────────────────────────
-    const MF=`id title{romaji english native}coverImage{large extraLarge}episodes description genres averageScore format season seasonYear status`;
+    const MF = `id title{romaji english native}coverImage{large extraLarge}episodes description genres averageScore format season seasonYear status`;
     function fmtAnime(m) {
         if (!m) return null;
         return { id:m.id, title:String(m.title?.english||m.title?.romaji||m.title?.native||'Unknown'), coverImage:String(m.coverImage?.extraLarge||m.coverImage?.large||''), episodes:m.episodes||0, description:m.description?String(m.description).replace(/<[^>]*>/g,''):'', genres:m.genres||[], averageScore:m.averageScore||null, format:String(m.format||''), season:m.season&&m.seasonYear?`${m.season} ${m.seasonYear}`:String(m.season||''), status:m.status||null, isManga:false };
     }
     async function fetchTrending() {
-        const cKey = `trending_${_activeSource}`;
-        return cachedFetch(cKey, async () => {
+        return cachedFetch(`trending_${_activeSource}`, async () => {
             if (_activeSource === DataSource.JIKAN) return jikanTrending();
             if (_activeSource === DataSource.KITSU) return kitsuTrending();
             const d = await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);
-            if (!d?.Page?.media?.length && _alFailCount >= AL_FAIL_THRESHOLD) {
-                const ok = await testJikan(); setDataSource(ok ? DataSource.JIKAN : DataSource.KITSU); scheduleAnilistRetry(); return fetchTrending();
-            }
+            if (!d?.Page?.media?.length && _alFailCount >= AL_FAIL_THRESHOLD) { const ok = await testJikan(); setDataSource(ok?DataSource.JIKAN:DataSource.KITSU); scheduleAnilistRetry(); return fetchTrending(); }
             return (d.Page?.media||[]).filter(Boolean);
         });
     }
     async function fetchPopular() {
-        const cKey = `popular_${_activeSource}`;
-        return cachedFetch(cKey, async () => {
+        return cachedFetch(`popular_${_activeSource}`, async () => {
             if (_activeSource === DataSource.JIKAN) return jikanPopular();
             if (_activeSource === DataSource.KITSU) return kitsuPopular();
             const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}}}`);
@@ -1169,8 +1048,7 @@
         });
     }
     async function fetchTopRated() {
-        const cKey = `toprated_${_activeSource}`;
-        return cachedFetch(cKey, async () => {
+        return cachedFetch(`toprated_${_activeSource}`, async () => {
             if (_activeSource === DataSource.JIKAN) return jikanTopRated();
             if (_activeSource === DataSource.KITSU) return kitsuTopRated();
             const d = await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`);
@@ -1186,8 +1064,7 @@
         return jikanSearch(q).catch(()=>[]);
     }
     async function fetchBrowsePage(page=1) {
-        const cKey = `browse_${_activeSource}_p${page}`;
-        return cachedFetch(cKey, async () => {
+        return cachedFetch(`browse_${_activeSource}_p${page}`, async () => {
             if (_activeSource === DataSource.JIKAN) return jikanBrowse(page);
             if (_activeSource === DataSource.KITSU) return kitsuBrowse(page);
             const d = await alQuery(`query($p:Int){Page(page:$p,perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}pageInfo{hasNextPage total}}}`,{p:page});
@@ -1203,45 +1080,75 @@
     }
     async function fetchRelations(id) {
         if (_activeSource !== DataSource.ANILIST) return [];
-        const RF=`relations{edges{node{id title{romaji english}format season seasonYear}relationType}}`;
-        const d=await alQuery(`query($id:Int){Media(id:$id){${RF}}}`,{id});
+        const RF = `relations{edges{node{id title{romaji english}format season seasonYear}relationType}}`;
+        const d = await alQuery(`query($id:Int){Media(id:$id){${RF}}}`,{id});
         if (!d.Media) return [];
         return (d.Media.relations?.edges||[]).filter(e=>e.relationType==='SEQUEL'||e.relationType==='PREQUEL').map(e=>({id:e.node.id,title:e.node.title?.english||e.node.title?.romaji||'Unknown',format:e.node.format||'',season:e.node.season&&e.node.seasonYear?`${e.node.season} ${e.node.seasonYear}`:'',relationType:e.relationType}));
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // ── WEBTOON API — ToonShelf proxy @ public-reach-trend.ngrok-free.dev ───
+    // ── WEBTOON API (proxy: public-reach-trend.ngrok-free.dev) ─────────────
     // ══════════════════════════════════════════════════════════════════════════
     const WEBTOON_API = 'https://public-reach-trend.ngrok-free.dev';
 
-    // IMPORTANT: Do NOT send any custom headers on this fetch.
-    // The proxy's CORS policy only allows `Content-Type` in
-    // Access-Control-Allow-Headers. Sending `ngrok-skip-browser-warning` forces
-    // an OPTIONS preflight, and the browser then rejects the real GET because
-    // that header isn't whitelisted → "TypeError: Failed to fetch".
-    //
-    // `Accept: application/json` is a CORS-simple header (no preflight) AND
-    // it keeps ngrok's free-tier HTML interstitial out of the way, since that
-    // gate only fires on requests that accept text/html (or have no Accept).
-    async function webtoonFetch(path) {
-        const r = await fetch(WEBTOON_API + path, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(25000),
-        });
-        if (!r.ok) throw new Error(`WEBTOON API HTTP ${r.status}`);
-        const text = await r.text();
-        if (text.trim().startsWith('<')) {
-            throw new Error('WEBTOON API returned an HTML interstitial (ngrok warning)');
+    // Rewrite image URLs that point at the proxy's own localhost to go
+    // through the public ngrok URL instead. The Flask proxy generates URLs
+    // via `request.host_url`, which behind ngrok's forwarding can end up
+    // as `http://127.0.0.1:8765/...` — those only resolve on the server.
+    function fixWebtoonUrl(url) {
+        if (!url || typeof url !== 'string') return url || '';
+        if (url.includes('127.0.0.1:8765') || url.includes('localhost:8765')) {
+            try {
+                const u = new URL(url);
+                return WEBTOON_API + u.pathname + u.search;
+            } catch(_) { return url; }
         }
-        try { return JSON.parse(text); }
-        catch(_) { throw new Error('WEBTOON API returned invalid JSON'); }
+        return url;
     }
 
-    // Convert a WEBTOON proxy card into the site's internal manga shape.
+    // Robust fetch: direct first, then fall through public CORS proxies.
+    // Sends no custom headers (so no preflight); falls back gracefully when
+    // the ngrok CORS layer blocks the direct call.
+    async function webtoonFetch(path) {
+        const rawUrl = WEBTOON_API + path;
+        const attempts = [
+            // Direct — no custom headers means no CORS preflight
+            { url: rawUrl, headers: { 'Accept': 'application/json' } },
+            // Public CORS mirrors as backup
+            { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`, headers: { 'Accept': 'application/json' } },
+            { url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rawUrl)}`, headers: { 'Accept': 'application/json' } },
+            { url: `https://corsproxy.io/?url=${encodeURIComponent(rawUrl)}`, headers: { 'Accept': 'application/json' } },
+        ];
+        let lastErr = null;
+        for (const a of attempts) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 25000);
+            try {
+                const r = await fetch(a.url, {
+                    method: 'GET',
+                    headers: a.headers,
+                    signal: controller.signal,
+                    cache: 'no-store',
+                    mode: 'cors',
+                });
+                clearTimeout(timer);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const text = await r.text();
+                const trimmed = text.trim();
+                if (trimmed.startsWith('<')) throw new Error('HTML interstitial / ngrok warning');
+                try { return JSON.parse(trimmed); }
+                catch(_) { throw new Error('Invalid JSON from proxy'); }
+            } catch(e) {
+                clearTimeout(timer);
+                lastErr = e;
+            }
+        }
+        throw new Error(`WEBTOON API unreachable: ${lastErr?.message || 'unknown'}`);
+    }
+
     function fmtManga(card) {
         if (!card || !card.title_no) return null;
-        const cover = card.image_proxy_url || card.image_url || '';
+        const cover = fixWebtoonUrl(card.image_proxy_url || card.image_url || '');
         const subtitle = card.subtitle || '';
         return {
             id: String(card.title_no),
@@ -1261,7 +1168,6 @@
             _source: 'webtoon',
         };
     }
-
     async function mdLatestManga() {
         const d = await webtoonFetch('/api/home');
         const featured = d.sections?.featured || [];
@@ -1281,50 +1187,35 @@
         const d = await webtoonFetch('/api/search?q=' + encodeURIComponent(query));
         return (d.results || []).map(fmtManga).filter(Boolean);
     }
-
-    // Series lookup — returns the raw WEBTOON payload so selectManga can
-    // extract title, author, genre, description, cover and episode list.
     async function mdGetSeries(seriesUrl) {
         if (!seriesUrl) throw new Error('Missing WEBTOON series URL');
         return await webtoonFetch('/api/series?url=' + encodeURIComponent(seriesUrl));
     }
-
-    // Pages for a chapter. chapterAttrs MUST contain `_url` (the WEBTOON
-    // episode URL). The proxy response is { images: [{ url, proxy_url, ... }] }.
     async function mdGetPages(chapterId, chapterAttrs) {
         const epUrl = chapterAttrs?._url;
         if (!epUrl) throw new Error('Missing WEBTOON episode URL');
         const d = await webtoonFetch('/api/episode?url=' + encodeURIComponent(epUrl));
         const imgs = d.images || [];
         if (!imgs.length) throw new Error('No pages in this episode');
-        // Prefer the proxy URL (bypasses WEBTOON hotlink protection)
-        return imgs.map(i => i.proxy_url || i.url);
+        return imgs.map(i => fixWebtoonUrl(i.proxy_url || i.url));
     }
 
-    // ── PROVIDERS ──────────────────────────────────────────────────────────────
+    // ── PROVIDERS ─────────────────────────────────────────────────────────────
     const PROVIDERS = [
-        { id:'animeplay', name:'Server 1', icon:'S1', color:'#dc2626', description:'Fast & reliable',
-          getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`,
-          supportsAudio:true, external:false, resumeSupport:'url-t' },
-        { id:'megaplay',  name:'Server 2', icon:'S2', color:'#0ea5e9', description:'Full HiAnime library',
-          getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`,
-          supportsAudio:true, external:false, resumeSupport:'url-t' },
-        { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS',
-          getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`,
-          supportsAudio:false, external:false, resumeSupport:'url-start' },
-        { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)',
-          supportsAudio:false, external:false, resumeSupport:'none' },
+        { id:'animeplay', name:'Server 1', icon:'S1', color:'#dc2626', description:'Fast & reliable', getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
+        { id:'megaplay',  name:'Server 2', icon:'S2', color:'#0ea5e9', description:'Full HiAnime library', getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
+        { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'url-start' },
+        { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)', supportsAudio:false, external:false, resumeSupport:'none' },
     ];
 
-    // ── HELPERS ───────────────────────────────────────────────────────────────
-    function escapeHTML(s) { const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML; }
-    function fmtTime(s) { if(!s||isNaN(s)||s<0) return '0:00'; s=Math.floor(s); const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; return `${m}:${String(sec).padStart(2,'0')}`; }
+    function escapeHTML(s){const d=document.createElement('div');d.textContent=String(s??'');return d.innerHTML;}
+    function fmtTime(s){if(!s||isNaN(s)||s<0)return '0:00';s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;if(h>0)return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;return `${m}:${String(sec).padStart(2,'0')}`;}
     function buildStreamUrl(prov, anime, ep, audio, resumeAtSec) {
         let url = prov.getUrl(anime.id, anime.season, ep, audio);
         const t = Math.floor(resumeAtSec || 0);
         if (t >= 3) {
-            if (prov.resumeSupport === 'url-t') url += (url.includes('?') ? '&' : '?') + `t=${t}`;
-            else if (prov.resumeSupport === 'url-start') url += (url.includes('?') ? '&' : '?') + `start=${t}`;
+            if (prov.resumeSupport === 'url-t') url += (url.includes('?')?'&':'?') + `t=${t}`;
+            else if (prov.resumeSupport === 'url-start') url += (url.includes('?')?'&':'?') + `start=${t}`;
         }
         return url;
     }
@@ -1340,7 +1231,6 @@
         else (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
     };
 
-    // ── LAST WATCHED BANNER ───────────────────────────────────────────────────
     const lwBanner  = document.getElementById('lastWatchedBanner');
     const lwTitle   = document.getElementById('lwTitle');
     const lwSub     = document.getElementById('lwSub');
@@ -1349,11 +1239,11 @@
     const lwBarFill = document.getElementById('lwBarFill');
     let _lwTimer    = null;
     window.hideLWBanner = () => { lwBanner.classList.remove('visible'); if (_lwTimer) { clearTimeout(_lwTimer); _lwTimer = null; } };
-    function showLastWatchedBanner(animeTitle, epNum, timeSec, durationSec) {
+    function showLastWatchedBanner(t, epNum, timeSec, durationSec) {
         if (!timeSec || timeSec < 5) return;
-        const pct = durationSec > 0 ? Math.min(Math.round((timeSec / durationSec) * 100), 100) : null;
-        lwTitle.textContent = `${animeTitle} — Episode ${epNum}`;
-        lwTime.textContent  = fmtTime(timeSec);
+        const pct = durationSec > 0 ? Math.min(Math.round((timeSec/durationSec)*100), 100) : null;
+        lwTitle.textContent = `${t} — Episode ${epNum}`;
+        lwTime.textContent = fmtTime(timeSec);
         if (pct !== null) { lwPct.textContent = pct+'%'; lwBarFill.style.width = pct+'%'; lwSub.innerHTML = `Last watched at <strong>${fmtTime(timeSec)}</strong>`; }
         else { lwPct.textContent=''; lwBarFill.style.width='0%'; }
         lwBanner.classList.add('visible');
@@ -1361,7 +1251,6 @@
         _lwTimer = setTimeout(() => { lwBanner.classList.remove('visible'); _lwTimer=null; }, 6000);
     }
 
-    // ── STATE ─────────────────────────────────────────────────────────────────
     let appMode = 'anime';
     let state = {
         selectedAnime:null, selectedEpisode:1,
@@ -1373,24 +1262,15 @@
         animeRelations:[], activeGenre:'All', activeTab:'newest',
         anistream:{ slug:null, epData:[], isLoading:false, cacheKey:null, targetSeason:1, allSeasons:[] },
         currentTime:0, duration:0,
-        mangaMode:{
-            selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[],
-            isLoadingChapter:false, activeGenreTag:'All',
-            trendingData:[], popularData:[], topRatedData:[],
-            readMode:'strip',
-            fitMode:'width',
-            currentSinglePage:0,
-            bookmarks:{},
-        }
+        mangaMode:{ selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[], isLoadingChapter:false, activeGenreTag:'All', trendingData:[], popularData:[], topRatedData:[], readMode:'strip', fitMode:'width', currentSinglePage:0, bookmarks:{} }
     };
 
-    // ── PERSISTENCE ───────────────────────────────────────────────────────────
     try { const s=localStorage.getItem('thyAnime_history'); if(s) state.watchHistory=JSON.parse(s); } catch(e){}
     try { const s=localStorage.getItem('thyAnime_bookmarks'); if(s) state.mangaMode.bookmarks=JSON.parse(s); } catch(e){}
-    function saveHistory() { try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(e){} }
-    function saveBookmarks() { try{localStorage.setItem('thyAnime_bookmarks',JSON.stringify(state.mangaMode.bookmarks));}catch(e){} }
-    function getHistoryEntry(id) { return state.watchHistory.find(h=>String(h.id)===String(id))||null; }
-    function getEpProgress(animeId, epNum) { return getHistoryEntry(animeId)?.epProgress?.[epNum]||null; }
+    function saveHistory(){try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(e){}}
+    function saveBookmarks(){try{localStorage.setItem('thyAnime_bookmarks',JSON.stringify(state.mangaMode.bookmarks));}catch(e){}}
+    function getHistoryEntry(id){return state.watchHistory.find(h=>String(h.id)===String(id))||null;}
+    function getEpProgress(animeId, epNum){return getHistoryEntry(animeId)?.epProgress?.[epNum]||null;}
     function saveEpProgress(animeId, epNum, time, duration) {
         if (!animeId||!epNum) return;
         const idx = state.watchHistory.findIndex(h=>String(h.id)===String(animeId));
@@ -1402,7 +1282,6 @@
         saveHistory();
     }
 
-    // ── PROGRESS TRACKING ─────────────────────────────────────────────────────
     let _startWall=null, _startSec=0, _saveTimer=null;
     const progressTrackWrap  = document.getElementById('progressTrackWrap');
     const progressFill       = document.getElementById('progressFill');
@@ -1420,12 +1299,12 @@
             const elapsed=(Date.now()-_startWall)/1000;
             state.currentTime=Math.min(_startSec+elapsed,state.duration);
             updateProgressUI();
-            if (state.selectedAnime&&Math.round(elapsed)%8===0) saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+            if (state.selectedAnime && Math.round(elapsed)%8===0) saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
         },1500);
     }
     function stopProgressTracking() {
         if (_saveTimer){clearInterval(_saveTimer);_saveTimer=null;}
-        if (state.selectedAnime&&state.currentTime>5) saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+        if (state.selectedAnime && state.currentTime>5) saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
         _startWall=null;
     }
     function updateProgressUI() {
@@ -1444,17 +1323,16 @@
                 if (duration!==null&&!isNaN(duration)&&parseFloat(duration)>0) state.duration=parseFloat(duration);
                 if (_startWall){_startWall=Date.now();_startSec=state.currentTime;}
                 updateProgressUI();
-                if (state.selectedAnime) saveEpProgress(state.selectedAnime.id,state.selectedEpisode,state.currentTime,state.duration);
+                if (state.selectedAnime) saveEpProgress(state.selectedAnime.id, state.selectedEpisode, state.currentTime, state.duration);
             }
         } catch(_){}
     });
 
-    // ── RESUME MODAL ──────────────────────────────────────────────────────────
-    const resumeModal      =document.getElementById('resumeModal');
-    const resumeModalText  =document.getElementById('resumeModalText');
+    const resumeModal=document.getElementById('resumeModal');
+    const resumeModalText=document.getElementById('resumeModalText');
     const resumeSupportNote=document.getElementById('resumeSupportNote');
-    const resumeYesBtn     =document.getElementById('resumeYesBtn');
-    const resumeNoBtn      =document.getElementById('resumeNoBtn');
+    const resumeYesBtn=document.getElementById('resumeYesBtn');
+    const resumeNoBtn=document.getElementById('resumeNoBtn');
     function showResumeModal(episode,time,duration,onResume,onFresh) {
         const pct=duration>0?Math.round((time/duration)*100):null;
         resumeModalText.innerHTML=`Continue <strong>Episode ${episode}</strong> from <strong>${fmtTime(time)}</strong>${pct!==null?` (${pct}% watched)`:''}`;
@@ -1472,47 +1350,26 @@
     }
     resumeModal.addEventListener('click',e=>{if(e.target===resumeModal)resumeModal.classList.add('hidden');});
 
-    // ── SERVER 4 (ANISTREAM) ──────────────────────────────────────────────────
+    // ── SERVER 4 ──────────────────────────────────────────────────────────────
     const ANIMEAPI_BASE = 'https://appetite-barrette-empirical.ngrok-free.dev';
-    function getAnimeApiBase() { return ANIMEAPI_BASE; }
-    function titleToSlug(title) {
-        if (!title) return '';
-        return title.toLowerCase().trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_]+/g, '-')
-            .replace(/-+/g, '-');
-    }
-    // Same CORS reasoning as webtoonFetch — no custom headers, just Accept.
+    function getAnimeApiBase(){ return ANIMEAPI_BASE; }
+    function titleToSlug(title){ if(!title)return ''; return title.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_]+/g,'-').replace(/-+/g,'-'); }
     async function animeApiFetch(path) {
         const url = getAnimeApiBase() + path;
-        const r = await fetch(url, {
-            method: 'GET',
-            headers: { 'Accept': 'application/json' },
-        });
+        const r = await fetch(url, { method:'GET', headers:{ 'Accept':'application/json' } });
         if (!r.ok) throw new Error(`AnimeAPI HTTP ${r.status}`);
         const text = await r.text();
         if (text.trim().startsWith('<')) throw new Error('AnimeAPI returned HTML interstitial');
-        try { return JSON.parse(text); }
-        catch(_) { throw new Error('AnimeAPI returned invalid JSON'); }
+        try { return JSON.parse(text); } catch(_) { throw new Error('AnimeAPI returned invalid JSON'); }
     }
     function extractSeasonFromTitle(title) {
         if (!title) return { cleanTitle: title, season: null };
         let season = null, clean = title;
         const mSeason = clean.match(/\bSeason\s+(\d+)\b/i);
         if (mSeason) { season = parseInt(mSeason[1], 10); clean = clean.replace(mSeason[0], '').trim(); }
-        if (!season) {
-            const mOrd = clean.match(/\b(\d+)(?:st|nd|rd|th)\s+Season\b/i);
-            if (mOrd) { season = parseInt(mOrd[1], 10); clean = clean.replace(mOrd[0], '').trim(); }
-        }
-        if (!season) {
-            const mPart = clean.match(/\bPart\s+(\d+)\b/i);
-            if (mPart) { season = parseInt(mPart[1], 10); clean = clean.replace(mPart[0], '').trim(); }
-        }
-        if (!season) {
-            const romans = { II:2, III:3, IV:4, V:5, VI:6, VII:7, VIII:8 };
-            const mRoman = clean.match(/\b(II|III|IV|V|VI|VII|VIII)\s*$/);
-            if (mRoman && romans[mRoman[1]]) { season = romans[mRoman[1]]; clean = clean.replace(mRoman[0], '').trim(); }
-        }
+        if (!season) { const mOrd = clean.match(/\b(\d+)(?:st|nd|rd|th)\s+Season\b/i); if (mOrd) { season = parseInt(mOrd[1], 10); clean = clean.replace(mOrd[0], '').trim(); } }
+        if (!season) { const mPart = clean.match(/\bPart\s+(\d+)\b/i); if (mPart) { season = parseInt(mPart[1], 10); clean = clean.replace(mPart[0], '').trim(); } }
+        if (!season) { const romans = {II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8}; const mRoman = clean.match(/\b(II|III|IV|V|VI|VII|VIII)\s*$/); if (mRoman && romans[mRoman[1]]) { season = romans[mRoman[1]]; clean = clean.replace(mRoman[0], '').trim(); } }
         clean = clean.replace(/[\s\-:]+$/, '').trim();
         return { cleanTitle: clean, season };
     }
@@ -1523,11 +1380,7 @@
         const { cleanTitle: engClean, season: engSeason } = extractSeasonFromTitle(typeof anime.title === 'string' ? anime.title : engRaw);
         const { cleanTitle: romClean, season: romSeason  } = extractSeasonFromTitle(romRaw);
         const detectedSeason = engSeason || romSeason || null;
-        const candidates = [
-            engClean, romClean, engRaw, romRaw,
-            engClean && engClean.replace(/\s*[\(:].*/,'').trim(),
-            romClean && romClean.replace(/\s*[\(:].*/,'').trim(),
-        ].filter((t, i, arr) => t && arr.indexOf(t) === i);
+        const candidates = [engClean, romClean, engRaw, romRaw, engClean && engClean.replace(/\s*[\(:].*/,'').trim(), romClean && romClean.replace(/\s*[\(:].*/,'').trim()].filter((t,i,arr)=>t && arr.indexOf(t)===i);
         for (const t of candidates) {
             const slug = titleToSlug(t);
             if (!slug) continue;
@@ -1535,10 +1388,7 @@
                 const results = await animeApiFetch('/search?q=' + encodeURIComponent(t));
                 if (!results || !results.length) continue;
                 const lower = t.toLowerCase();
-                const best = results.find(r => (r.title||'').toLowerCase() === lower)
-                          || results.find(r => r.slug === slug)
-                          || results.find(r => (r.title||'').toLowerCase().startsWith(lower.split(' ')[0]))
-                          || results[0];
+                const best = results.find(r => (r.title||'').toLowerCase() === lower) || results.find(r => r.slug === slug) || results.find(r => (r.title||'').toLowerCase().startsWith(lower.split(' ')[0])) || results[0];
                 if (best) return { slug: best.slug, season: detectedSeason };
             } catch(_) { continue; }
         }
@@ -1555,15 +1405,9 @@
         else if (filterSeason && allSeasonNums.length >= filterSeason) targetSeason = allSeasonNums[filterSeason - 1] || allSeasonNums[0];
         else targetSeason = allSeasonNums[0] || 1;
         const seasonEps = (seasons[targetSeason] || []).slice().sort((a,b) => (a.episode||0) - (b.episode||0));
-        return {
-            episodes: seasonEps.map(ep => ({ number: ep.episode || 1, season: targetSeason, title: ep.title || `Episode ${ep.episode}`, snapshot: null })),
-            targetSeason,
-            allSeasons: allSeasonNums,
-        };
+        return { episodes: seasonEps.map(ep => ({ number: ep.episode || 1, season: targetSeason, title: ep.title || `Episode ${ep.episode}`, snapshot: null })), targetSeason, allSeasons: allSeasonNums };
     }
-    function anistreamEmbedUrl(slug, season, epNumber) {
-        return `${getAnimeApiBase()}/embed?anime=${encodeURIComponent(slug)}&s=${season}&ep=${epNumber}`;
-    }
+    function anistreamEmbedUrl(slug, season, epNumber) { return `${getAnimeApiBase()}/embed?anime=${encodeURIComponent(slug)}&s=${season}&ep=${epNumber}`; }
     async function loadAnistreamPlayer(anime, epNum, resumeAtSec=0) {
         if (state.anistream.isLoading) return;
         state.anistream.isLoading = true; hideLWBanner();
@@ -1588,11 +1432,7 @@
             playerPlaceholder.style.display='none'; playerIframe.style.display='block';
             playerIframe.onload = null;
             playerIframe.src = anistreamEmbedUrl(c.slug, epObj.season, epObj.number);
-            playerIframe.onload = () => {
-                startProgressTracking(resumeAtSec);
-                const prog = getEpProgress(anime.id, epNum);
-                if (prog && prog.time > 5) showLastWatchedBanner(anime.title?.english || anime.title, epNum, prog.time, prog.duration);
-            };
+            playerIframe.onload = () => { startProgressTracking(resumeAtSec); const prog = getEpProgress(anime.id, epNum); if (prog && prog.time > 5) showLastWatchedBanner(anime.title?.english || anime.title, epNum, prog.time, prog.duration); };
             startProgressTracking(resumeAtSec);
             const progImmediate = getEpProgress(anime.id, epNum);
             if (progImmediate && progImmediate.time > 5) showLastWatchedBanner(anime.title?.english || anime.title, epNum, progImmediate.time, progImmediate.duration);
@@ -1612,10 +1452,7 @@
             const card = document.createElement('div');
             card.className = 's5-ep-card' + (String(num) === String(activeEpNum) ? ' active' : '');
             card.dataset.epnum = num;
-            card.innerHTML = `
-                <div class="s5-ep-thumb-placeholder" style="display:flex">▶</div>
-                <div class="s5-ep-label">Episode ${num}${label ? `<small>${escapeHTML(label)}</small>` : ''}${pct > 0 && pct < 92 ? `<small style="color:var(--accent3);">⏱ ${pct}% watched</small>` : ''}${pct >= 92 ? `<small style="color:#22c55e;">Watched</small>` : ''}</div>
-                <div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
+            card.innerHTML = `<div class="s5-ep-thumb-placeholder" style="display:flex">▶</div><div class="s5-ep-label">Episode ${num}${label?`<small>${escapeHTML(label)}</small>`:''}${pct>0&&pct<92?`<small style="color:var(--accent3);">⏱ ${pct}% watched</small>`:''}${pct>=92?`<small style="color:#22c55e;">Watched</small>`:''}</div><div class="s5-ep-progress"><div class="s5-ep-progress-fill" style="width:${pct}%"></div></div>`;
             card.addEventListener('click', () => {
                 state.selectedEpisode = num; updateHistory(state.selectedAnime, num);
                 const p = getEpProgress(state.selectedAnime?.id, num);
@@ -1629,64 +1466,28 @@
         if (ac) ac.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // ── DOM REFS ──────────────────────────────────────────────────────────────
     const $  = s=>document.querySelector(s);
     const $$ = s=>document.querySelectorAll(s);
-    const searchInput       = $('#searchInput');
-    const searchDropdown    = $('#searchDropdown');
-    const homePage          = $('#homePage');
-    const watchPage         = $('#watchPage');
-    const browsePage_el     = $('#browsePage');
-    const mangaReadPage     = $('#mangaReadPage');
-    const playerPlaceholder = $('#playerPlaceholder');
-    const playerIframe      = $('#playerIframe');
-    const playerWrapper     = $('#playerWrapper');
-    const episodeSection    = $('#episodeSection');
-    const episodeGrid       = $('#episodeGrid');
-    const s5EpSection       = $('#s5EpisodeSection');
-    const s5EpGrid          = $('#s5EpisodeGrid');
-    const audioToggle       = $('#audioToggleWrap');
-    const provWrap          = $('#providerDropdownWrap');
-    const provMenu          = $('#providerDropdownMenu');
-    const provDot           = $('#provDot');
-    const provLabel         = $('#provLabel');
-    const historyRow        = $('#historyRow');
-    const continueSection   = $('#continueWatchingSection');
-    const browseGrid        = $('#browseGrid');
-    const browsePagination  = $('#browsePagination');
-    const sidebarRelations  = $('#sidebarRelations');
-    const topAiringList     = $('#topAiringList');
-    const newestGrid        = $('#newestGrid');
-    const popularGrid       = $('#popularGrid');
-    const topRatedGrid      = $('#topRatedGrid');
-    const heroBg            = $('#heroBg');
-    const heroTitle         = $('#heroTitle');
-    const heroGenres        = $('#heroGenres');
-    const heroBadges        = $('#heroBadges');
-    const heroDesc          = $('#heroDesc');
-    const heroAiringBadge   = $('#heroAiringBadge');
-    const heroAiringText    = $('#heroAiringText');
-    const heroPagination    = $('#heroPagination');
-    const heroPageLabel     = $('#heroPageLabel');
-    const shortcutsBtn      = $('#shortcutsBtn');
-    const shortcutsPanel    = $('#shortcutsPanel');
-    const genreBarInner     = $('#genreBarInner');
+    const searchInput=$('#searchInput'), searchDropdown=$('#searchDropdown');
+    const homePage=$('#homePage'), watchPage=$('#watchPage'), browsePage_el=$('#browsePage'), mangaReadPage=$('#mangaReadPage');
+    const playerPlaceholder=$('#playerPlaceholder'), playerIframe=$('#playerIframe'), playerWrapper=$('#playerWrapper');
+    const episodeSection=$('#episodeSection'), episodeGrid=$('#episodeGrid');
+    const s5EpSection=$('#s5EpisodeSection'), s5EpGrid=$('#s5EpisodeGrid');
+    const audioToggle=$('#audioToggleWrap');
+    const provWrap=$('#providerDropdownWrap'), provMenu=$('#providerDropdownMenu'), provDot=$('#provDot'), provLabel=$('#provLabel');
+    const historyRow=$('#historyRow'), continueSection=$('#continueWatchingSection');
+    const browseGrid=$('#browseGrid'), browsePagination=$('#browsePagination');
+    const sidebarRelations=$('#sidebarRelations'), topAiringList=$('#topAiringList');
+    const newestGrid=$('#newestGrid'), popularGrid=$('#popularGrid'), topRatedGrid=$('#topRatedGrid');
+    const heroBg=$('#heroBg'), heroTitle=$('#heroTitle'), heroGenres=$('#heroGenres'), heroBadges=$('#heroBadges'), heroDesc=$('#heroDesc');
+    const heroAiringBadge=$('#heroAiringBadge'), heroAiringText=$('#heroAiringText'), heroPagination=$('#heroPagination'), heroPageLabel=$('#heroPageLabel');
+    const shortcutsBtn=$('#shortcutsBtn'), shortcutsPanel=$('#shortcutsPanel'), genreBarInner=$('#genreBarInner');
 
-    // ── GENRE BARS ────────────────────────────────────────────────────────────
     const ANIME_GENRES = ['All','Action','Adventure','Comedy','Drama','Ecchi','Fantasy','Horror','Mahou Shoujo','Mecha','Mystery','Psychological','Romance','Sci-Fi','Slice of Life','Sports','Supernatural','Thriller'];
-    window.scrollGenreBar=(dir)=>{
-        const el=document.getElementById('genreBarInner');
-        if (el) el.scrollBy({left: dir*220, behavior:'smooth'});
-    };
-    function renderAnimeGenreBar() {
-        genreBarInner.innerHTML = ANIME_GENRES.map(g=> `<button class="genre-btn${state.activeGenre===g?' active':''}" onclick="setGenre('${g}',this)">${escapeHTML(g)}</button>` ).join('');
-    }
-    // WEBTOON's public proxy has no genre endpoint, so we just show "All".
-    async function renderMangaGenreBar() {
-        genreBarInner.innerHTML = `<button class="genre-btn active">All</button>`;
-    }
+    window.scrollGenreBar=(dir)=>{ const el=document.getElementById('genreBarInner'); if (el) el.scrollBy({left: dir*220, behavior:'smooth'}); };
+    function renderAnimeGenreBar() { genreBarInner.innerHTML = ANIME_GENRES.map(g=>`<button class="genre-btn${state.activeGenre===g?' active':''}" onclick="setGenre('${g}',this)">${escapeHTML(g)}</button>`).join(''); }
+    async function renderMangaGenreBar() { genreBarInner.innerHTML = `<button class="genre-btn active">All</button>`; }
 
-    // ── MODE SWITCHING ────────────────────────────────────────────────────────
     window.setMode = async (mode) => {
         if (mode === 'manga' && !_mangaVisible) return;
         appMode = mode;
@@ -1697,49 +1498,26 @@
         else { await renderMangaGenreBar(); await loadMangaHome(); }
     };
 
-    // ── PLAYER STATES ─────────────────────────────────────────────────────────
-    function showPlayerLoading(msg,sub='') {
-        stopProgressTracking(); hideLWBanner();
-        progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
-        playerPlaceholder.style.display='flex';
-        playerPlaceholder.innerHTML=`<div class="server5-loading"><div class="spinner"></div><span class="status-text">${escapeHTML(msg)}</span>${sub?`<span class="sub-text">${escapeHTML(sub)}</span>`:''}</div>`;
-    }
-    function showPlayerError(msg) {
-        stopProgressTracking(); hideLWBanner();
-        progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
-        playerPlaceholder.style.display='flex';
-        playerPlaceholder.innerHTML=`<span class="big-icon" style="animation:none;">!</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`;
-    }
-    function showPlayerIdle() {
-        stopProgressTracking(); hideLWBanner();
-        progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src='';
-        playerPlaceholder.style.display='flex';
-        playerPlaceholder.innerHTML=`<span class="big-icon" style="font-size:2rem;font-family:'Segoe UI Symbol',sans-serif;">&#x25B6;</span><p>Select an episode to start streaming</p>`;
-    }
+    function showPlayerLoading(msg,sub='') { stopProgressTracking(); hideLWBanner(); progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src=''; playerPlaceholder.style.display='flex'; playerPlaceholder.innerHTML=`<div class="server5-loading"><div class="spinner"></div><span class="status-text">${escapeHTML(msg)}</span>${sub?`<span class="sub-text">${escapeHTML(sub)}</span>`:''}</div>`; }
+    function showPlayerError(msg) { stopProgressTracking(); hideLWBanner(); progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src=''; playerPlaceholder.style.display='flex'; playerPlaceholder.innerHTML=`<span class="big-icon" style="animation:none;">!</span><p style="color:var(--text3);font-size:0.86rem;">${escapeHTML(msg)}</p>`; }
+    function showPlayerIdle() { stopProgressTracking(); hideLWBanner(); progressTrackWrap.style.display='none'; playerIframe.style.display='none'; playerIframe.src=''; playerPlaceholder.style.display='flex'; playerPlaceholder.innerHTML=`<span class="big-icon" style="font-size:2rem;font-family:'Segoe UI Symbol',sans-serif;">&#x25B6;</span><p>Select an episode to start streaming</p>`; }
 
-    // ── LOAD STREAM ───────────────────────────────────────────────────────────
     async function loadStream(resumeAtSec=0) {
         if (!state.selectedAnime||!state.selectedProvider) return;
         const prov=state.selectedProvider, anime=state.selectedAnime, ep=state.selectedEpisode;
-        stopProgressTracking(); hideLWBanner();
-        playerIframe.style.display='none'; playerIframe.src='';
+        stopProgressTracking(); hideLWBanner(); playerIframe.style.display='none'; playerIframe.src='';
         if (prov.id==='anistream'){await loadAnistreamPlayer(anime,ep,resumeAtSec);return;}
         if (prov.external){ window.open(prov.getUrl(anime.id,anime.season,ep,state.selectedAudio),'_blank'); showToast(`Opening ${prov.name} in new tab`); showPlayerIdle(); return; }
         const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
         playerIframe.removeAttribute('sandbox'); playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
         playerPlaceholder.style.display='none'; playerIframe.style.display='block';
         playerIframe.onload=null; playerIframe.src=url;
-        playerIframe.onload=()=>{
-            startProgressTracking(resumeAtSec);
-            const prog=getEpProgress(anime.id,ep);
-            if (prog&&prog.time>5) showLastWatchedBanner(anime.title,ep,prog.time,prog.duration);
-        };
+        playerIframe.onload=()=>{ startProgressTracking(resumeAtSec); const prog=getEpProgress(anime.id,ep); if (prog&&prog.time>5) showLastWatchedBanner(anime.title,ep,prog.time,prog.duration); };
         startProgressTracking(resumeAtSec);
         const progImmediate=getEpProgress(anime.id,ep);
         if (progImmediate&&progImmediate.time>5) showLastWatchedBanner(anime.title,ep,progImmediate.time,progImmediate.duration);
     }
 
-    // ── EPISODE RENDERS ───────────────────────────────────────────────────────
     function renderStdEpisodes() {
         if (!state.selectedAnime?.episodes){episodeSection.style.display='none';return;}
         episodeSection.style.display='flex';
@@ -1752,45 +1530,29 @@
             let cls='episode-btn';
             if (i===state.selectedEpisode) cls+=' active';
             else if (pct>=90) cls+=' completed';
-            else if (pct>5)   cls+=' in-progress';
+            else if (pct>5) cls+=' in-progress';
             const tip=pct>=90?'Watched':pct>5?`${Math.round(pct)}% watched`:'';
             html+=`<button class="${cls}" data-ep="${i}" title="${tip}">${i}</button>`;
         }
         if (total>maxShow) html+=`<span style="padding:8px;color:var(--text3);font-family:var(--font);font-size:0.74rem;">+${total-maxShow} more</span>`;
         episodeGrid.innerHTML=html;
-        const ab=episodeGrid.querySelector('.episode-btn.active');
-        if (ab) ab.scrollIntoView({behavior:'smooth',block:'nearest'});
-        episodeGrid.querySelectorAll('.episode-btn').forEach(btn=>{
-            btn.addEventListener('click',()=>{
-                const ep=parseInt(btn.dataset.ep);
-                state.selectedEpisode=ep; renderStdEpisodes(); updateHistory(state.selectedAnime,ep);
-                const p=getEpProgress(animeId,ep);
-                if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(ep,p.time,p.duration,()=>loadStream(p.time),()=>loadStream(0));
-                else loadStream(0);
-            });
-        });
+        const ab=episodeGrid.querySelector('.episode-btn.active'); if (ab) ab.scrollIntoView({behavior:'smooth',block:'nearest'});
+        episodeGrid.querySelectorAll('.episode-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ const ep=parseInt(btn.dataset.ep); state.selectedEpisode=ep; renderStdEpisodes(); updateHistory(state.selectedAnime,ep); const p=getEpProgress(animeId,ep); if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(ep,p.time,p.duration,()=>loadStream(p.time),()=>loadStream(0)); else loadStream(0); }); });
     }
     function syncEpisodeUI() {
         const pid = state.selectedProvider.id;
         if (pid==='anistream') {
             const cKey = String(state.selectedAnime?.id);
-            if (state.anistream.cacheKey===cKey && state.anistream.epData.length) {
-                episodeSection.style.display='none'; s5EpSection.style.display='flex';
-                renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode);
-            } else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
+            if (state.anistream.cacheKey===cKey && state.anistream.epData.length) { episodeSection.style.display='none'; s5EpSection.style.display='flex'; renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode); }
+            else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
         } else { s5EpSection.style.display='none'; renderStdEpisodes(); }
     }
 
-    // ── HISTORY ───────────────────────────────────────────────────────────────
     function updateHistory(anime,ep) {
         if (!anime) return;
         const idx=state.watchHistory.findIndex(h=>String(h.id)===String(anime.id));
-        if (idx>=0) {
-            const existing=state.watchHistory[idx];
-            state.watchHistory[idx]={...anime,epProgress:existing.epProgress||{},lastProvider:existing.lastProvider||null,lastAudio:existing.lastAudio||null,episode:ep,timestamp:Date.now()};
-        } else {
-            state.watchHistory.unshift({...anime,episode:ep,timestamp:Date.now(),epProgress:{}});
-        }
+        if (idx>=0) { const existing=state.watchHistory[idx]; state.watchHistory[idx]={...anime,epProgress:existing.epProgress||{},lastProvider:existing.lastProvider||null,lastAudio:existing.lastAudio||null,episode:ep,timestamp:Date.now()}; }
+        else state.watchHistory.unshift({...anime,episode:ep,timestamp:Date.now(),epProgress:{}});
         if (state.watchHistory.length>30) state.watchHistory=state.watchHistory.slice(0,30);
         saveHistory();
     }
@@ -1815,39 +1577,14 @@
             const isManga=!!h.isManga;
             const card=document.createElement('div');
             card.className='history-card';
-            card.innerHTML=`
-                <div class="history-card-thumb">
-                    <img src="${escapeHTML(h.coverImage||'')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"/>
-                    <div class="history-card-thumb-overlay"></div>
-                    <span class="history-ep-badge${isManga?' manga':''}">EP ${h.episode||1}</span>
-                    <button class="history-remove-btn" onclick="event.stopPropagation();removeHistoryItem('${escapeHTML(String(h.id))}',${isManga})">✕</button>
-                    ${timeStr?`<span class="history-time-badge">${timeStr}</span>`:''}
-                    <div class="history-play-btn"><span>&#9654;</span></div>
-                    <div class="history-progress-bar">
-                        <div class="history-progress-fill" style="width:${Math.round(pct)}%"></div>
-                    </div>
-                </div>
-                <div class="history-card-body">
-                    <div class="history-card-title">${escapeHTML(h.title)}</div>
-                    <div class="history-card-meta">
-                        ${h.format?`<span>${escapeHTML(h.format)}</span>`:''}
-                        ${pct>0?`<span style="color:var(--accent3);">${Math.round(pct)}%</span>`:''}
-                    </div>
-                </div>`;
-            card.addEventListener('click',()=>{
-                if (isManga) selectManga(h,h.episode);
-                else selectAnime(h,h.episode);
-            });
+            card.innerHTML=`<div class="history-card-thumb"><img src="${escapeHTML(h.coverImage||'')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"/><div class="history-card-thumb-overlay"></div><span class="history-ep-badge${isManga?' manga':''}">EP ${h.episode||1}</span><button class="history-remove-btn" onclick="event.stopPropagation();removeHistoryItem('${escapeHTML(String(h.id))}',${isManga})">✕</button>${timeStr?`<span class="history-time-badge">${timeStr}</span>`:''}<div class="history-play-btn"><span>&#9654;</span></div><div class="history-progress-bar"><div class="history-progress-fill" style="width:${Math.round(pct)}%"></div></div></div><div class="history-card-body"><div class="history-card-title">${escapeHTML(h.title)}</div><div class="history-card-meta">${h.format?`<span>${escapeHTML(h.format)}</span>`:''}${pct>0?`<span style="color:var(--accent3);">${Math.round(pct)}%</span>`:''}</div></div>`;
+            card.addEventListener('click',()=>{ if (isManga) selectManga(h,h.episode); else selectAnime(h,h.episode); });
             historyRow.appendChild(card);
         });
     }
     window.clearHistory=()=>{state.watchHistory=[];saveHistory();renderWatchHistory();showToast('History cleared');};
-    window.removeHistoryItem=(id,isManga)=>{
-        state.watchHistory = state.watchHistory.filter(h=>!(String(h.id)===String(id) && !!h.isManga===!!isManga));
-        saveHistory(); renderWatchHistory();
-    };
+    window.removeHistoryItem=(id,isManga)=>{ state.watchHistory = state.watchHistory.filter(h=>!(String(h.id)===String(id) && !!h.isManga===!!isManga)); saveHistory(); renderWatchHistory(); };
 
-    // ── SELECT ANIME ──────────────────────────────────────────────────────────
     async function selectAnime(animeData,forceEpisode=null) {
         if (!animeData) return;
         state.selectedAnime=animeData;
@@ -1868,22 +1605,17 @@
         else loadStream(0);
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ── SELECT MANGA (WEBTOON) ───────────────────────────────────────────────
-    // ══════════════════════════════════════════════════════════════════════════
+    // ── SELECT MANGA (WEBTOON) ────────────────────────────────────────────────
     async function selectManga(mangaData, forceChapter=null) {
         if (!mangaData) return;
         const mm = state.mangaMode;
         mm.selectedManga = mangaData;
-        mm.chapters = []; mm.currentPages = []; mm.isLoadingChapter = false;
-        mm.currentSinglePage = 0;
-
+        mm.chapters = []; mm.currentPages = []; mm.isLoadingChapter = false; mm.currentSinglePage = 0;
         const startChIdx = forceChapter != null ? Math.max(0, forceChapter - 1) : 0;
         updateHistory(mangaData, startChIdx + 1);
         openMangaReadPage();
         $('#mangaReadTitle').textContent = mangaData.title;
         document.getElementById('mangaSidebarTitle').textContent = mangaData.title;
-
         const sidebar = document.getElementById('mangaSidebar');
         sidebar.style.display = 'flex';
         if (mangaData.coverImage) {
@@ -1891,16 +1623,11 @@
             document.getElementById('mangaSidebarCover').style.display = 'block';
             document.getElementById('mangaSidebarCoverPH').style.display = 'none';
         }
-        document.getElementById('mangaSidebarTags').innerHTML =
-            `<span class="sidebar-tag">WEBTOON</span>`;
+        document.getElementById('mangaSidebarTags').innerHTML = `<span class="sidebar-tag">WEBTOON</span>`;
         document.getElementById('mangaSidebarDesc').textContent = mangaData.description || '';
         document.getElementById('mangaSidebarGenres').innerHTML = '';
-
-        applyReadMode(mm.readMode);
-        applyFitMode(mm.fitMode);
-        updateBookmarkBtn();
+        applyReadMode(mm.readMode); applyFitMode(mm.fitMode); updateBookmarkBtn();
         showToast(mangaData.title);
-
         const container = document.getElementById('mangaPagesContainer');
         container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading episodes…</p><small>Fetching from WEBTOON</small></div>`;
         try {
@@ -1909,17 +1636,10 @@
             const series = await cachedFetch(`series_${mangaData.id}`, () => mdGetSeries(seriesUrl));
             const chapters = (series.episodes || []).map(ep => ({
                 id: String(ep.episode_no ?? ep.url),
-                attributes: {
-                    chapter:   String(ep.episode_no ?? ''),
-                    title:     ep.title || '',
-                    publishAt: ep.date || null,
-                    _url:      ep.url,
-                    _thumbnail: ep.thumbnail_proxy_url || ep.thumbnail_url || '',
-                },
+                attributes: { chapter: String(ep.episode_no ?? ''), title: ep.title || '', publishAt: ep.date || null, _url: ep.url, _thumbnail: fixWebtoonUrl(ep.thumbnail_proxy_url || ep.thumbnail_url || '') },
             }));
             if (!chapters.length) throw new Error('No episodes found for this series');
             mm.chapters = chapters;
-
             const tags = [];
             if (series.author) tags.push(`<span class="sidebar-tag">✍ ${escapeHTML(series.author)}</span>`);
             if (series.status) tags.push(`<span class="sidebar-tag">${escapeHTML(series.status)}</span>`);
@@ -1927,23 +1647,13 @@
             document.getElementById('mangaSidebarTags').innerHTML = tags.join('');
             if (series.description) document.getElementById('mangaSidebarDesc').textContent = series.description;
             const genresList = String(series.genre || '').split(',').map(s=>s.trim()).filter(Boolean);
-            document.getElementById('mangaSidebarGenres').innerHTML =
-                genresList.slice(0,8).map(g=>`<span class="sidebar-genre manga-genre">${escapeHTML(g)}</span>`).join('');
-
-            if (series.image_proxy_url && !mangaData.coverImage) {
-                document.getElementById('mangaSidebarCover').src = series.image_proxy_url;
-            }
-
-            renderMangaChapterList(chapters);
-            buildChapterSelect(chapters);
-
+            document.getElementById('mangaSidebarGenres').innerHTML = genresList.slice(0,8).map(g=>`<span class="sidebar-genre manga-genre">${escapeHTML(g)}</span>`).join('');
+            if (series.image_proxy_url && !mangaData.coverImage) document.getElementById('mangaSidebarCover').src = fixWebtoonUrl(series.image_proxy_url);
+            renderMangaChapterList(chapters); buildChapterSelect(chapters);
             const hist = getHistoryEntry(mangaData.id);
             let chIdx = 0;
-            if (forceChapter != null) {
-                chIdx = Math.min(Math.max(0, forceChapter - 1), chapters.length - 1);
-            } else if (hist?.episode) {
-                chIdx = Math.min(Math.max(0, parseInt(hist.episode) - 1), chapters.length - 1);
-            }
+            if (forceChapter != null) chIdx = Math.min(Math.max(0, forceChapter - 1), chapters.length - 1);
+            else if (hist?.episode) chIdx = Math.min(Math.max(0, parseInt(hist.episode) - 1), chapters.length - 1);
             mm.currentChapterIndex = chIdx;
             document.getElementById('mangaChapterSelect').value = String(chIdx);
             await loadMangaChapter(chIdx);
@@ -1953,31 +1663,16 @@
         }
     }
 
-    // ── MANGA READ MODE CONTROLS ──────────────────────────────────────────────
-    window.setReadMode = (mode) => {
-        state.mangaMode.readMode = mode;
-        applyReadMode(mode);
-    };
+    window.setReadMode = (mode) => { state.mangaMode.readMode = mode; applyReadMode(mode); };
     function applyReadMode(mode) {
         const container = document.getElementById('mangaPagesContainer');
         container.classList.toggle('single-page', mode === 'single');
         document.getElementById('readModeStrip').classList.toggle('active', mode === 'strip');
         document.getElementById('readModeSingle').classList.toggle('active', mode === 'single');
-        if (mode === 'single') {
-            renderSinglePageNav();
-            updateSinglePageView();
-        } else {
-            const nav = container.querySelector('.single-page-nav');
-            if (nav) nav.remove();
-            const ind = container.querySelector('.single-page-indicator');
-            if (ind) ind.remove();
-            container.querySelectorAll('.manga-page-wrapper').forEach(w => w.classList.remove('current-page'));
-        }
+        if (mode === 'single') { renderSinglePageNav(); updateSinglePageView(); }
+        else { const nav = container.querySelector('.single-page-nav'); if (nav) nav.remove(); const ind = container.querySelector('.single-page-indicator'); if (ind) ind.remove(); container.querySelectorAll('.manga-page-wrapper').forEach(w => w.classList.remove('current-page')); }
     }
-    window.setFitMode = (mode) => {
-        state.mangaMode.fitMode = mode;
-        applyFitMode(mode);
-    };
+    window.setFitMode = (mode) => { state.mangaMode.fitMode = mode; applyFitMode(mode); };
     function applyFitMode(mode) {
         const container = document.getElementById('mangaPagesContainer');
         container.classList.toggle('fit-width', mode === 'width');
@@ -1994,8 +1689,7 @@
         nav.innerHTML = `<div class="sp-nav-left" onclick="spNav(-1)"><div class="sp-nav-arrow">‹</div></div><div class="sp-nav-right" onclick="spNav(1)"><div class="sp-nav-arrow">›</div></div>`;
         container.appendChild(nav);
         const ind = document.createElement('div');
-        ind.className = 'single-page-indicator';
-        ind.id = 'spIndicator';
+        ind.className = 'single-page-indicator'; ind.id = 'spIndicator';
         container.appendChild(ind);
     }
     function updateSinglePageView() {
@@ -2017,34 +1711,18 @@
         const container = document.getElementById('mangaPagesContainer');
         const total = container.querySelectorAll('.manga-page-wrapper').length;
         const next = mm.currentSinglePage + dir;
-        if (next < 0) {
-            if (mm.currentChapterIndex > 0) { navigateChapter(-1); return; }
-            return;
-        }
-        if (next >= total) {
-            if (mm.currentChapterIndex < mm.chapters.length - 1) { navigateChapter(1); return; }
-            return;
-        }
-        mm.currentSinglePage = next;
-        updateSinglePageView();
+        if (next < 0) { if (mm.currentChapterIndex > 0) navigateChapter(-1); return; }
+        if (next >= total) { if (mm.currentChapterIndex < mm.chapters.length - 1) navigateChapter(1); return; }
+        mm.currentSinglePage = next; updateSinglePageView();
     };
 
-    // ── BOOKMARK ─────────────────────────────────────────────────────────────
     window.toggleBookmark = () => {
         const mm = state.mangaMode;
         if (!mm.selectedManga) return;
         const mangaId = String(mm.selectedManga.id);
-        if (mm.bookmarks[mangaId]) {
-            delete mm.bookmarks[mangaId];
-            showToast('Bookmark removed');
-        } else {
-            const ch = mm.chapters[mm.currentChapterIndex];
-            const chNum = ch?.attributes?.chapter || (mm.currentChapterIndex + 1);
-            mm.bookmarks[mangaId] = { chIdx: mm.currentChapterIndex, chNum, title: mm.selectedManga.title, ts: Date.now() };
-            showToast(`Bookmarked at Episode ${chNum}`);
-        }
-        saveBookmarks();
-        updateBookmarkBtn();
+        if (mm.bookmarks[mangaId]) { delete mm.bookmarks[mangaId]; showToast('Bookmark removed'); }
+        else { const ch = mm.chapters[mm.currentChapterIndex]; const chNum = ch?.attributes?.chapter || (mm.currentChapterIndex + 1); mm.bookmarks[mangaId] = { chIdx: mm.currentChapterIndex, chNum, title: mm.selectedManga.title, ts: Date.now() }; showToast(`Bookmarked at Episode ${chNum}`); }
+        saveBookmarks(); updateBookmarkBtn();
     };
     function updateBookmarkBtn() {
         const mm = state.mangaMode;
@@ -2058,37 +1736,26 @@
     }
 
     function buildChapterSelect(chapters) {
-        const opts = chapters.map((ch,i)=>{
-            const num = ch.attributes?.chapter || (i+1);
-            const title = ch.attributes?.title ? ` — ${ch.attributes.title}` : '';
-            return `<option value="${i}">Ep. ${num}${title}</option>`;
-        }).join('');
+        const opts = chapters.map((ch,i)=>{ const num = ch.attributes?.chapter || (i+1); const title = ch.attributes?.title ? ` — ${ch.attributes.title}` : ''; return `<option value="${i}">Ep. ${num}${title}</option>`; }).join('');
         const sel = document.getElementById('mangaChapterSelect');
         const mfsSel = document.getElementById('mfsChapterSelect');
-        sel.innerHTML = opts;
-        mfsSel.innerHTML = opts;
+        sel.innerHTML = opts; mfsSel.innerHTML = opts;
         sel.value = String(state.mangaMode.currentChapterIndex);
         mfsSel.value = String(state.mangaMode.currentChapterIndex);
     }
-
     window.selectChapterByIndex = async (idx) => {
         const mm = state.mangaMode;
         if (isNaN(idx) || idx < 0 || idx >= mm.chapters.length) return;
-        mm.currentChapterIndex = idx;
-        mm.currentSinglePage = 0;
+        mm.currentChapterIndex = idx; mm.currentSinglePage = 0;
         document.getElementById('mangaChapterSelect').value = String(idx);
         document.getElementById('mfsChapterSelect').value = String(idx);
         await loadMangaChapter(idx);
-        if (document.getElementById('mangaFullscreenOverlay').classList.contains('active')) {
-            await mfsLoadChapter(idx);
-        }
+        if (document.getElementById('mangaFullscreenOverlay').classList.contains('active')) await mfsLoadChapter(idx);
     };
-
     window.mfsChapterChange = async (val) => {
         const idx = parseInt(val);
         if (isNaN(idx)) return;
-        state.mangaMode.currentChapterIndex = idx;
-        state.mangaMode.currentSinglePage = 0;
+        state.mangaMode.currentChapterIndex = idx; state.mangaMode.currentSinglePage = 0;
         document.getElementById('mangaChapterSelect').value = String(idx);
         await mfsLoadChapter(idx);
     };
@@ -2100,11 +1767,7 @@
             const num = ch.attributes?.chapter || (i+1);
             const title = ch.attributes?.title || '';
             const date = ch.attributes?.publishAt ? new Date(ch.attributes.publishAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}) : '';
-            return `<div class="manga-chapter-item${i===mm.currentChapterIndex?' active':''}" data-idx="${i}" onclick="selectChapterByIndex(${i})">
-                <span class="manga-ch-num">Ep.${num}</span>
-                <span class="manga-ch-title">${escapeHTML(title||'Episode '+num)}</span>
-                <span class="manga-ch-date">${escapeHTML(date)}</span>
-            </div>`;
+            return `<div class="manga-chapter-item${i===mm.currentChapterIndex?' active':''}" data-idx="${i}" onclick="selectChapterByIndex(${i})"><span class="manga-ch-num">Ep.${num}</span><span class="manga-ch-title">${escapeHTML(title||'Episode '+num)}</span><span class="manga-ch-date">${escapeHTML(date)}</span></div>`;
         }).join('');
         const active = list.querySelector('.manga-chapter-item.active');
         if (active) setTimeout(() => active.scrollIntoView({block:'nearest'}), 100);
@@ -2113,46 +1776,35 @@
     async function loadMangaChapter(chapterIndex) {
         const mm = state.mangaMode;
         if (mm.isLoadingChapter) return;
-        mm.isLoadingChapter = true;
-        mm.currentSinglePage = 0;
+        mm.isLoadingChapter = true; mm.currentSinglePage = 0;
         const container = document.getElementById('mangaPagesContainer');
         const chapter = mm.chapters[chapterIndex];
         if (!chapter) { mm.isLoadingChapter=false; return; }
         const chNum = chapter.attributes?.chapter || (chapterIndex+1);
-
         container.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading Episode ${chNum}…</p><small>Fetching pages from WEBTOON</small></div>`;
-
         const prevBtns = [document.getElementById('mangaPrevChBtn'), document.getElementById('mangaPrevChBtn2')];
         const nextBtns = [document.getElementById('mangaNextChBtn'), document.getElementById('mangaNextChBtn2')];
         prevBtns.forEach(b => { if(b) b.disabled = chapterIndex <= 0; });
         nextBtns.forEach(b => { if(b) b.disabled = chapterIndex >= mm.chapters.length - 1; });
-
         const sel = document.getElementById('mangaChapterSelect');
         const mfsSel = document.getElementById('mfsChapterSelect');
         if (sel.options.length > chapterIndex) sel.value = String(chapterIndex);
         if (mfsSel.options.length > chapterIndex) mfsSel.value = String(chapterIndex);
-
         document.querySelectorAll('.manga-chapter-item').forEach((el,i) => el.classList.toggle('active', i === chapterIndex));
         const activeListItem = document.querySelector('.manga-chapter-item.active');
         if (activeListItem) activeListItem.scrollIntoView({block:'nearest', behavior:'smooth'});
-
         updateHistory(mm.selectedManga, chapterIndex + 1);
         updateBookmarkBtn();
-
         try {
             const pages = await cachedFetch(`pages_${chapter.id}`, () => mdGetPages(chapter.id, chapter.attributes));
             mm.currentPages = pages;
             container.innerHTML = '';
-
             pages.forEach((url, i) => {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'manga-page-wrapper';
                 if (mm.readMode === 'single' && i === 0) wrapper.classList.add('current-page');
-
                 const badge = document.createElement('span');
-                badge.className = 'manga-page-num';
-                badge.textContent = i + 1;
-
+                badge.className = 'manga-page-num'; badge.textContent = i + 1;
                 const img = document.createElement('img');
                 img.className = 'manga-page-img loading';
                 img.alt = `Page ${i+1}`;
@@ -2161,39 +1813,24 @@
                 img.referrerPolicy = 'no-referrer';
                 img.onload  = () => img.classList.remove('loading');
                 img.onerror = function() {
-                    if (!this.dataset.retried) {
-                        this.dataset.retried = '1';
-                        this.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                        return;
-                    }
-                    this.classList.remove('loading');
-                    this.style.display = 'none';
+                    if (!this.dataset.retried) { this.dataset.retried = '1'; this.src = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; return; }
+                    this.classList.remove('loading'); this.style.display = 'none';
                     const fallback = document.createElement('div');
                     fallback.style.cssText = 'width:100%;min-height:200px;display:flex;align-items:center;justify-content:center;background:var(--surface3);color:var(--text3);font-family:var(--font);font-size:0.8rem;border-radius:6px;';
                     fallback.textContent = `Page ${i+1} unavailable`;
                     wrapper.appendChild(fallback);
                 };
                 img.src = url;
-
-                wrapper.appendChild(badge);
-                wrapper.appendChild(img);
+                wrapper.appendChild(badge); wrapper.appendChild(img);
                 container.appendChild(wrapper);
             });
-
-            applyReadMode(mm.readMode);
-            applyFitMode(mm.fitMode);
-            if (mm.readMode === 'single') {
-                renderSinglePageNav();
-                updateSinglePageView();
-            }
-
+            applyReadMode(mm.readMode); applyFitMode(mm.fitMode);
+            if (mm.readMode === 'single') { renderSinglePageNav(); updateSinglePageView(); }
             setupMangaScrollProgress(container);
         } catch(err) {
             console.error('[loadMangaChapter]', err);
             container.innerHTML = `<div class="manga-chapter-error"><div class="err-icon">!</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="selectChapterByIndex(${chapterIndex})">Retry</button></div>`;
-        } finally {
-            mm.isLoadingChapter = false;
-        }
+        } finally { mm.isLoadingChapter = false; }
     }
 
     let _mangaScrollRaf = null;
@@ -2216,20 +1853,16 @@
         window.removeEventListener('scroll', onScroll);
         window.addEventListener('scroll', onScroll, {passive: true});
     }
-
     window.navigateChapter = async (dir) => {
         const mm = state.mangaMode;
         const newIdx = mm.currentChapterIndex + dir;
         if (newIdx < 0 || newIdx >= mm.chapters.length) return;
-        mm.currentChapterIndex = newIdx;
-        mm.currentSinglePage = 0;
+        mm.currentChapterIndex = newIdx; mm.currentSinglePage = 0;
         await loadMangaChapter(newIdx);
         window.scrollTo({top:0, behavior:'smooth'});
     };
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ── MANGA FULLSCREEN ─────────────────────────────────────────────────────
-    // ══════════════════════════════════════════════════════════════════════════
+    // ── MANGA FULLSCREEN ──────────────────────────────────────────────────────
     const fsOverlay = document.getElementById('mangaFullscreenOverlay');
     const fsScroll  = document.getElementById('mfsScroll');
     let _mfsHideTimer = null;
@@ -2246,8 +1879,7 @@
         document.body.style.overflow = 'hidden';
         document.getElementById('mfsTitle').textContent = mm.selectedManga.title;
         _mfsCurrentChapterIndex = mm.currentChapterIndex;
-        _mfsSinglePage = false;
-        _mfsFitMode = 'width';
+        _mfsSinglePage = false; _mfsFitMode = 'width';
         mfsSetFit('width');
         document.getElementById('mfsSinglePageBtn').classList.remove('active');
         fsOverlay.classList.remove('sp-mode');
@@ -2258,40 +1890,27 @@
         await mfsLoadChapter(_mfsCurrentChapterIndex);
         _mfsTriggerAutoHide();
     };
-
-    window.closeMangaFullscreen = () => {
-        fsOverlay.classList.remove('active');
-        fsOverlay.classList.remove('sp-mode');
-        document.body.style.overflow = '';
-        if (_mfsHideTimer){clearTimeout(_mfsHideTimer);_mfsHideTimer=null;}
-    };
+    window.closeMangaFullscreen = () => { fsOverlay.classList.remove('active'); fsOverlay.classList.remove('sp-mode'); document.body.style.overflow = ''; if (_mfsHideTimer){clearTimeout(_mfsHideTimer);_mfsHideTimer=null;} };
 
     async function mfsLoadChapter(idx) {
         const mm = state.mangaMode;
         const chapter = mm.chapters[idx];
         if (!chapter) return;
-        _mfsCurrentChapterIndex = idx;
-        mm.currentChapterIndex = idx;
+        _mfsCurrentChapterIndex = idx; mm.currentChapterIndex = idx;
         const chNum = chapter.attributes?.chapter || (idx + 1);
         document.getElementById('mfsChapterInfo').textContent = `Episode ${chNum}`;
         document.getElementById('mfsChapterSelect').value = String(idx);
         document.getElementById('mfsPrevBtn').disabled = idx <= 0;
         document.getElementById('mfsNextBtn').disabled = idx >= mm.chapters.length - 1;
-
         const sel = document.getElementById('mangaChapterSelect');
         if (sel.options.length > idx) sel.value = String(idx);
         document.querySelectorAll('.manga-chapter-item').forEach((el,i) => el.classList.toggle('active', i === idx));
-
         fsScroll.innerHTML = `<div class="manga-chapter-loading" style="background:transparent;height:100%;justify-content:center;"><div class="manga-spinner"></div><p>Loading Episode ${chNum}…</p></div>`;
-
         try {
             const pages = await cachedFetch(`pages_${chapter.id}`, () => mdGetPages(chapter.id, chapter.attributes));
             mm.currentPages = pages;
-
-            _mfsPageCount = pages.length;
-            _mfsSinglePageCurrent = 0;
+            _mfsPageCount = pages.length; _mfsSinglePageCurrent = 0;
             fsScroll.innerHTML = '';
-
             pages.forEach((url, i) => {
                 const img = document.createElement('img');
                 img.className = 'mfs-page-img';
@@ -2300,23 +1919,15 @@
                 img.decoding = 'async';
                 img.referrerPolicy = 'no-referrer';
                 img.dataset.idx = i;
-                if (_mfsSinglePage) {
-                    if (i === 0) img.classList.add('fs-current');
-                } else {
-                    img.style.display = 'block';
-                }
-                img.onerror = function() {
-                    if (!this.dataset.retried) { this.dataset.retried='1'; this.src=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; }
-                };
+                if (_mfsSinglePage) { if (i === 0) img.classList.add('fs-current'); }
+                else img.style.display = 'block';
+                img.onerror = function() { if (!this.dataset.retried) { this.dataset.retried='1'; this.src=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; } };
                 img.src = url;
                 fsScroll.appendChild(img);
             });
-
             mfsApplyFit(_mfsFitMode);
-
             fsScroll.removeEventListener('scroll', mfsScrollHandler);
             fsScroll.addEventListener('scroll', mfsScrollHandler, {passive: true});
-
             document.getElementById('mfsPageLabel').textContent = `1 / ${_mfsPageCount}`;
             document.getElementById('mfsProgressFill').style.width = '0%';
             fsScroll.scrollTop = 0;
@@ -2326,7 +1937,6 @@
             fsScroll.innerHTML = `<div class="manga-chapter-error" style="height:100%;justify-content:center;"><div class="err-icon">!</div><p>${escapeHTML(err.message)}</p><button class="manga-retry-btn" onclick="mfsLoadChapter(${idx})">Retry</button></div>`;
         }
     }
-
     function mfsScrollHandler() {
         if (_mfsSinglePage) return;
         const s = fsScroll.scrollTop;
@@ -2338,7 +1948,6 @@
         document.getElementById('mfsPageLabel').textContent = `${page} / ${total}`;
         _mfsTriggerAutoHide();
     }
-
     window.mfsNavChapter = async (dir) => {
         const newIdx = _mfsCurrentChapterIndex + dir;
         if (newIdx < 0 || newIdx >= state.mangaMode.chapters.length) return;
@@ -2346,7 +1955,6 @@
         fsScroll.scrollTop = 0;
         document.getElementById('mangaChapterSelect').value = String(newIdx);
     };
-
     window.mfsSeekClick = (e) => {
         if (_mfsSinglePage) return;
         const track = e.currentTarget;
@@ -2354,13 +1962,9 @@
         const pct = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
         fsScroll.scrollTop = pct * (fsScroll.scrollHeight - fsScroll.clientHeight);
     };
-
     window.mfsSetFit = (mode) => {
-        _mfsFitMode = mode;
-        mfsApplyFit(mode);
-        ['mfsFitWidthBtn','mfsFitHeightBtn','mfsFitOrigBtn'].forEach(id => {
-            document.getElementById(id)?.classList.remove('active');
-        });
+        _mfsFitMode = mode; mfsApplyFit(mode);
+        ['mfsFitWidthBtn','mfsFitHeightBtn','mfsFitOrigBtn'].forEach(id => { document.getElementById(id)?.classList.remove('active'); });
         const map = {width:'mfsFitWidthBtn', height:'mfsFitHeightBtn', original:'mfsFitOrigBtn'};
         document.getElementById(map[mode])?.classList.add('active');
     };
@@ -2368,33 +1972,17 @@
         fsScroll.classList.remove('fit-width','fit-height','fit-original');
         if (!_mfsSinglePage) fsScroll.classList.add(`fit-${mode}`);
     }
-
     window.mfsToggleSinglePage = () => {
         _mfsSinglePage = !_mfsSinglePage;
         const btn = document.getElementById('mfsSinglePageBtn');
         btn.classList.toggle('active', _mfsSinglePage);
         fsOverlay.classList.toggle('sp-mode', _mfsSinglePage);
-
-        if (_mfsSinglePage) {
-            fsScroll.classList.remove('fit-width','fit-height','fit-original');
-            fsScroll.classList.add('single-page');
-            _mfsSinglePageCurrent = 0;
-            mfsUpdateSinglePage();
-        } else {
-            fsScroll.classList.remove('single-page');
-            mfsApplyFit(_mfsFitMode);
-            fsScroll.querySelectorAll('.mfs-page-img').forEach(img => {
-                img.classList.remove('fs-current');
-                img.style.display = 'block';
-            });
-        }
+        if (_mfsSinglePage) { fsScroll.classList.remove('fit-width','fit-height','fit-original'); fsScroll.classList.add('single-page'); _mfsSinglePageCurrent = 0; mfsUpdateSinglePage(); }
+        else { fsScroll.classList.remove('single-page'); mfsApplyFit(_mfsFitMode); fsScroll.querySelectorAll('.mfs-page-img').forEach(img => { img.classList.remove('fs-current'); img.style.display = 'block'; }); }
     };
     function mfsUpdateSinglePage() {
         const imgs = fsScroll.querySelectorAll('.mfs-page-img');
-        imgs.forEach((img, i) => {
-            img.classList.toggle('fs-current', i === _mfsSinglePageCurrent);
-            img.style.display = i === _mfsSinglePageCurrent ? 'block' : 'none';
-        });
+        imgs.forEach((img, i) => { img.classList.toggle('fs-current', i === _mfsSinglePageCurrent); img.style.display = i === _mfsSinglePageCurrent ? 'block' : 'none'; });
         const total = imgs.length;
         document.getElementById('mfsPageLabel').textContent = `${_mfsSinglePageCurrent + 1} / ${total}`;
         const pct = total > 1 ? (_mfsSinglePageCurrent / (total - 1)) * 100 : 0;
@@ -2403,18 +1991,10 @@
     window.mfsSpNav = (dir) => {
         const total = fsScroll.querySelectorAll('.mfs-page-img').length;
         const next = _mfsSinglePageCurrent + dir;
-        if (next < 0) {
-            if (_mfsCurrentChapterIndex > 0) mfsNavChapter(-1);
-            return;
-        }
-        if (next >= total) {
-            if (_mfsCurrentChapterIndex < state.mangaMode.chapters.length - 1) mfsNavChapter(1);
-            return;
-        }
-        _mfsSinglePageCurrent = next;
-        mfsUpdateSinglePage();
+        if (next < 0) { if (_mfsCurrentChapterIndex > 0) mfsNavChapter(-1); return; }
+        if (next >= total) { if (_mfsCurrentChapterIndex < state.mangaMode.chapters.length - 1) mfsNavChapter(1); return; }
+        _mfsSinglePageCurrent = next; mfsUpdateSinglePage();
     };
-
     function _mfsTriggerAutoHide() {
         const topbar = document.getElementById('mfsTopbar');
         const bottombar = document.getElementById('mfsBottombar');
@@ -2425,243 +2005,136 @@
     fsScroll.addEventListener('click', _mfsTriggerAutoHide);
     fsOverlay.addEventListener('mousemove', _mfsTriggerAutoHide);
 
-    // ── TOP AIRING ────────────────────────────────────────────────────────────
     function renderTopAiring(data, clickFn) {
         topAiringList.innerHTML='';
         (data||[]).slice(0,10).forEach((anime,i)=>{
             const item=document.createElement('div'); item.className='top-airing-item';
             const rankClass=i<3?['gold','silver','bronze'][i]:'';
             const rating=anime.averageScore?(anime.averageScore/10).toFixed(1):'';
-            item.innerHTML=`
-                <span class="top-airing-rank ${rankClass}">${i+1}</span>
-                <img class="top-airing-thumb" src="${escapeHTML(anime.coverImage)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
-                <div class="top-airing-info">
-                    <div class="top-airing-name">${escapeHTML(anime.title)}</div>
-                    <div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · '+rating:''}</div>
-                </div>`;
+            item.innerHTML=`<span class="top-airing-rank ${rankClass}">${i+1}</span><img class="top-airing-thumb" src="${escapeHTML(anime.coverImage)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"><div class="top-airing-info"><div class="top-airing-name">${escapeHTML(anime.title)}</div><div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · '+rating:''}</div></div>`;
             item.addEventListener('click',()=>clickFn(anime));
             topAiringList.appendChild(item);
         });
     }
 
-    // ── GENRE / TABS ──────────────────────────────────────────────────────────
-    const ANIME_GENRE_ID_MAP = {
-        'Action':1,'Adventure':2,'Comedy':4,'Drama':8,'Ecchi':9,'Fantasy':10,
-        'Horror':14,'Mahou Shoujo':16,'Mecha':18,'Mystery':7,'Psychological':40,
-        'Romance':22,'Sci-Fi':24,'Slice of Life':36,'Sports':30,'Supernatural':37,'Thriller':41
-    };
+    const ANIME_GENRE_ID_MAP = { 'Action':1,'Adventure':2,'Comedy':4,'Drama':8,'Ecchi':9,'Fantasy':10,'Horror':14,'Mahou Shoujo':16,'Mecha':18,'Mystery':7,'Psychological':40,'Romance':22,'Sci-Fi':24,'Slice of Life':36,'Sports':30,'Supernatural':37,'Thriller':41 };
     window.setGenre=async(genre,btn)=>{
         state.activeGenre=genre;
-        $$('.genre-btn').forEach(b=>b.classList.remove('active'));
-        btn?.classList.add('active');
-        if(genre==='All'){
-            populateGrid(newestGrid,state.trendingData);
-            populateGrid(popularGrid,state.popularData);
-            populateGrid(topRatedGrid,state.topRatedData);
-        } else {
-            await loadAnimeByGenre(genre);
-        }
+        $$('.genre-btn').forEach(b=>b.classList.remove('active')); btn?.classList.add('active');
+        if(genre==='All'){ populateGrid(newestGrid,state.trendingData); populateGrid(popularGrid,state.popularData); populateGrid(topRatedGrid,state.topRatedData); }
+        else await loadAnimeByGenre(genre);
     };
     async function loadAnimeByGenre(genre) {
         populateGrid(newestGrid,[]);
         try {
             let results=[];
-            if(_activeSource===DataSource.ANILIST){
-                const d=await alQuery(`query($g:String){Page(perPage:20){media(genre:$g,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`,{g:genre});
-                results=(d.Page?.media||[]).map(m=>fmtAnime(m)).filter(Boolean);
-            }
-            if(!results.length){
-                const genreId=ANIME_GENRE_ID_MAP[genre];
-                if(genreId){
-                    const d=await jikanFetch('/anime',{genres:genreId,limit:20,order_by:'popularity',sort:'asc'});
-                    results=(d.data||[]).map(fmtJikan).filter(Boolean);
-                }
-            }
+            if(_activeSource===DataSource.ANILIST){ const d=await alQuery(`query($g:String){Page(perPage:20){media(genre:$g,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`,{g:genre}); results=(d.Page?.media||[]).map(m=>fmtAnime(m)).filter(Boolean); }
+            if(!results.length){ const genreId=ANIME_GENRE_ID_MAP[genre]; if(genreId){ const d=await jikanFetch('/anime',{genres:genreId,limit:20,order_by:'popularity',sort:'asc'}); results=(d.data||[]).map(fmtJikan).filter(Boolean); } }
             if(!results.length) results=filterByGenre(state.trendingData);
-            populateGrid(newestGrid,results);
-            populateGrid(popularGrid,results);
-            populateGrid(topRatedGrid,results);
-        } catch(e){
-            const filtered=filterByGenre(state.trendingData);
-            populateGrid(newestGrid,filtered);
-            populateGrid(popularGrid,filterByGenre(state.popularData));
-            populateGrid(topRatedGrid,filterByGenre(state.topRatedData));
-        }
+            populateGrid(newestGrid,results); populateGrid(popularGrid,results); populateGrid(topRatedGrid,results);
+        } catch(e){ populateGrid(newestGrid,filterByGenre(state.trendingData)); populateGrid(popularGrid,filterByGenre(state.popularData)); populateGrid(topRatedGrid,filterByGenre(state.topRatedData)); }
     }
     function filterByGenre(d){return state.activeGenre==='All'?d:d.filter(a=>a.genres?.includes(state.activeGenre));}
     window.setTab=(tab,btn)=>{
-        state.activeTab=tab;
-        $$('.tab-btn').forEach(b=>b.classList.remove('active'));
-        btn?.classList.add('active');
-        ['newest','popular','toprated'].forEach(t=>{
-            const el=document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
-            if(el) el.style.display=t===tab?'block':'none';
-        });
+        state.activeTab=tab; $$('.tab-btn').forEach(b=>b.classList.remove('active')); btn?.classList.add('active');
+        ['newest','popular','toprated'].forEach(t=>{ const el=document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`); if(el) el.style.display=t===tab?'block':'none'; });
         refreshTabGrid();
     };
     function refreshTabGrid(){
         if (appMode==='manga'){refreshMangaTabGrid();return;}
         if(state.activeGenre!=='All'){loadAnimeByGenre(state.activeGenre);return;}
-        if(state.activeTab==='newest')       populateGrid(newestGrid,  filterByGenre(state.trendingData));
+        if(state.activeTab==='newest') populateGrid(newestGrid, filterByGenre(state.trendingData));
         else if(state.activeTab==='popular') populateGrid(popularGrid, filterByGenre(state.popularData));
-        else                                  populateGrid(topRatedGrid,filterByGenre(state.topRatedData));
+        else populateGrid(topRatedGrid,filterByGenre(state.topRatedData));
     }
     function refreshMangaTabGrid(){
-        if(state.activeTab==='newest')       populateGrid(newestGrid,  state.mangaMode.trendingData);
+        if(state.activeTab==='newest') populateGrid(newestGrid, state.mangaMode.trendingData);
         else if(state.activeTab==='popular') populateGrid(popularGrid, state.mangaMode.popularData);
-        else                                  populateGrid(topRatedGrid,state.mangaMode.topRatedData);
+        else populateGrid(topRatedGrid,state.mangaMode.topRatedData);
     }
 
-    // ── CARDS ─────────────────────────────────────────────────────────────────
     function createAnimeCard(item) {
         if (!item) return document.createElement('div');
         const isManga = !!item.isManga;
         const rating=item.averageScore?(item.averageScore/10).toFixed(1):null;
-        const epText=isManga?(item.chapters && item.chapters!=='?'?`${item.chapters} ep`:''):(item.episodes?`${item.episodes} eps`:'');
+        const epText=isManga?(item.chapters&&item.chapters!=='?'?`${item.chapters} ep`:''):(item.episodes?`${item.episodes} eps`:'');
         const div=document.createElement('div');
         div.className='anime-card'+(isManga?' manga-card':'');
-        div.innerHTML=`
-            <div class="anime-card-img-wrap">
-                <img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer"
-                     onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(this.src);}else{this.style.display='none';this.parentElement.style.background='var(--surface3)';}"/>
-                <div class="anime-card-overlay"></div>
-                ${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">${rating}</span>`:''}
-                ${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}
-                ${isManga?`<span class="anime-card-badge manga-badge" style="top:auto;bottom:28px;left:6px;font-size:0.55rem;letter-spacing:0.05em;">WEBTOON</span>`:''}
-            </div>
-            <div class="anime-card-info">
-                <span class="anime-card-title">${escapeHTML(item.title)}</span>
-                <span class="anime-card-sub">${escapeHTML(item.format)} · ${escapeHTML((item.genres||[]).slice(0,2).join(', '))}</span>
-            </div>`;
-        div.addEventListener('click',()=>{
-            if (isManga) selectManga(item);
-            else selectAnime(item);
-        });
+        div.innerHTML=`<div class="anime-card-img-wrap"><img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(this.src);}else{this.style.display='none';this.parentElement.style.background='var(--surface3)';}"/><div class="anime-card-overlay"></div>${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">${rating}</span>`:''}${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}${isManga?`<span class="anime-card-badge manga-badge" style="top:auto;bottom:28px;left:6px;font-size:0.55rem;letter-spacing:0.05em;">WEBTOON</span>`:''}</div><div class="anime-card-info"><span class="anime-card-title">${escapeHTML(item.title)}</span><span class="anime-card-sub">${escapeHTML(item.format)} · ${escapeHTML((item.genres||[]).slice(0,2).join(', '))}</span></div>`;
+        div.addEventListener('click',()=>{ if (isManga) selectManga(item); else selectAnime(item); });
         return div;
     }
     function populateGrid(container,data) {
         container.innerHTML='';
-        if (!data?.length){
-            for(let i=0;i<16;i++){const s=document.createElement('div');s.className='skeleton';s.style.cssText='aspect-ratio:3/4;border-radius:9px;';container.appendChild(s);}
-            return;
-        }
+        if (!data?.length){ for(let i=0;i<16;i++){const s=document.createElement('div');s.className='skeleton';s.style.cssText='aspect-ratio:3/4;border-radius:9px;';container.appendChild(s);} return; }
         data.forEach(a=>container.appendChild(createAnimeCard(a)));
     }
 
-    // ── HERO ──────────────────────────────────────────────────────────────────
     function renderHeroSlide(hero, isManga) {
         if (!hero) return;
         heroBg.src = isManga ? (hero.cover512||hero.coverImage) : hero.coverImage;
         heroTitle.textContent = hero.title;
-        if (isManga) {
-            heroBadges.innerHTML = `<span class="hero-badge-pill manga-type">WEBTOON</span>${hero.season?`<span class="hero-badge-pill">${escapeHTML(hero.season)}</span>`:''}`;
-        } else {
-            heroBadges.innerHTML=[
-                hero.format?`<span class="hero-badge-pill type">${escapeHTML(hero.format)}</span>`:'',
-                hero.averageScore?`<span class="hero-badge-pill">★ ${(hero.averageScore/10).toFixed(1)}</span>`:'',
-                hero.episodes?`<span class="hero-badge-pill">⏱ ${hero.episodes} ep</span>`:'',
-            ].filter(Boolean).join('');
-        }
+        if (isManga) heroBadges.innerHTML = `<span class="hero-badge-pill manga-type">WEBTOON</span>${hero.season?`<span class="hero-badge-pill">${escapeHTML(hero.season)}</span>`:''}`;
+        else heroBadges.innerHTML=[hero.format?`<span class="hero-badge-pill type">${escapeHTML(hero.format)}</span>`:'', hero.averageScore?`<span class="hero-badge-pill">★ ${(hero.averageScore/10).toFixed(1)}</span>`:'', hero.episodes?`<span class="hero-badge-pill">⏱ ${hero.episodes} ep</span>`:''].filter(Boolean).join('');
         heroGenres.innerHTML=(hero.genres||[]).slice(0,4).map(g=>`<span class="hero-genre-tag">${escapeHTML(g)}</span>`).join('');
         heroDesc.textContent=hero.description?(hero.description.length>180?hero.description.slice(0,180)+'…':hero.description):'';
-
         const releasing = String(hero.status||'').toUpperCase().includes('RELEASING') || String(hero.status||'').toUpperCase().includes('ONGOING');
-        if (releasing) { heroAiringText.textContent='Airing Now'; heroAiringBadge.style.display='inline-flex'; }
-        else { heroAiringBadge.style.display='none'; }
-
-        if (state.heroPool.length>1) {
-            heroPagination.style.display='flex';
-            heroPageLabel.textContent = `${state.heroIndex+1} / ${state.heroPool.length}`;
-        } else { heroPagination.style.display='none'; }
+        if (releasing) { heroAiringText.textContent='Airing Now'; heroAiringBadge.style.display='inline-flex'; } else heroAiringBadge.style.display='none';
+        if (state.heroPool.length>1) { heroPagination.style.display='flex'; heroPageLabel.textContent = `${state.heroIndex+1} / ${state.heroPool.length}`; } else heroPagination.style.display='none';
     }
-    window.shuffleRandomAnime=()=>{
-        const pool = appMode==='manga' ? state.mangaMode.trendingData : state.trendingData;
-        if (!pool || !pool.length) { showToast('Still loading — try again in a sec'); return; }
-        const pick = pool[Math.floor(Math.random()*pool.length)];
-        if (appMode==='manga') selectManga(pick); else selectAnime(pick);
-    };
-    window.heroPrev=()=>{
-        if (!state.heroPool.length) return;
-        state.heroIndex = (state.heroIndex - 1 + state.heroPool.length) % state.heroPool.length;
-        state.heroAnime = state.heroPool[state.heroIndex];
-        renderHeroSlide(state.heroAnime, state.heroIsManga);
-    };
-    window.heroNext=()=>{
-        if (!state.heroPool.length) return;
-        state.heroIndex = (state.heroIndex + 1) % state.heroPool.length;
-        state.heroAnime = state.heroPool[state.heroIndex];
-        renderHeroSlide(state.heroAnime, state.heroIsManga);
-    };
+    window.shuffleRandomAnime=()=>{ const pool = appMode==='manga' ? state.mangaMode.trendingData : state.trendingData; if (!pool || !pool.length) { showToast('Still loading — try again in a sec'); return; } const pick = pool[Math.floor(Math.random()*pool.length)]; if (appMode==='manga') selectManga(pick); else selectAnime(pick); };
+    window.heroPrev=()=>{ if (!state.heroPool.length) return; state.heroIndex = (state.heroIndex - 1 + state.heroPool.length) % state.heroPool.length; state.heroAnime = state.heroPool[state.heroIndex]; renderHeroSlide(state.heroAnime, state.heroIsManga); };
+    window.heroNext=()=>{ if (!state.heroPool.length) return; state.heroIndex = (state.heroIndex + 1) % state.heroPool.length; state.heroAnime = state.heroPool[state.heroIndex]; renderHeroSlide(state.heroAnime, state.heroIsManga); };
 
-    // ── HOME — ANIME ──────────────────────────────────────────────────────────
     async function loadHomePage() {
         document.getElementById('topListHeader').textContent = 'Top Airing';
         document.getElementById('heroWatchBtn').className = 'hero-btn primary';
         document.getElementById('heroWatchBtn').textContent = 'Watch Now';
         document.getElementById('browseTitle').innerHTML = 'Browse All Anime';
         const tabBar = document.getElementById('tabBar');
-        tabBar.innerHTML=`
-            <button class="tab-btn active" onclick="setTab('newest',this)">Newest</button>
-            <button class="tab-btn" onclick="setTab('popular',this)">Popular</button>
-            <button class="tab-btn" onclick="setTab('toprated',this)">Top Rated</button>`;
-        ['newest','popular','toprated'].forEach(t=>{
-            const grid=document.getElementById(`${t}Grid`); if(grid) grid.className='anime-grid';
-        });
+        tabBar.innerHTML=`<button class="tab-btn active" onclick="setTab('newest',this)">Newest</button><button class="tab-btn" onclick="setTab('popular',this)">Popular</button><button class="tab-btn" onclick="setTab('toprated',this)">Top Rated</button>`;
+        ['newest','popular','toprated'].forEach(t=>{ const grid=document.getElementById(`${t}Grid`); if(grid) grid.className='anime-grid'; });
         populateGrid(newestGrid,[]); populateGrid(popularGrid,[]); populateGrid(topRatedGrid,[]);
-
         try {
-            const [trendingRaw, popularRaw, topRatedRaw] = await Promise.all([
-                fetchTrending(), fetchPopular(), fetchTopRated()
-            ]);
+            const [trendingRaw, popularRaw, topRatedRaw] = await Promise.all([fetchTrending(), fetchPopular(), fetchTopRated()]);
             const normalize = items => items.map(m => { if (m._source) return m; return fmtAnime(m); }).filter(Boolean);
             state.trendingData  = normalize(trendingRaw);
             state.popularData   = normalize(popularRaw);
             state.topRatedData  = normalize(topRatedRaw);
         } catch(e){ console.error('[ThyAnime] load error:', e); }
-
-        state.heroPool = state.trendingData.slice(0,8);
-        state.heroIndex = 0;
-        state.heroIsManga = false;
+        state.heroPool = state.trendingData.slice(0,8); state.heroIndex = 0; state.heroIsManga = false;
         if (state.heroPool.length){ state.heroAnime=state.heroPool[0]; renderHeroSlide(state.heroPool[0], false); }
         else { heroTitle.textContent='Could not load featured anime'; heroPagination.style.display='none'; heroAiringBadge.style.display='none'; }
-
         populateGrid(newestGrid,state.trendingData);
         populateGrid(popularGrid,state.popularData);
         populateGrid(topRatedGrid,state.topRatedData);
         renderTopAiring(state.trendingData, selectAnime);
-        renderWatchHistory();
-        renderAnimeGenreBar();
+        renderWatchHistory(); renderAnimeGenreBar();
     }
 
-    // ── HOME — WEBTOON ────────────────────────────────────────────────────────
     async function loadMangaHome() {
         document.getElementById('topListHeader').textContent = 'Popular Webtoons';
         document.getElementById('heroWatchBtn').className = 'hero-btn primary-manga';
         document.getElementById('heroWatchBtn').textContent = 'Read Now';
         document.getElementById('browseTitle').innerHTML = 'Browse All Webtoons';
         const tabBar = document.getElementById('tabBar');
-        tabBar.innerHTML=`
-            <button class="tab-btn active" onclick="setTab('newest',this)">Latest</button>
-            <button class="tab-btn" onclick="setTab('popular',this)">Trending</button>
-            <button class="tab-btn" onclick="setTab('toprated',this)">Popular</button>`;
-        ['newestGrid','popularGrid','topRatedGrid'].forEach(id=>{
-            const g=document.getElementById(id); if(g) g.className='manga-grid';
-        });
+        tabBar.innerHTML=`<button class="tab-btn active" onclick="setTab('newest',this)">Latest</button><button class="tab-btn" onclick="setTab('popular',this)">Trending</button><button class="tab-btn" onclick="setTab('toprated',this)">Popular</button>`;
+        ['newestGrid','popularGrid','topRatedGrid'].forEach(id=>{ const g=document.getElementById(id); if(g) g.className='manga-grid'; });
         populateGrid(newestGrid,[]); populateGrid(popularGrid,[]); populateGrid(topRatedGrid,[]);
         try {
             const mm = state.mangaMode;
-            const [latest, popular, topRated] = await Promise.all([
-                cachedFetch('manga_latest',   mdLatestManga),
-                cachedFetch('manga_popular',  mdPopularManga),
-                cachedFetch('manga_toprated', mdTopRatedManga),
-            ]);
-            mm.trendingData = latest.filter(Boolean);
-            mm.popularData  = popular.filter(Boolean);
-            mm.topRatedData = topRated.filter(Boolean);
+            // Fetch once and derive all three tabs from the same payload —
+            // avoids hammering ngrok's free tier with 3 parallel calls.
+            const homePayload = await cachedFetch('webtoon_home', () => webtoonFetch('/api/home'));
+            const featured  = (homePayload.sections?.featured  || []).map(fmtManga).filter(Boolean);
+            const trending  = (homePayload.sections?.trending  || []).map(fmtManga).filter(Boolean);
+            // Latest = featured if available, otherwise trending
+            mm.trendingData = featured.length ? featured : trending;
+            mm.popularData  = trending.length ? trending : featured;
+            mm.topRatedData = trending.slice().reverse(); // just shuffle the order a bit
             if (mm.trendingData.length) {
                 state.heroPool = mm.trendingData.slice(0,8);
-                state.heroIndex = 0;
-                state.heroIsManga = true;
+                state.heroIndex = 0; state.heroIsManga = true;
                 state.heroAnime = state.heroPool[0];
                 renderHeroSlide(state.heroPool[0], true);
             } else { heroPagination.style.display='none'; heroAiringBadge.style.display='none'; }
@@ -2675,20 +2148,16 @@
             heroPagination.style.display='none';
             heroAiringBadge.style.display='none';
             showToast('WEBTOON API error — check the proxy');
+            // Show a helpful error in the grids
+            const msg = `<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;font-family:var(--font);font-size:0.85rem;">Failed to load WEBTOON feed.<br><span style="color:var(--text3);font-size:0.72rem;">${escapeHTML(e.message||'')}</span></div>`;
+            newestGrid.innerHTML = msg;
         }
         renderWatchHistory();
     }
 
-    window.handleHeroWatch   = () => {
-        if (appMode==='manga') { if (state.heroAnime) selectManga(state.heroAnime); }
-        else { if (state.heroAnime) selectAnime(state.heroAnime); }
-    };
-    window.handleHeroDetails = () => {
-        if (appMode==='manga') { if (state.heroAnime) { showToast(state.heroAnime.title); selectManga(state.heroAnime); } }
-        else { if (state.heroAnime) { showToast(state.heroAnime.title); selectAnime(state.heroAnime); } }
-    };
+    window.handleHeroWatch   = () => { if (appMode==='manga') { if (state.heroAnime) selectManga(state.heroAnime); } else { if (state.heroAnime) selectAnime(state.heroAnime); } };
+    window.handleHeroDetails = () => { if (appMode==='manga') { if (state.heroAnime) { showToast(state.heroAnime.title); selectManga(state.heroAnime); } } else { if (state.heroAnime) { showToast(state.heroAnime.title); selectAnime(state.heroAnime); } } };
 
-    // ── PAGES ─────────────────────────────────────────────────────────────────
     window.goHome = (skipReload=false) => {
         state.activeGenre='All';
         stopProgressTracking(); hideLWBanner();
@@ -2707,29 +2176,10 @@
         shortcutsBtn.classList.remove('visible'); shortcutsPanel.classList.remove('visible');
         if (!skipReload) renderWatchHistory();
     };
-    function openWatchPage(){
-        homePage.classList.add('hidden'); browsePage_el.classList.remove('active');
-        watchPage.classList.add('active'); mangaReadPage.classList.remove('active');
-        document.getElementById('genreBar').style.display='none';
-        window.scrollTo({top:0,behavior:'smooth'});
-        shortcutsBtn.classList.add('visible');
-    }
-    function openMangaReadPage(){
-        homePage.classList.add('hidden'); browsePage_el.classList.remove('active');
-        watchPage.classList.remove('active'); mangaReadPage.classList.add('active');
-        document.getElementById('genreBar').style.display='none';
-        window.scrollTo({top:0,behavior:'smooth'});
-        shortcutsBtn.classList.add('visible');
-    }
-    window.goToBrowsePage=()=>{
-        homePage.classList.add('hidden'); watchPage.classList.remove('active');
-        browsePage_el.classList.add('active'); mangaReadPage.classList.remove('active');
-        document.getElementById('genreBar').style.display='none';
-        window.scrollTo({top:0,behavior:'smooth'});
-        loadBrowsePage(1);
-    };
+    function openWatchPage(){ homePage.classList.add('hidden'); browsePage_el.classList.remove('active'); watchPage.classList.add('active'); mangaReadPage.classList.remove('active'); document.getElementById('genreBar').style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); shortcutsBtn.classList.add('visible'); }
+    function openMangaReadPage(){ homePage.classList.add('hidden'); browsePage_el.classList.remove('active'); watchPage.classList.remove('active'); mangaReadPage.classList.add('active'); document.getElementById('genreBar').style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); shortcutsBtn.classList.add('visible'); }
+    window.goToBrowsePage=()=>{ homePage.classList.add('hidden'); watchPage.classList.remove('active'); browsePage_el.classList.add('active'); mangaReadPage.classList.remove('active'); document.getElementById('genreBar').style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); loadBrowsePage(1); };
 
-    // ── BROWSE ────────────────────────────────────────────────────────────────
     async function loadBrowsePage(page){
         if(state.isLoadingBrowse) return; state.isLoadingBrowse=true; browseGrid.innerHTML='';
         for(let i=0;i<20;i++){const s=document.createElement('div');s.className='skeleton';s.style.cssText='aspect-ratio:3/4;border-radius:9px;';browseGrid.appendChild(s);}
@@ -2739,20 +2189,15 @@
             const normalized = media.map(m => m._source ? m : fmtAnime(m)).filter(Boolean);
             populateGrid(browseGrid, normalized);
             renderBrowsePagination();
-        } catch(e) {
-            browseGrid.innerHTML='<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;">Failed to load. Please try again.</div>';
-        } finally{state.isLoadingBrowse=false;}
+        } catch(e) { browseGrid.innerHTML='<div style="color:var(--text3);text-align:center;padding:40px;grid-column:1/-1;">Failed to load. Please try again.</div>'; }
+        finally{state.isLoadingBrowse=false;}
     }
     function renderBrowsePagination(){
         const{browsePage:p,browseTotalPages:t}=state;
-        browsePagination.innerHTML=`
-            <button ${p<=1?'disabled':''} onclick="window.goToBrowsePageNumber(${p-1})">← Prev</button>
-            <span class="page-indicator">Page ${p} of ${t}</span>
-            <button ${p>=t?'disabled':''} onclick="window.goToBrowsePageNumber(${p+1})">Next →</button>`;
+        browsePagination.innerHTML=`<button ${p<=1?'disabled':''} onclick="window.goToBrowsePageNumber(${p-1})">← Prev</button><span class="page-indicator">Page ${p} of ${t}</span><button ${p>=t?'disabled':''} onclick="window.goToBrowsePageNumber(${p+1})">Next →</button>`;
     }
     window.goToBrowsePageNumber=page=>{if(page<1||page>state.browseTotalPages)return;loadBrowsePage(page);};
 
-    // ── WATCH SIDEBAR ─────────────────────────────────────────────────────────
     function updateWatchUI(){
         const a=state.selectedAnime; if(!a) return;
         $('#sidebarTitle').textContent=a.title||'Unknown';
@@ -2768,30 +2213,17 @@
         if(a.coverImage){$('#sidebarCover').src=a.coverImage;$('#sidebarCover').style.display='block';$('#sidebarCoverPlaceholder').style.display='none';}
         else{$('#sidebarCover').style.display='none';$('#sidebarCoverPlaceholder').style.display='flex';}
     }
-
-    // ── RELATIONS ─────────────────────────────────────────────────────────────
-    async function loadAnimeRelations(id){
-        try{state.animeRelations=await fetchRelations(id);}catch(e){state.animeRelations=[];}
-        renderRelations();
-    }
+    async function loadAnimeRelations(id){ try{state.animeRelations=await fetchRelations(id);}catch(e){state.animeRelations=[];} renderRelations(); }
     function renderRelations(){
         if(!state.animeRelations.length){sidebarRelations.innerHTML='';return;}
-        sidebarRelations.innerHTML=`<span class="rel-label">Related Seasons</span>`+
-            state.animeRelations.map(r=>`<div class="related-season-item" onclick="window.selectRelatedAnime(${r.id})"><span>${escapeHTML(r.title)}</span><span class="rel-meta">${escapeHTML(r.format)} ${escapeHTML(r.season)}</span></div>`).join('');
+        sidebarRelations.innerHTML=`<span class="rel-label">Related Seasons</span>`+state.animeRelations.map(r=>`<div class="related-season-item" onclick="window.selectRelatedAnime(${r.id})"><span>${escapeHTML(r.title)}</span><span class="rel-meta">${escapeHTML(r.format)} ${escapeHTML(r.season)}</span></div>`).join('');
     }
     window.selectRelatedAnime=id=>fetchById(id).then(a=>{if(a)selectAnime(a);});
 
-    // ── PROVIDER DROPDOWN ─────────────────────────────────────────────────────
     function renderProviderDropdown(){
         provDot.style.backgroundColor=state.selectedProvider.color;
         provLabel.textContent=state.selectedProvider.name;
-        provMenu.innerHTML=PROVIDERS.map(p=>
-            `<div class="provider-option${p.id===state.selectedProvider.id?' selected':''}" data-provider="${p.id}">
-                <span class="prov-dot" style="background:${p.color};width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;"></span>
-                <span>${escapeHTML(p.icon)} ${escapeHTML(p.name)}${p.external?' ↗':''}</span>
-                <span class="prov-desc">${escapeHTML(p.description)}</span>
-             </div>`
-        ).join('');
+        provMenu.innerHTML=PROVIDERS.map(p=>`<div class="provider-option${p.id===state.selectedProvider.id?' selected':''}" data-provider="${p.id}"><span class="prov-dot" style="background:${p.color};width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;"></span><span>${escapeHTML(p.icon)} ${escapeHTML(p.name)}${p.external?' ↗':''}</span><span class="prov-desc">${escapeHTML(p.description)}</span></div>`).join('');
         provMenu.querySelectorAll('.provider-option').forEach(opt=>{
             opt.addEventListener('click',e=>{
                 e.stopPropagation();
@@ -2815,18 +2247,12 @@
             });
         });
     }
-    window.toggleProviderDropdown=()=>{
-        state.providerDropdownOpen=!state.providerDropdownOpen;
-        provWrap.classList.toggle('open',state.providerDropdownOpen);
-    };
+    window.toggleProviderDropdown=()=>{ state.providerDropdownOpen=!state.providerDropdownOpen; provWrap.classList.toggle('open',state.providerDropdownOpen); };
     document.addEventListener('click',e=>{if(!provWrap.contains(e.target)){state.providerDropdownOpen=false;provWrap.classList.remove('open');}});
 
-    // ── AUDIO ─────────────────────────────────────────────────────────────────
     function updateAudioToggle(){
-        if(state.selectedProvider.supportsAudio&&state.selectedAnime){
-            audioToggle.style.display='flex';
-            audioToggle.querySelectorAll('.audio-btn').forEach(b=>b.classList.toggle('active',b.dataset.audio===state.selectedAudio));
-        } else audioToggle.style.display='none';
+        if(state.selectedProvider.supportsAudio&&state.selectedAnime){ audioToggle.style.display='flex'; audioToggle.querySelectorAll('.audio-btn').forEach(b=>b.classList.toggle('active',b.dataset.audio===state.selectedAudio)); }
+        else audioToggle.style.display='none';
     }
     window.setAudio=audio=>{
         state.selectedAudio=audio;
@@ -2837,7 +2263,6 @@
         loadStream(prog&&prog.time>10?prog.time:0);
     };
 
-    // ── SEARCH ────────────────────────────────────────────────────────────────
     async function handleSearchInput(){
         const q=searchInput.value.trim();
         if(q.length<2){searchDropdown.classList.remove('active');searchDropdown.innerHTML='';return;}
@@ -2849,18 +2274,9 @@
                 const results = await searchAnime(q);
                 const fmted = results.map(m => { const f = m._source ? m : fmtAnime(m); if(f) rmap[String(f.id)]=f; return f; }).filter(Boolean);
                 searchDropdown.innerHTML=fmted.length
-                    ? fmted.map(f=>{
-                        const rating=f.averageScore?`⭐${(f.averageScore/10).toFixed(1)}`:'';
-                        const meta=[f.format,f.episodes?`${f.episodes}eps`:'',rating].filter(Boolean).join(' · ');
-                        const hist=getHistoryEntry(f.id);
-                        const epProg=hist?getEpProgress(f.id,hist.episode):null;
-                        const resumeStr=hist?`<div class="search-result-resume">▶ EP${hist.episode||1}${epProg&&epProg.time>10?' · '+fmtTime(epProg.time):''}</div>`:'';
-                        return `<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">${escapeHTML(meta)}</div>${resumeStr}</div></div>`;
-                    }).join('')
+                    ? fmted.map(f=>{ const rating=f.averageScore?`⭐${(f.averageScore/10).toFixed(1)}`:''; const meta=[f.format,f.episodes?`${f.episodes}eps`:'',rating].filter(Boolean).join(' · '); const hist=getHistoryEntry(f.id); const epProg=hist?getEpProgress(f.id,hist.episode):null; const resumeStr=hist?`<div class="search-result-resume">▶ EP${hist.episode||1}${epProg&&epProg.time>10?' · '+fmtTime(epProg.time):''}</div>`:''; return `<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">${escapeHTML(meta)}</div>${resumeStr}</div></div>`; }).join('')
                     : '<div style="padding:14px;text-align:center;color:var(--text3);">No results found</div>';
-                searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{
-                    item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectAnime(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}});
-                });
+                searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{ item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectAnime(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}}); });
             } else {
                 const raw=await mdSearchManga(q);
                 const fmted=raw.filter(Boolean);
@@ -2868,9 +2284,7 @@
                 searchDropdown.innerHTML=fmted.length
                     ? fmted.map(f=>`<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" referrerpolicy="no-referrer" onerror="this.style.display='none'"><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">WEBTOON${f.genres?.[0] ? ' · ' + escapeHTML(f.genres[0]) : ''}</div></div></div>`).join('')
                     : '<div style="padding:14px;text-align:center;color:var(--text3);">No webtoon found</div>';
-                searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{
-                    item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectManga(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}});
-                });
+                searchDropdown.querySelectorAll('.search-result-item').forEach(item=>{ item.addEventListener('click',()=>{const d=rmap[item.dataset.id];if(d){selectManga(d);searchDropdown.classList.remove('active');searchInput.value=d.title||'';}}); });
             }
         } catch(e) {
             console.error('[search]', e);
@@ -2880,12 +2294,8 @@
     searchInput.addEventListener('input',()=>{clearTimeout(state.searchTimeout);state.searchTimeout=setTimeout(handleSearchInput,350);});
     searchInput.addEventListener('focus',()=>{if(searchInput.value.trim().length>=2&&searchDropdown.innerHTML)searchDropdown.classList.add('active');});
     document.addEventListener('click',e=>{if(!searchDropdown.contains(e.target)&&e.target!==searchInput)searchDropdown.classList.remove('active');});
-    searchInput.addEventListener('keydown',e=>{
-        if(e.key==='Escape'){searchDropdown.classList.remove('active');searchInput.blur();}
-        if(e.key==='Enter'){const f=searchDropdown.querySelector('.search-result-item');if(f)f.click();}
-    });
+    searchInput.addEventListener('keydown',e=>{ if(e.key==='Escape'){searchDropdown.classList.remove('active');searchInput.blur();} if(e.key==='Enter'){const f=searchDropdown.querySelector('.search-result-item');if(f)f.click();} });
 
-    // ── KEYBOARD SHORTCUTS ────────────────────────────────────────────────────
     shortcutsBtn.addEventListener('click',()=>shortcutsPanel.classList.toggle('visible'));
     document.addEventListener('click',e=>{if(!shortcutsPanel.contains(e.target)&&e.target!==shortcutsBtn)shortcutsPanel.classList.remove('visible');});
     document.addEventListener('keydown',e=>{
@@ -2894,77 +2304,30 @@
         const onManga=mangaReadPage.classList.contains('active');
         const onFS=fsOverlay.classList.contains('active');
         if(e.key==='/'&&!e.ctrlKey){e.preventDefault();searchInput.focus();return;}
-        if(e.key==='Escape'){
-            if(onFS){closeMangaFullscreen();return;}
-            if(!resumeModal.classList.contains('hidden')){resumeModal.classList.add('hidden');return;}
-            if(onWatch||onManga) goHome();
-            else{searchDropdown.classList.remove('active');searchInput.blur();}
-            return;
-        }
+        if(e.key==='Escape'){ if(onFS){closeMangaFullscreen();return;} if(!resumeModal.classList.contains('hidden')){resumeModal.classList.add('hidden');return;} if(onWatch||onManga) goHome(); else{searchDropdown.classList.remove('active');searchInput.blur();} return; }
         if((e.key==='m'||e.key==='M')&&(onManga||onWatch)&&!onFS){if(onManga)openMangaFullscreen();return;}
         if(onManga&&!onWatch){
-            if(e.key==='ArrowRight'){
-                e.preventDefault();
-                const mm=state.mangaMode;
-                if(mm.readMode==='single') spNav(1);
-                else navigateChapter(1);
-                return;
-            }
-            if(e.key==='ArrowLeft'){
-                e.preventDefault();
-                const mm=state.mangaMode;
-                if(mm.readMode==='single') spNav(-1);
-                else navigateChapter(-1);
-                return;
-            }
+            if(e.key==='ArrowRight'){ e.preventDefault(); const mm=state.mangaMode; if(mm.readMode==='single') spNav(1); else navigateChapter(1); return; }
+            if(e.key==='ArrowLeft'){ e.preventDefault(); const mm=state.mangaMode; if(mm.readMode==='single') spNav(-1); else navigateChapter(-1); return; }
         }
-        if(onFS){
-            if(e.key==='ArrowRight'){e.preventDefault();if(_mfsSinglePage)mfsSpNav(1);else mfsNavChapter(1);return;}
-            if(e.key==='ArrowLeft'){e.preventDefault();if(_mfsSinglePage)mfsSpNav(-1);else mfsNavChapter(-1);return;}
-        }
+        if(onFS){ if(e.key==='ArrowRight'){e.preventDefault();if(_mfsSinglePage)mfsSpNav(1);else mfsNavChapter(1);return;} if(e.key==='ArrowLeft'){e.preventDefault();if(_mfsSinglePage)mfsSpNav(-1);else mfsNavChapter(-1);return;} }
         if(!onWatch) return;
         if(e.key==='f'||e.key==='F'){e.preventDefault();toggleFullscreen();return;}
         if(e.key==='d'||e.key==='D'){if(state.selectedProvider.supportsAudio){setAudio(state.selectedAudio==='sub'?'dub':'sub');showToast(`Audio: ${state.selectedAudio.toUpperCase()}`);}return;}
-        if(e.key==='p'||e.key==='P'){
-            const curr=PROVIDERS.findIndex(p=>p.id===state.selectedProvider.id);
-            const nxt=PROVIDERS[(curr+1)%PROVIDERS.length];
-            state.selectedProvider=nxt; renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
-            const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
-            loadStream(prog&&prog.time>10?prog.time:0);
-            showToast(`${nxt.name}`); return;
-        }
-        if(e.key==='ArrowRight'){
-            const total=state.selectedAnime?.episodes||0;
-            if(state.selectedEpisode<total){state.selectedEpisode++;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();loadStream(0);showToast(`Episode ${state.selectedEpisode}`);}
-            return;
-        }
-        if(e.key==='ArrowLeft'){
-            if(state.selectedEpisode>1){
-                state.selectedEpisode--;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();
-                const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode);
-                if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
-                else loadStream(0);
-                showToast(`Episode ${state.selectedEpisode}`);
-            }
-            return;
-        }
+        if(e.key==='p'||e.key==='P'){ const curr=PROVIDERS.findIndex(p=>p.id===state.selectedProvider.id); const nxt=PROVIDERS[(curr+1)%PROVIDERS.length]; state.selectedProvider=nxt; renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI(); const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode); loadStream(prog&&prog.time>10?prog.time:0); showToast(`${nxt.name}`); return; }
+        if(e.key==='ArrowRight'){ const total=state.selectedAnime?.episodes||0; if(state.selectedEpisode<total){state.selectedEpisode++;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI();loadStream(0);showToast(`Episode ${state.selectedEpisode}`);} return; }
+        if(e.key==='ArrowLeft'){ if(state.selectedEpisode>1){ state.selectedEpisode--;updateHistory(state.selectedAnime,state.selectedEpisode);syncEpisodeUI(); const prog=getEpProgress(state.selectedAnime?.id,state.selectedEpisode); if(prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(state.selectedEpisode,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0)); else loadStream(0); showToast(`Episode ${state.selectedEpisode}`); } return; }
     });
 
-    // ── LIFECYCLE ─────────────────────────────────────────────────────────────
     window.addEventListener('beforeunload',()=>stopProgressTracking());
-    document.addEventListener('visibilitychange',()=>{
-        if(document.visibilityState==='hidden'){stopProgressTracking();}
-        else if(watchPage.classList.contains('active')&&playerIframe.src&&playerIframe.src!=='about:blank') startProgressTracking(state.currentTime);
-    });
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'){stopProgressTracking();} else if(watchPage.classList.contains('active')&&playerIframe.src&&playerIframe.src!=='about:blank') startProgressTracking(state.currentTime); });
 
-    // Expose globals
     window.state        = state;
     window.selectManga  = selectManga;
     window.selectAnime  = selectAnime;
     window.openMangaFullscreen = openMangaFullscreen;
     window.navigateChapter = navigateChapter;
 
-    // ── INIT ──────────────────────────────────────────────────────────────────
     setDataSource(DataSource.ANILIST);
     renderProviderDropdown(); updateAudioToggle();
     episodeSection.style.display='none'; s5EpSection.style.display='none'; audioToggle.style.display='none';
