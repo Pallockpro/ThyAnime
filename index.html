@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ThyAnime — Watch Anime & Read Manga Free</title>
 <link rel="icon" type="image/gif" href="https://media1.tenor.com/m/fSskkWtbhHIAAAAC/delta-eminence-in-shadow.gif">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,8 +29,8 @@
   --nav-h:68px;--sidebar-w:240px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:
   radial-gradient(ellipse 60% 45% at 12% -10%,rgba(139,92,246,0.10) 0%,transparent 55%),
   radial-gradient(ellipse 50% 40% at 92% 92%,rgba(59,130,246,0.08) 0%,transparent 55%),
@@ -141,7 +141,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .dropdown-empty{padding:32px 20px;text-align:center;color:var(--text-3);font-size:0.8rem;font-family:var(--font);}
 
 /* Sidebar drawer */
-#appSidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:rgba(10,9,18,0.94);backdrop-filter:blur(24px);border-right:1px solid var(--border);z-index:1100;transform:translateX(-100%);transition:transform 0.32s var(--ease);display:flex;flex-direction:column;padding:18px 0;}
+#appSidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:rgba(10,9,18,0.94);backdrop-filter:blur(24px);border-right:1px solid var(--border);z-index:1100;transform:translateX(-100%);transition:transform 0.32s var(--ease);display:flex;flex-direction:column;padding:18px 0;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));}
 #appSidebar.open{transform:translateX(0);}
 .sidebar-brand{display:flex;align-items:center;gap:10px;padding:8px 20px 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
 .sidebar-brand img{width:34px;height:34px;border-radius:10px;object-fit:cover;box-shadow:0 0 0 1.5px rgba(139,92,246,0.4);}
@@ -204,7 +204,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .section-clear-btn:hover{color:#fff;background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);}
 
 /* Row scroll */
-.row-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-behavior:smooth;scroll-snap-type:x proximity;}
+.row-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-behavior:smooth;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
 .row-scroll::-webkit-scrollbar{height:4px;}
 .row-scroll::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.3);border-radius:10px;}
 .row-scroll::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,0.5);}
@@ -222,6 +222,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .history-time-badge{position:absolute;bottom:8px;right:8px;background:rgba(8,8,13,0.8);backdrop-filter:blur(6px);color:rgba(255,255,255,0.9);font-family:var(--font);font-weight:600;font-size:0.6rem;padding:3px 7px;border-radius:6px;z-index:2;}
 .history-remove-btn{position:absolute;top:7px;right:7px;width:22px;height:22px;border-radius:7px;background:rgba(8,8,13,0.7);backdrop-filter:blur(6px);border:none;color:rgba(255,255,255,0.8);cursor:pointer;font-size:0.7rem;display:flex;align-items:center;justify-content:center;z-index:3;opacity:0;transition:opacity 0.2s,background 0.2s;}
 .history-card:hover .history-remove-btn{opacity:1;}
+@media (hover:none){.history-remove-btn{opacity:1;}}
 .history-remove-btn:hover{background:rgba(220,38,38,0.9);color:#fff;}
 .history-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.25s;z-index:2;}
 .history-play-btn span{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;box-shadow:0 8px 26px rgba(139,92,246,0.5);}
@@ -271,6 +272,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 .anime-card-watchlist{position:absolute;top:8px;right:8px;z-index:3;width:28px;height:28px;border-radius:8px;background:rgba(8,8,13,0.8);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:all var(--t) var(--ease);font-size:0.85rem;}
 .anime-card:hover .anime-card-watchlist{opacity:1;}
+@media (hover:none){.anime-card-watchlist{opacity:1;}}
 .anime-card-watchlist:hover{background:rgba(139,92,246,0.4);border-color:rgba(139,92,246,0.6);color:#fff;}
 .anime-card-watchlist.in-list{background:linear-gradient(135deg,var(--primary),var(--accent));border-color:transparent;color:#fff;opacity:1;}
 .anime-card-info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1;}
@@ -534,7 +536,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 /* Manga fullscreen */
 #mangaFullscreenOverlay{display:none;position:fixed;inset:0;z-index:5000;background:#000;flex-direction:column;overflow:hidden;}
 #mangaFullscreenOverlay.active{display:flex;}
-.mfs-topbar{display:flex;align-items:center;gap:10px;padding:11px 18px;background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
+.mfs-topbar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-top:calc(11px + env(safe-area-inset-top,0px));background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
 .mfs-topbar.hidden{opacity:0;pointer-events:none;}
 .mfs-title{font-family:var(--font);font-weight:700;font-size:0.9rem;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .mfs-chapter-info{font-size:0.75rem;color:var(--text-3);font-family:var(--font);white-space:nowrap;}
@@ -544,7 +546,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .mfs-tool-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:var(--text-2);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.72rem;transition:all var(--t);white-space:nowrap;}
 .mfs-tool-btn:hover{background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);color:var(--primary-3);}
 .mfs-tool-btn.active{background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);color:var(--primary-3);}
-.mfs-scroll{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;gap:0;padding:0;scroll-behavior:smooth;background:#0a0a0f;}
+.mfs-scroll{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;gap:0;padding:0;scroll-behavior:smooth;background:#0a0a0f;-webkit-overflow-scrolling:touch;}
 .mfs-scroll::-webkit-scrollbar{width:4px;}
 .mfs-scroll::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.3);border-radius:10px;}
 .mfs-page-img{display:block;max-width:100%;object-fit:contain;}
@@ -554,7 +556,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .mfs-scroll.single-page{display:flex;flex-direction:row;overflow:hidden;}
 .mfs-scroll.single-page .mfs-page-img{display:none;width:100%;height:100%;object-fit:contain;}
 .mfs-scroll.single-page .mfs-page-img.fs-current{display:block;}
-.mfs-bottombar{display:flex;align-items:center;gap:10px;padding:11px 18px;background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-top:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
+.mfs-bottombar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-top:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
 .mfs-bottombar.hidden{opacity:0;pointer-events:none;}
 .mfs-progress-track{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;cursor:pointer;}
 .mfs-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--pink));border-radius:2px;transition:width 0.2s;}
@@ -571,7 +573,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 #mangaFullscreenOverlay.sp-mode .mfs-sp-nav{display:flex;}
 
 /* Resume modal */
-#resumeModal{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);}
+#resumeModal{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);padding:16px;}
 #resumeModal.hidden{display:none;}
 .resume-card{background:var(--glass-strong);backdrop-filter:blur(24px);border:1px solid rgba(139,92,246,0.35);border-radius:var(--radius-lg);padding:32px 36px;display:flex;flex-direction:column;gap:16px;max-width:460px;width:90%;box-shadow:0 36px 90px rgba(0,0,0,0.85),0 0 60px rgba(139,92,246,0.15);}
 .resume-icon{font-size:2rem;line-height:1;color:var(--primary-3);}
@@ -655,7 +657,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .settings-toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.24s var(--ease);}
 .settings-toggle.on .settings-toggle-knob{transform:translateX(20px);}
 
-/* Prompt modal (for username/password edit) */
+/* Prompt modal */
 #promptModal{position:fixed;inset:0;z-index:1300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.82);backdrop-filter:blur(14px);padding:20px;}
 #promptModal.hidden{display:none;}
 .prompt-card{background:var(--glass-strong);backdrop-filter:blur(28px);border:1px solid rgba(139,92,246,0.35);border-radius:var(--radius-lg);padding:30px 32px;max-width:420px;width:100%;box-shadow:0 36px 90px rgba(0,0,0,0.85),0 0 60px rgba(139,92,246,0.18);position:relative;animation:authIn 0.3s var(--ease);}
@@ -685,8 +687,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 #shortcutsBtn.visible{display:flex;}
 
 /* Toasts */
-.toast-container{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
-.toast{background:var(--glass-strong);backdrop-filter:blur(20px);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:12px;font-family:var(--font);font-weight:600;font-size:0.82rem;box-shadow:0 14px 44px rgba(0,0,0,0.7),0 0 0 1px rgba(139,92,246,0.08);animation:toastIn 0.3s var(--ease);display:flex;align-items:center;gap:9px;white-space:nowrap;}
+.toast-container{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 12px;max-width:100vw;}
+.toast{background:var(--glass-strong);backdrop-filter:blur(20px);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:12px;font-family:var(--font);font-weight:600;font-size:0.82rem;box-shadow:0 14px 44px rgba(0,0,0,0.7),0 0 0 1px rgba(139,92,246,0.08);animation:toastIn 0.3s var(--ease);display:flex;align-items:center;gap:9px;}
 @keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
 /* Footer */
@@ -757,6 +759,289 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   .section-title{font-size:1rem;}
   .watch-title-bar{max-width:calc(100% - 120px);font-size:0.9rem;}
   .mode-toggle-btn{padding:6px 10px;font-size:0.7rem;}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE / iOS OPTIMIZATIONS  (applied via html.is-mobile and width)
+   ═══════════════════════════════════════════════════════════════════ */
+html.is-mobile{-webkit-tap-highlight-color:transparent;}
+html.is-mobile body{overscroll-behavior-y:none;}
+/* Prevent iOS zoom on focus by forcing 16px min on inputs */
+html.is-mobile input,
+html.is-mobile select,
+html.is-mobile textarea,
+html.is-mobile .topbar-search input{font-size:16px !important;}
+html.ios body{min-height:-webkit-fill-available;}
+/* Push things below the notch */
+html.ios .topbar{padding-top:env(safe-area-inset-top,0px);height:calc(var(--nav-h) + env(safe-area-inset-top,0px));}
+html.ios #appSidebar{padding-top:calc(18px + env(safe-area-inset-top,0px));}
+html.ios .mfs-topbar{padding-top:calc(11px + env(safe-area-inset-top,0px));}
+html.ios .mfs-bottombar{padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));}
+html.ios .toast-container{bottom:calc(26px + env(safe-area-inset-bottom,0px));}
+html.ios #shortcutsBtn{bottom:calc(24px + env(safe-area-inset-bottom,0px));}
+html.ios #shortcutsPanel{bottom:calc(80px + env(safe-area-inset-bottom,0px));}
+html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px));}
+
+@media (max-width: 820px){
+  :root{--nav-h:58px;}
+
+  /* iOS safe area is handled above; ensure body knows about bottom too */
+  body{padding-bottom:env(safe-area-inset-bottom,0px);}
+
+  /* ---- TOPBAR ---- */
+  .topbar-inner{padding:0 10px;gap:8px;}
+  .logo-icon{width:32px;height:32px;border-radius:9px;}
+  .logo span{display:none;}
+  .icon-btn,.avatar-btn{width:36px;height:36px;border-radius:10px;}
+  .mode-toggle{padding:3px;}
+  .mode-toggle-btn{padding:5px 9px;font-size:0.68rem;}
+  .mode-toggle-btn svg{width:11px;height:11px;}
+  .topbar-search{flex:1;min-width:0;max-width:none;}
+  .topbar-search input{padding:9px 12px 9px 34px;font-size:16px;height:38px;}
+  .topbar-search-icon{left:11px;}
+  .topbar-search-kbd{display:none;}
+
+  /* ---- MAIN CONTAINER ---- */
+  .app{padding:calc(var(--nav-h) + 14px) 12px calc(28px + env(safe-area-inset-bottom,0px));}
+
+  /* ---- HERO ---- */
+  .hero-section{
+    aspect-ratio:4/5;
+    min-height:380px;
+    max-height:560px;
+    border-radius:18px;
+    margin-bottom:22px;
+  }
+  .hero-content{padding:22px 18px 20px;max-width:100%;}
+  .hero-title{font-size:1.4rem;margin-bottom:10px;}
+  .hero-genres{gap:5px;margin-bottom:8px;}
+  .hero-genre-tag{font-size:0.66rem;padding:3px 9px;}
+  .hero-desc{font-size:0.8rem;-webkit-line-clamp:2;margin-bottom:14px;}
+  .hero-badges{gap:5px;margin-bottom:10px;}
+  .hero-badge-pill{font-size:0.64rem;padding:4px 9px;gap:4px;}
+  .hero-actions{gap:8px;}
+  .hero-btn{padding:10px 16px;font-size:0.8rem;border-radius:10px;gap:6px;}
+  .hero-pagination{bottom:12px;right:12px;gap:6px;}
+  .hero-page-arrow{width:30px;height:30px;border-radius:9px;}
+  .hero-page-label{font-size:0.66rem;padding:5px 10px;}
+  .hero-top-left{top:14px;left:14px;}
+  .hero-airing-badge{font-size:0.64rem;padding:5px 10px;}
+
+  /* ---- SECTIONS ---- */
+  .section-block{margin-bottom:26px;}
+  .section-header{margin-bottom:12px;gap:8px;}
+  .section-title{font-size:0.98rem;gap:8px;}
+  .section-title-icon{width:28px;height:28px;border-radius:8px;}
+  .section-clear-btn{font-size:0.7rem;padding:5px 10px;}
+
+  /* ---- CARDS ---- */
+  .history-card{flex:0 0 200px;border-radius:14px;}
+  .history-card-title{font-size:0.78rem;}
+  .history-remove-btn{opacity:1;}
+  .trending-card{flex:0 0 140px;}
+  .trending-number{font-size:4.6rem;-webkit-text-stroke:2px rgba(139,92,246,0.55);margin-right:-16px;margin-bottom:-4px;}
+  .trending-poster{width:105px;}
+  .recent-card{flex:0 0 200px;padding:8px;gap:10px;}
+  .recent-thumb{width:56px;height:76px;}
+
+  /* ---- GRIDS ---- */
+  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;}
+  .manga-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;}
+  .anime-card-info{padding:8px 10px 10px;}
+  .anime-card-title{font-size:0.76rem;}
+  .anime-card-sub{font-size:0.62rem;}
+  .anime-card-watchlist{opacity:1;}
+  .anime-card-play{width:44px;height:44px;}
+  .anime-card-badge{font-size:0.62rem;padding:2px 7px;}
+  .anime-card-ep-badge{font-size:0.58rem;padding:2px 7px;}
+  .anime-card-airing-badge{font-size:0.54rem;padding:2px 7px;}
+
+  /* ---- GENRE BAR ---- */
+  .genre-bar-row{gap:0;}
+  .genre-scroll-arrow{display:none;}
+  .genre-bar-inner{-webkit-overflow-scrolling:touch;padding:4px 0;}
+  .genre-btn{padding:7px 13px;font-size:0.72rem;border-radius:9px;}
+
+  /* ---- TABS ---- */
+  .tab-bar-row{flex-wrap:wrap;gap:8px;}
+  .tab-btn{padding:10px 14px;font-size:0.8rem;}
+
+  /* ---- DETAILS PAGE ---- */
+  .details-hero{border-radius:18px;margin-bottom:22px;}
+  .details-hero-content{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:26px 16px 22px;
+    min-height:0;
+    gap:16px;
+  }
+  .details-poster{width:130px;border-radius:12px;}
+  .details-title{font-size:1.3rem;letter-spacing:-0.02em;}
+  .details-alt-title{font-size:0.76rem;margin-bottom:10px;}
+  .details-stats{justify-content:center;gap:12px;margin-bottom:14px;}
+  .details-stat-value{font-size:0.8rem;}
+  .details-stat-label{font-size:0.58rem;}
+  .details-actions{justify-content:center;width:100%;}
+  .details-actions .hero-btn{flex:1 1 auto;justify-content:center;min-width:120px;}
+  .details-desc{font-size:0.84rem;line-height:1.7;}
+  .details-genre{font-size:0.72rem;padding:5px 12px;}
+
+  /* ---- WATCH PAGE ---- */
+  .watch-top-bar{gap:8px;margin-bottom:12px;}
+  .back-btn{padding:8px 13px;font-size:0.78rem;border-radius:10px;}
+  .watch-title-bar{font-size:0.86rem;max-width:100%;flex:1;min-width:0;}
+  .watch-layout{gap:16px;}
+  .player-card{border-radius:14px;}
+  .controls-row{gap:8px;padding:12px 0;}
+  .provider-dropdown-wrap{flex:1 1 100%;min-width:0;}
+  .provider-dropdown-btn{padding:10px 12px;font-size:0.78rem;}
+  .prov-desc{display:none;}
+  .audio-toggle{flex:0 0 auto;}
+  .audio-btn{padding:7px 12px;font-size:0.72rem;}
+  .episode-section{gap:8px;}
+  .episode-grid{max-height:180px;gap:5px;}
+  .episode-btn{width:38px;height:38px;font-size:0.72rem;border-radius:9px;}
+  .s5-ep-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;max-height:260px;}
+  .s5-ep-label{font-size:0.66rem;padding:5px 7px;}
+  .s5-ep-label small{font-size:0.62rem;}
+
+  /* Watch sidebar stacks below; constrain it */
+  .anime-sidebar{position:static;padding:16px;gap:12px;}
+  .anime-sidebar-cover{max-width:170px;margin:0 auto;width:100%;}
+  .anime-sidebar h2{font-size:1rem;text-align:center;}
+  .sidebar-tags{justify-content:center;}
+  .sidebar-desc{max-height:none;font-size:0.8rem;}
+  .related-season-item span{font-size:0.74rem;}
+
+  /* Last watched banner */
+  #lastWatchedBanner{padding:10px 12px;gap:8px;}
+  .lw-icon{font-size:1.1rem;}
+  .lw-title{font-size:0.76rem;}
+  .lw-sub{font-size:0.66rem;}
+  .lw-pct{font-size:0.86rem;}
+  .lw-bar{width:60px;}
+  .lw-dismiss{padding:3px 8px;font-size:0.72rem;}
+
+  /* Progress labels */
+  .player-progress-label{padding:5px 12px 6px;font-size:0.62rem;}
+  .progress-resume-note{font-size:0.58rem;}
+
+  /* ---- MANGA READER ---- */
+  .manga-top-bar{gap:7px;padding:10px 0 10px;}
+  .manga-chapter-select{font-size:0.76rem;padding:8px 10px;flex:1 1 auto;min-width:110px;max-width:none;}
+  .manga-nav-btn{padding:8px 12px;font-size:0.74rem;border-radius:10px;}
+  .manga-fs-btn{padding:8px 13px;font-size:0.74rem;border-radius:10px;}
+  .manga-toolbar{gap:5px;padding:8px 0;}
+  .manga-tool-btn{font-size:0.68rem;padding:6px 10px;border-radius:8px;}
+  .manga-bookmark-btn{font-size:0.68rem;padding:6px 10px;}
+  .manga-pages-container{padding:8px;border-radius:14px;}
+  .manga-page-num{font-size:0.58rem;padding:2px 6px;}
+  .manga-bottom-nav{padding:14px 0;gap:8px;}
+
+  /* Hide the sidebar on mobile manga reader to keep focus on pages */
+  #mangaSidebar{display:none !important;}
+
+  /* ---- MANGA FULLSCREEN ---- */
+  .mfs-topbar{padding:8px 10px;flex-wrap:wrap;gap:6px;}
+  .mfs-title{font-size:0.8rem;width:100%;}
+  .mfs-chapter-info{font-size:0.68rem;}
+  .mfs-close-btn{padding:6px 10px;font-size:0.72rem;}
+  .mfs-toolbar{width:100%;justify-content:flex-end;flex-wrap:wrap;gap:5px;margin-left:0;}
+  .mfs-tool-btn{font-size:0.64rem;padding:5px 8px;}
+  .mfs-chapter-select{font-size:0.7rem;padding:6px 9px;max-width:130px;}
+  .mfs-bottombar{padding:8px 10px;gap:6px;}
+  .mfs-page-label{font-size:0.68rem;}
+  .mfs-nav-btn{width:34px;height:34px;border-radius:9px;}
+  .mfs-sp-nav{width:46px;height:46px;font-size:1.2rem;}
+  #mfsSpLeft{left:8px;}
+  #mfsSpRight{right:8px;}
+  .mfs-progress-track{height:3px;}
+
+  /* ---- SIDEBAR DRAWER ---- */
+  #appSidebar{width:78vw;max-width:300px;}
+  .sidebar-link{padding:12px 14px;font-size:0.86rem;}
+
+  /* ---- DROPDOWNS ---- */
+  .dropdown-panel{left:12px;right:12px;width:auto;}
+
+  /* ---- MODALS ---- */
+  #authModal{padding:12px;}
+  .auth-card{padding:28px 22px;border-radius:20px;max-width:100%;}
+  .auth-heading{font-size:1.2rem;}
+  .auth-subtitle{font-size:0.78rem;}
+  .auth-logo img{width:54px;height:54px;}
+  #promptModal{padding:12px;}
+  .prompt-card{padding:24px 22px;border-radius:18px;max-width:100%;}
+  #resumeModal{padding:12px;}
+  .resume-card{padding:24px 22px;border-radius:18px;max-width:100%;width:100%;}
+  .resume-card h3{font-size:1rem;}
+  .resume-card p{font-size:0.8rem;}
+  .resume-btn{font-size:0.8rem;padding:11px 14px;}
+
+  /* ---- TOASTS ---- */
+  .toast-container{
+    left:12px;
+    right:12px;
+    transform:none;
+    align-items:stretch;
+    bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  }
+  .toast{
+    padding:11px 14px;
+    font-size:0.78rem;
+    text-align:center;
+    justify-content:center;
+    white-space:normal;
+  }
+
+  /* ---- SHORTCUTS ---- */
+  #shortcutsBtn{right:12px;padding:8px 12px;font-size:0.68rem;bottom:calc(16px + env(safe-area-inset-bottom,0px));}
+  #shortcutsPanel{left:12px;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px));min-width:0;}
+
+  /* ---- FOOTER ---- */
+  .footer{padding:34px 14px 22px;margin-top:40px;}
+  .footer-top{flex-direction:column;gap:22px;margin-bottom:24px;}
+  .footer-cols{gap:28px;}
+  .footer-bottom{flex-direction:column;text-align:center;gap:12px;}
+
+  /* ---- SETTINGS ---- */
+  .settings-card{padding:18px;border-radius:14px;}
+  .settings-profile{flex-direction:column;align-items:flex-start;gap:12px;}
+  .settings-avatar{width:56px;height:56px;border-radius:14px;font-size:1.3rem;}
+  .settings-actions .settings-btn{flex:1 1 100%;justify-content:center;}
+  .settings-option{flex-wrap:wrap;gap:10px;}
+}
+
+/* Extra-small phones (iPhone SE, older) */
+@media (max-width: 420px){
+  .hero-section{min-height:340px;border-radius:16px;}
+  .hero-title{font-size:1.2rem;}
+  .hero-desc{-webkit-line-clamp:2;font-size:0.76rem;}
+  .hero-btn{padding:9px 14px;font-size:0.76rem;}
+  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:8px;}
+  .manga-grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;}
+  .anime-card-info{padding:7px 8px 9px;}
+  .anime-card-title{font-size:0.72rem;}
+  .history-card{flex:0 0 180px;}
+  .trending-card{flex:0 0 130px;}
+  .trending-number{font-size:4rem;margin-right:-14px;}
+  .trending-poster{width:95px;}
+  .mode-toggle-btn{padding:4px 7px;font-size:0.62rem;}
+  .logo-icon{width:30px;height:30px;}
+  .icon-btn,.avatar-btn{width:32px;height:32px;}
+  .details-title{font-size:1.15rem;}
+  .section-title{font-size:0.92rem;}
+  .search-page-title{font-size:1.3rem;}
+  .filter-select{min-width:120px;font-size:0.76rem;padding:9px 11px;}
+}
+
+/* Very small heights (landscape on phones) */
+@media (max-height: 500px) and (orientation: landscape){
+  .hero-section{aspect-ratio:21/9;min-height:280px;}
+  .hero-content{padding:18px 20px;}
+  .hero-title{font-size:1.2rem;}
+  .hero-desc{display:none;}
 }
 </style>
 </head>
@@ -1335,6 +1620,17 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 (async function () {
 
   // ══════════════════════════════════════════════════════════════════════════
+  // DEVICE / MOBILE DETECTION  (adds html.ios, html.android, html.is-mobile)
+  // ══════════════════════════════════════════════════════════════════════════
+  const _ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const IS_IOS = /iPad|iPhone|iPod/.test(_ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const IS_ANDROID = /Android/i.test(_ua);
+  const IS_MOBILE = IS_IOS || IS_ANDROID || (window.matchMedia && window.matchMedia('(max-width: 820px)').matches);
+  if (IS_IOS) document.documentElement.classList.add('ios');
+  if (IS_ANDROID) document.documentElement.classList.add('android');
+  if (IS_MOBILE) document.documentElement.classList.add('is-mobile');
+
+  // ══════════════════════════════════════════════════════════════════════════
   // FIREBASE INIT
   // ══════════════════════════════════════════════════════════════════════════
   const firebaseConfig = {
@@ -1765,7 +2061,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     { id:'animeplay', name:'Server 1', icon:'S1', color:'#8b5cf6', description:'Fast & reliable', getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
     { id:'megaplay',  name:'Server 2', icon:'S2', color:'#3b82f6', description:'Full HiAnime library', getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
     { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'url-start' },
-    { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)', supportsAudio:false, external:false, resumeSupport:'none' },
+    { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'none' },
   ];
 
   // Helpers
@@ -1833,9 +2129,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     mangaMode:{ selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[], isLoadingChapter:false, trendingData:[], popularData:[], topRatedData:[], readMode:'strip', fitMode:'width', currentSinglePage:0, bookmarks:{} }
   };
 
-  try { const s=localStorage.getItem('thyAnime_history'); if(s) state.watchHistory=JSON.parse(s); } catch(e){}
+  try { const s=localStorage.getItem('thyAnime_history'); if(s){ const arr=JSON.parse(s); state.watchHistory = Array.isArray(arr) ? arr : Object.values(arr||{}).filter(x=>x&&x.id!=null); } } catch(e){}
   try { const s=localStorage.getItem('thyAnime_bookmarks'); if(s) state.mangaMode.bookmarks=JSON.parse(s); } catch(e){}
-  try { const s=localStorage.getItem('thyAnime_watchlist'); if(s) state.watchlist=JSON.parse(s); } catch(e){}
+  try { const s=localStorage.getItem('thyAnime_watchlist'); if(s){ const w=JSON.parse(s); state.watchlist = (w && typeof w==='object' && !Array.isArray(w)) ? w : {}; } } catch(e){}
 
   function saveHistory(){try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(e){} syncUserDataDebounced();}
   function saveBookmarks(){try{localStorage.setItem('thyAnime_bookmarks',JSON.stringify(state.mangaMode.bookmarks));}catch(e){}}
@@ -2070,6 +2366,160 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   const promptModal = document.getElementById('promptModal');
 
   // ══════════════════════════════════════════════════════════════════════════
+  // CLOUD SYNC (Firebase) — history, watchlist, progress per episode
+  // ══════════════════════════════════════════════════════════════════════════
+  let _syncPushTimer = null;
+  let _isPullingFromRemote = false;
+  let _lastPushHash = '';
+  let _lastPullAt = 0;
+
+  function _sanitizeFbKey(s){ return String(s).replace(/[.#$\[\]\/]/g, '_'); }
+
+  function _trimHistoryEntry(h) {
+    if (!h || h.id == null) return null;
+    return {
+      id: h.id,
+      title: h.title || '',
+      coverImage: h.coverImage || '',
+      format: h.format || '',
+      averageScore: h.averageScore || null,
+      isManga: !!h.isManga,
+      episode: h.episode || 1,
+      timestamp: h.timestamp || Date.now(),
+      epProgress: h.epProgress || {},
+      lastProvider: h.lastProvider || null,
+      lastAudio: h.lastAudio || null,
+      _url: h._url || null,
+      genres: Array.isArray(h.genres) ? h.genres : [],
+      description: h.description || '',
+      episodes: h.episodes || 0,
+      chapters: h.chapters || null,
+      status: h.status || null,
+      season: h.season || '',
+      altTitle: h.altTitle || ''
+    };
+  }
+
+  function _mergeHistory(localArr, remoteArr) {
+    const map = new Map();
+    const keyOf = h => (h.isManga ? 'm_' : 'a_') + String(h.id);
+    const add = (h) => {
+      if (!h || h.id == null) return;
+      const trimmed = _trimHistoryEntry(h);
+      if (!trimmed) return;
+      const key = keyOf(trimmed);
+      const existing = map.get(key);
+      if (!existing) { map.set(key, trimmed); return; }
+      const epA = existing.epProgress || {};
+      const epB = trimmed.epProgress || {};
+      const mergedEp = { ...epA };
+      Object.keys(epB).forEach(ep => {
+        const a = epA[ep], b = epB[ep];
+        if (!a || !b) { mergedEp[ep] = b || a; return; }
+        mergedEp[ep] = (b.ts || 0) >= (a.ts || 0) ? b : a;
+      });
+      const newerOverall = (trimmed.timestamp || 0) > (existing.timestamp || 0) ? trimmed : existing;
+      const olderOverall = newerOverall === trimmed ? existing : trimmed;
+      const merged = { ...olderOverall, ...newerOverall, epProgress: mergedEp };
+      merged.timestamp = Math.max(existing.timestamp || 0, trimmed.timestamp || 0);
+      const finalEntry = _trimHistoryEntry(merged);
+      map.set(key, finalEntry);
+    };
+    (localArr || []).forEach(add);
+    (remoteArr || []).forEach(add);
+    return Array.from(map.values()).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  }
+
+  function syncUserDataDebounced() {
+    if (!currentUser) return;
+    if (_isPullingFromRemote) return;
+    if (_syncPushTimer) clearTimeout(_syncPushTimer);
+    _syncPushTimer = setTimeout(pushUserDataToFirebase, 1200);
+  }
+
+  async function pushUserDataToFirebase() {
+    if (!currentUser || _isPullingFromRemote) return;
+    try {
+      const histObj = {};
+      state.watchHistory.forEach(h => {
+        const t = _trimHistoryEntry(h);
+        if (!t) return;
+        const key = _sanitizeFbKey((t.isManga ? 'm_' : 'a_') + String(t.id));
+        histObj[key] = t;
+      });
+      const wlObj = {};
+      Object.entries(state.watchlist).forEach(([k, v]) => {
+        if (!v || v.id == null) return;
+        const key = _sanitizeFbKey((v.isManga ? 'm_' : 'a_') + String(v.id));
+        wlObj[key] = v;
+      });
+      const payload = {
+        watchlist: wlObj,
+        history: histObj,
+        lastSync: Date.now()
+      };
+      const hash = JSON.stringify(payload);
+      if (hash === _lastPushHash) return;
+      await db.ref('users/' + currentUser.uid).update(payload);
+      _lastPushHash = hash;
+    } catch(e) { console.warn('[sync] push failed', e); }
+  }
+
+  async function pullUserDataFromFirebase(uid) {
+    try {
+      const snap = await db.ref('users/' + uid).get();
+      if (!snap.exists()) return;
+      const data = snap.val();
+      _isPullingFromRemote = true;
+      let changed = false;
+
+      // Watchlist
+      if (data.watchlist && typeof data.watchlist === 'object') {
+        const remoteWL = {};
+        Object.values(data.watchlist).forEach(v => {
+          if (v && typeof v === 'object' && v.id != null) remoteWL[String(v.id)] = v;
+        });
+        // Old format support (id-keyed)
+        Object.entries(data.watchlist).forEach(([k, v]) => {
+          if (v && typeof v === 'object' && v.id != null && !remoteWL[String(v.id)]) remoteWL[String(v.id)] = v;
+          else if (v && typeof v === 'object' && v.title && v.id == null && !isNaN(Number(k))) remoteWL[String(k)] = { ...v, id: Number(k) };
+        });
+        Object.entries(remoteWL).forEach(([id, item]) => {
+          const local = state.watchlist[id];
+          if (!local || (item.ts || 0) >= (local.ts || 0)) {
+            state.watchlist[id] = item;
+            changed = true;
+          }
+        });
+        try { localStorage.setItem('thyAnime_watchlist', JSON.stringify(state.watchlist)); } catch(_) {}
+      }
+
+      // History
+      if (data.history) {
+        let remoteHist = [];
+        if (Array.isArray(data.history)) remoteHist = data.history.filter(Boolean);
+        else if (typeof data.history === 'object') remoteHist = Object.values(data.history).filter(h => h && h.id != null);
+        if (remoteHist.length) {
+          state.watchHistory = _mergeHistory(state.watchHistory, remoteHist);
+          try { localStorage.setItem('thyAnime_history', JSON.stringify(state.watchHistory)); } catch(_) {}
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        _lastPushHash = ''; // let the next push go through
+        renderWatchHistory();
+        if (currentPage === 'watchlist') renderWatchlistPage();
+        if (currentPage === 'settings') renderSettingsPage();
+      }
+    } catch(e) {
+      console.warn('[sync] pull failed', e);
+    } finally {
+      _isPullingFromRemote = false;
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
   // AUTH SYSTEM
   // ══════════════════════════════════════════════════════════════════════════
 
@@ -2162,12 +2612,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     try {
       const result = await auth.signInWithPopup(googleProvider);
       const user = result.user;
-      // Check if user has a username in our DB
       const snap = await db.ref('users/' + user.uid).get();
       const existing = snap.exists() ? snap.val() : null;
       const fallbackUsername = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
       if (!existing || !existing.username) {
-        // First time Google sign-in — set username from Google or fallback
         const username = user.displayName || fallbackUsername;
         if (!user.displayName) { try { await user.updateProfile({ displayName: username }); } catch(_) {} }
         await db.ref('users/' + user.uid).update({
@@ -2383,39 +2831,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     });
   };
 
-  // Sync helpers
-  let _syncTimer = null;
-  function syncUserDataDebounced() {
-    if (!currentUser) return;
-    if (_syncTimer) clearTimeout(_syncTimer);
-    _syncTimer = setTimeout(syncUserDataToFirebase, 1500);
-  }
-  async function syncUserDataToFirebase() {
-    if (!currentUser) return;
-    try {
-      await db.ref('users/' + currentUser.uid).update({
-        watchlist: state.watchlist,
-        history: state.watchHistory,
-        lastSync: Date.now()
-      });
-    } catch(e) { console.warn('[sync] upload failed', e); }
-  }
-  async function syncUserDataFromFirebase(uid) {
-    try {
-      const snap = await db.ref('users/' + uid).get();
-      if (snap.exists()) {
-        const data = snap.val();
-        currentUserData = data;
-        if (data.watchlist && typeof data.watchlist === 'object') { state.watchlist = data.watchlist; try{localStorage.setItem('thyAnime_watchlist',JSON.stringify(state.watchlist));}catch(_){} }
-        if (Array.isArray(data.history)) { state.watchHistory = data.history; try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(_){} }
-      } else {
-        currentUserData = null;
-      }
-      renderWatchHistory();
-      renderWatchlistPage();
-    } catch(e) { console.warn('[sync] download failed', e); }
-  }
-
   // Auth state listener
   if (authAvailable && auth) {
     auth.onAuthStateChanged(async (user) => {
@@ -2424,7 +2839,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       updateAvatarUI();
       renderUserMenu();
       if (user) {
-        await syncUserDataFromFirebase(user.uid);
+        await pullUserDataFromFirebase(user.uid);
         if (!wasSignedIn) showToast(`Welcome, ${user.displayName || user.email}`, '👋');
       }
       if (currentPage === 'settings') renderSettingsPage();
@@ -2433,6 +2848,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     updateAvatarUI();
     renderUserMenu();
   }
+
+  // Re-pull when the tab becomes visible (get latest progress from other devices)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && currentUser && Date.now() - _lastPullAt > 30000) {
+      _lastPullAt = Date.now();
+      pullUserDataFromFirebase(currentUser.uid);
+    }
+  });
+  window.addEventListener('online', () => { if (currentUser) { _lastPullAt = Date.now(); pullUserDataFromFirebase(currentUser.uid); } });
 
   // ══════════════════════════════════════════════════════════════════════════
   // SETTINGS PAGE
@@ -2547,7 +2971,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <div class="settings-option">
           <div class="settings-option-info">
             <div class="settings-option-title">Clear watch history</div>
-            <div class="settings-option-desc">Remove all locally saved watch history</div>
+            <div class="settings-option-desc">Remove all saved watch history (local + cloud)</div>
           </div>
           <button class="settings-btn danger" onclick="clearHistory()">Clear</button>
         </div>
@@ -2570,7 +2994,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <div style="font-size:0.82rem;color:var(--text-2);line-height:1.75;">
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">ThyAnime</strong> is a free anime and manga streaming platform. Not affiliated with any content provider — all artwork belongs to its respective owners.</p>
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">Data Sources:</strong> AniList (primary), Jikan/MAL, Kitsu, MangaProx</p>
-          <p><strong style="color:var(--text);">Version:</strong> 2.1.0</p>
+          <p><strong style="color:var(--text);">Version:</strong> 2.2.0</p>
         </div>
       </div>`;
     grid.innerHTML = accountHTML + prefsHTML;
@@ -2651,7 +3075,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   window.addEventListener('scroll', () => {
     if (window.scrollY > 20) topbar.classList.add('scrolled');
     else topbar.classList.remove('scrolled');
-  });
+  }, { passive: true });
 
   // ══════════════════════════════════════════════════════════════════════════
   // WATCHLIST
@@ -2673,7 +3097,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   window.toggleWatchlistDrawer = () => { navigateTo('watchlist'); };
 
   function renderWatchlistPage() {
-    const items = Object.values(state.watchlist).sort((a,b) => b.ts - a.ts);
+    const items = Object.values(state.watchlist).sort((a,b) => (b.ts || 0) - (a.ts || 0));
     if (!items.length) {
       browseGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-3);font-family:var(--font);">Your watchlist is empty. Add anime by clicking the heart icon on any card.</div>';
       browsePagination.innerHTML = '';
@@ -3864,7 +4288,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (e.key === 'ArrowLeft') { if (state.selectedEpisode > 1) { state.selectedEpisode--; updateHistory(state.selectedAnime, state.selectedEpisode); syncEpisodeUI(); const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode); if (prog && prog.time > 10 && prog.duration > 0 && (prog.time/prog.duration) < 0.92) showResumeModal(state.selectedEpisode, prog.time, prog.duration, () => loadStream(prog.time), () => loadStream(0)); else loadStream(0); showToast(`Episode ${state.selectedEpisode}`); } return; }
   });
 
-  window.addEventListener('beforeunload', () => stopProgressTracking());
+  window.addEventListener('beforeunload', () => {
+    stopProgressTracking();
+    if (currentUser) { // best-effort flush
+      try { pushUserDataToFirebase(); } catch(_) {}
+    }
+  });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') { stopProgressTracking(); }
     else if (watchPage.classList.contains('active') && playerIframe.src && playerIframe.src !== 'about:blank') startProgressTracking(state.currentTime);
