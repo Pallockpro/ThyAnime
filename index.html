@@ -215,12 +215,25 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .section-clear-btn{font-size:0.74rem;color:var(--text-3);cursor:pointer;font-family:var(--font);font-weight:600;background:none;border:1px solid var(--border-2);transition:all var(--t);padding:6px 12px;border-radius:8px;}
 .section-clear-btn:hover{color:#fff;background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);}
 
-/* Row scroll */
-.row-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-behavior:smooth;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-.row-scroll::-webkit-scrollbar{height:4px;}
-.row-scroll::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.3);border-radius:10px;}
-.row-scroll::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,0.5);}
+/* Row scroll — always shows a scrollbar on desktop so mouse users can drag/see it.
+   On touch devices it stays hidden to preserve the swipe feel. */
+.row-scroll{
+  display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;
+  scroll-behavior:smooth;scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(139,92,246,0.55) rgba(255,255,255,0.05);
+  overscroll-behavior-x:contain;
+}
+.row-scroll::-webkit-scrollbar{height:8px;}
+.row-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px;}
+.row-scroll::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.55);border-radius:10px;}
+.row-scroll::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,0.8);}
 .row-scroll>*{scroll-snap-align:start;}
+@media (hover:none){
+  .row-scroll{scrollbar-width:none;}
+  .row-scroll::-webkit-scrollbar{height:0;}
+}
 
 /* History card */
 .history-card{flex:0 0 260px;border-radius:var(--radius);overflow:hidden;cursor:pointer;position:relative;transition:transform 0.28s var(--ease),box-shadow 0.28s var(--ease),border-color 0.28s;border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;}
@@ -302,11 +315,23 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .skeleton{background:linear-gradient(135deg,var(--surface),var(--bg-3));border-radius:var(--radius-sm);animation:shimmer 2s ease infinite;border:1px solid var(--border);}
 @keyframes shimmer{0%,100%{opacity:0.4}50%{opacity:0.75}}
 
-/* Sidebar column */
+/* Sidebar column — sticky + scrollable, with visible scrollbar on desktop */
 .home-layout{display:flex;gap:26px;align-items:flex-start;}
 .main-col{flex:1;min-width:0;}
-.sidebar-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:18px;position:sticky;top:calc(var(--nav-h) + var(--safe-top) + 22px);max-height:calc(100vh - var(--nav-h) - 44px);overflow-y:auto;padding-right:4px;}
-.sidebar-col::-webkit-scrollbar{width:4px;}
+.sidebar-col{
+  width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:18px;
+  position:sticky;top:calc(var(--nav-h) + var(--safe-top) + 22px);
+  max-height:calc(100vh - var(--nav-h) - var(--safe-top) - 44px);
+  overflow-y:auto;
+  padding-right:8px;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(139,92,246,0.55) rgba(255,255,255,0.05);
+}
+.sidebar-col::-webkit-scrollbar{width:8px;}
+.sidebar-col::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px;}
+.sidebar-col::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.55);border-radius:10px;}
+.sidebar-col::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,0.8);}
 .sidebar-widget{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .sidebar-widget-header{padding:14px 16px;border-bottom:1px solid var(--border);font-family:var(--font);font-weight:800;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text);display:flex;align-items:center;gap:8px;}
 .sidebar-widget-header::before{content:'';width:3px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--primary),var(--accent));}
@@ -324,7 +349,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .top-airing-meta{font-size:0.63rem;color:var(--text-3);margin-top:3px;display:flex;gap:5px;align-items:center;}
 
 .airing-schedule-list,.upcoming-list{display:flex;flex-direction:column;gap:3px;max-height:340px;overflow-y:auto;padding:6px;}
-.airing-schedule-list::-webkit-scrollbar,.upcoming-list::-webkit-scrollbar{width:3px;}
+.airing-schedule-list::-webkit-scrollbar,.upcoming-list::-webkit-scrollbar{width:4px;}
 .airing-schedule-item,.upcoming-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;border:1px solid var(--border-3);background:rgba(255,255,255,0.02);cursor:pointer;transition:all var(--t);}
 .airing-schedule-item:hover,.upcoming-item:hover{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.3);}
 .airing-schedule-time{font-family:var(--font);font-weight:700;font-size:0.68rem;color:var(--primary-3);flex-shrink:0;min-width:50px;}
@@ -3080,7 +3105,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <div style="font-size:0.82rem;color:var(--text-2);line-height:1.75;">
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">ThyAnime</strong> is a free anime and manga streaming platform. Not affiliated with any content provider — all artwork belongs to its respective owners.</p>
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">Data Sources:</strong> AniList (primary), Jikan/MAL, Kitsu, MangaProx</p>
-          <p><strong style="color:var(--text);">Version:</strong> 2.3.0</p>
+          <p><strong style="color:var(--text);">Version:</strong> 2.3.1</p>
         </div>
       </div>`;
     grid.innerHTML = accountHTML + prefsHTML;
@@ -3340,8 +3365,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   window.clearHistory=()=>{
     state.watchHistory=[];
     saveHistory();
-    // ensure the clear propagates to the cloud even if the hash of the new
-    // payload happens to match something we pushed before
     _lastPushHash = '';
     if (currentUser) { try { pushUserDataToFirebase(); } catch(_) {} }
     renderWatchHistory();
