@@ -27,6 +27,11 @@
   --ease:cubic-bezier(0.4,0,0.2,1);--t:0.22s;
   --font:'Outfit',system-ui,sans-serif;--font-body:'DM Sans',system-ui,sans-serif;
   --nav-h:68px;--sidebar-w:240px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --bottomnav-h:0px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
@@ -74,7 +79,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .maint-footer strong{color:var(--text-2);font-weight:600;}
 
 /* Topbar */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nav-h);background:rgba(8,8,13,0.7);backdrop-filter:blur(22px) saturate(1.5);border-bottom:1px solid var(--border);transition:background 0.3s var(--ease),border-color 0.3s var(--ease),box-shadow 0.3s var(--ease);}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nav-h);background:rgba(8,8,13,0.7);backdrop-filter:blur(22px) saturate(1.5);border-bottom:1px solid var(--border);transition:background 0.3s var(--ease),border-color 0.3s var(--ease),box-shadow 0.3s var(--ease);padding-top:var(--safe-top);}
 .topbar.scrolled{background:rgba(8,8,13,0.92);border-bottom-color:var(--border);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
 .topbar-inner{height:100%;max-width:1600px;margin:0 auto;padding:0 22px;display:flex;align-items:center;gap:14px;}
 .icon-btn{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,0.04);border:1px solid var(--border-2);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--t) var(--ease);flex-shrink:0;position:relative;}
@@ -141,7 +146,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .dropdown-empty{padding:32px 20px;text-align:center;color:var(--text-3);font-size:0.8rem;font-family:var(--font);}
 
 /* Sidebar drawer */
-#appSidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:rgba(10,9,18,0.94);backdrop-filter:blur(24px);border-right:1px solid var(--border);z-index:1100;transform:translateX(-100%);transition:transform 0.32s var(--ease);display:flex;flex-direction:column;padding:18px 0;padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));}
+#appSidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:rgba(10,9,18,0.94);backdrop-filter:blur(24px);border-right:1px solid var(--border);z-index:1100;transform:translateX(-100%);transition:transform 0.32s var(--ease);display:flex;flex-direction:column;padding:18px 0;padding-top:calc(18px + var(--safe-top));padding-bottom:calc(18px + var(--safe-bottom));}
 #appSidebar.open{transform:translateX(0);}
 .sidebar-brand{display:flex;align-items:center;gap:10px;padding:8px 20px 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
 .sidebar-brand img{width:34px;height:34px;border-radius:10px;object-fit:cover;box-shadow:0 0 0 1.5px rgba(139,92,246,0.4);}
@@ -156,10 +161,17 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 #sidebarBackdrop.active{opacity:1;pointer-events:auto;}
 
 /* Main layout */
-.app{max-width:1600px;margin:0 auto;padding:calc(var(--nav-h) + 22px) 22px 40px;position:relative;z-index:1;}
+.app{max-width:1600px;margin:0 auto;padding:calc(var(--nav-h) + var(--safe-top) + 22px) 22px calc(40px + var(--bottomnav-h) + var(--safe-bottom));position:relative;z-index:1;}
 .page{display:none;}
 .page.active{display:block;animation:pageIn 0.4s var(--ease);}
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Bottom nav (mobile only) */
+#mobileBottomNav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:950;background:rgba(8,8,13,0.92);backdrop-filter:blur(22px) saturate(1.5);border-top:1px solid var(--border);padding:6px max(8px, var(--safe-left)) calc(6px + var(--safe-bottom)) max(8px, var(--safe-right));grid-template-columns:repeat(5,1fr);gap:4px;}
+.mbn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;border-radius:12px;background:none;border:none;color:var(--text-3);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.62rem;transition:all var(--t) var(--ease);-webkit-tap-highlight-color:transparent;}
+.mbn-item svg{width:20px;height:20px;}
+.mbn-item.active{color:var(--primary-3);background:rgba(139,92,246,0.12);}
+.mbn-item:active{transform:scale(0.95);}
 
 /* Hero */
 .hero-section{position:relative;overflow:hidden;border-radius:var(--radius-lg);aspect-ratio:21/9;min-height:380px;margin-bottom:36px;border:1px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(139,92,246,0.06);isolation:isolate;}
@@ -204,7 +216,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .section-clear-btn:hover{color:#fff;background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);}
 
 /* Row scroll */
-.row-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-behavior:smooth;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+.row-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-behavior:smooth;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .row-scroll::-webkit-scrollbar{height:4px;}
 .row-scroll::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.3);border-radius:10px;}
 .row-scroll::-webkit-scrollbar-thumb:hover{background:rgba(139,92,246,0.5);}
@@ -293,7 +305,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 /* Sidebar column */
 .home-layout{display:flex;gap:26px;align-items:flex-start;}
 .main-col{flex:1;min-width:0;}
-.sidebar-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:18px;position:sticky;top:calc(var(--nav-h) + 22px);max-height:calc(100vh - var(--nav-h) - 44px);overflow-y:auto;padding-right:4px;}
+.sidebar-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:18px;position:sticky;top:calc(var(--nav-h) + var(--safe-top) + 22px);max-height:calc(100vh - var(--nav-h) - 44px);overflow-y:auto;padding-right:4px;}
 .sidebar-col::-webkit-scrollbar{width:4px;}
 .sidebar-widget{background:var(--surface);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .sidebar-widget-header{padding:14px 16px;border-bottom:1px solid var(--border);font-family:var(--font);font-weight:800;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text);display:flex;align-items:center;gap:8px;}
@@ -402,7 +414,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .s5-ep-label small{display:block;color:var(--text-3);font-weight:400;font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
 .s5-ep-progress{height:2px;background:rgba(255,255,255,0.07);}
 .s5-ep-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width 0.3s;}
-.anime-sidebar{background:var(--surface);backdrop-filter:blur(16px);border-radius:var(--radius);border:1px solid var(--border);padding:18px;display:flex;flex-direction:column;gap:14px;position:sticky;top:calc(var(--nav-h) + 22px);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+.anime-sidebar{background:var(--surface);backdrop-filter:blur(16px);border-radius:var(--radius);border:1px solid var(--border);padding:18px;display:flex;flex-direction:column;gap:14px;position:sticky;top:calc(var(--nav-h) + var(--safe-top) + 22px);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
 .anime-sidebar-cover{border-radius:12px;overflow:hidden;aspect-ratio:3/4;background:var(--surface-solid);box-shadow:0 8px 26px rgba(0,0,0,0.5);}
 .anime-sidebar-cover img{width:100%;height:100%;object-fit:cover;}
 .anime-sidebar h2{font-family:var(--font);font-size:1.05rem;font-weight:800;line-height:1.3;letter-spacing:-0.02em;}
@@ -461,7 +473,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 /* Genre bar */
 .genre-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:22px;position:relative;}
-.genre-bar-inner{flex:1;min-width:0;display:flex;align-items:center;gap:8px;overflow-x:auto;scroll-behavior:smooth;padding:4px 2px;}
+.genre-bar-inner{flex:1;min-width:0;display:flex;align-items:center;gap:8px;overflow-x:auto;scroll-behavior:smooth;padding:4px 2px;scrollbar-width:none;}
 .genre-bar-inner::-webkit-scrollbar{height:0;}
 .genre-scroll-arrow{flex-shrink:0;width:32px;height:32px;border-radius:10px;border:1px solid var(--border-2);background:rgba(255,255,255,0.05);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.95rem;transition:all var(--t);font-family:var(--font);}
 .genre-scroll-arrow:hover{background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.4);color:#fff;}
@@ -509,6 +521,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .sp-nav-right{justify-content:flex-end;padding-right:18px;}
 .manga-pages-container.single-page:hover .sp-nav-left,
 .manga-pages-container.single-page:hover .sp-nav-right{opacity:1;}
+@media (hover:none){.manga-pages-container.single-page .sp-nav-left,.manga-pages-container.single-page .sp-nav-right{opacity:0.7;}}
 .sp-nav-arrow{width:46px;height:46px;border-radius:50%;background:rgba(8,8,13,0.65);backdrop-filter:blur(10px);border:1px solid rgba(139,92,246,0.45);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--primary-3);}
 .single-page-indicator{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(8,8,13,0.7);backdrop-filter:blur(8px);border:1px solid rgba(139,92,246,0.35);border-radius:999px;padding:5px 16px;font-family:var(--font);font-weight:700;font-size:0.72rem;color:var(--primary-3);pointer-events:none;z-index:4;display:none;}
 .manga-pages-container.single-page .single-page-indicator{display:block;}
@@ -536,7 +549,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 /* Manga fullscreen */
 #mangaFullscreenOverlay{display:none;position:fixed;inset:0;z-index:5000;background:#000;flex-direction:column;overflow:hidden;}
 #mangaFullscreenOverlay.active{display:flex;}
-.mfs-topbar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-top:calc(11px + env(safe-area-inset-top,0px));background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
+.mfs-topbar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-top:calc(11px + var(--safe-top));background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
 .mfs-topbar.hidden{opacity:0;pointer-events:none;}
 .mfs-title{font-family:var(--font);font-weight:700;font-size:0.9rem;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .mfs-chapter-info{font-size:0.75rem;color:var(--text-3);font-family:var(--font);white-space:nowrap;}
@@ -556,7 +569,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .mfs-scroll.single-page{display:flex;flex-direction:row;overflow:hidden;}
 .mfs-scroll.single-page .mfs-page-img{display:none;width:100%;height:100%;object-fit:contain;}
 .mfs-scroll.single-page .mfs-page-img.fs-current{display:block;}
-.mfs-bottombar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-top:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
+.mfs-bottombar{display:flex;align-items:center;gap:10px;padding:11px 18px;padding-bottom:calc(11px + var(--safe-bottom));background:rgba(8,8,13,0.94);backdrop-filter:blur(20px);border-top:1px solid rgba(139,92,246,0.15);flex-shrink:0;z-index:2;transition:opacity 0.4s;}
 .mfs-bottombar.hidden{opacity:0;pointer-events:none;}
 .mfs-progress-track{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;cursor:pointer;}
 .mfs-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--pink));border-radius:2px;transition:width 0.2s;}
@@ -730,144 +743,108 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   .home-layout{flex-direction:column;}
   .live-pill{display:none;}
 }
-@media(max-width:768px){
-  .topbar-inner{padding:0 14px;gap:10px;}
-  .topbar-search{max-width:none;}
-  .topbar-search-kbd{display:none;}
-  .app{padding:calc(var(--nav-h) + 16px) 14px 30px;}
-  .logo span{display:none;}
-  .hero-section{aspect-ratio:4/5;min-height:360px;border-radius:18px;}
-  .hero-content{padding:28px 22px;}
-  .hero-title{font-size:1.5rem;}
-  .details-hero-content{flex-direction:column;align-items:flex-start;padding:24px;min-height:auto;}
-  .details-poster{width:140px;}
-  .details-title{font-size:1.4rem;}
-  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
-  .manga-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
-  .history-card{flex:0 0 220px;}
-  .trending-card{flex:0 0 170px;}
-  .trending-number{font-size:5.5rem;}
-  .trending-poster{width:120px;}
-  .footer-cols{gap:30px;}
-  .auth-card{padding:28px 22px;}
-  .prompt-card{padding:24px 22px;}
-}
-@media(max-width:500px){
-  .footer-top{flex-direction:column;gap:24px;}
-  .footer-bottom{flex-direction:column;text-align:center;}
-  .hero-title{font-size:1.3rem;}
-  .section-title{font-size:1rem;}
-  .watch-title-bar{max-width:calc(100% - 120px);font-size:0.9rem;}
-  .mode-toggle-btn{padding:6px 10px;font-size:0.7rem;}
-}
 
 /* ═══════════════════════════════════════════════════════════════════
-   MOBILE / iOS OPTIMIZATIONS  (applied via html.is-mobile and width)
+   TABLET & MOBILE
    ═══════════════════════════════════════════════════════════════════ */
-html.is-mobile{-webkit-tap-highlight-color:transparent;}
-html.is-mobile body{overscroll-behavior-y:none;}
-/* Prevent iOS zoom on focus by forcing 16px min on inputs */
-html.is-mobile input,
-html.is-mobile select,
-html.is-mobile textarea,
-html.is-mobile .topbar-search input{font-size:16px !important;}
-html.ios body{min-height:-webkit-fill-available;}
-/* Push things below the notch */
-html.ios .topbar{padding-top:env(safe-area-inset-top,0px);height:calc(var(--nav-h) + env(safe-area-inset-top,0px));}
-html.ios #appSidebar{padding-top:calc(18px + env(safe-area-inset-top,0px));}
-html.ios .mfs-topbar{padding-top:calc(11px + env(safe-area-inset-top,0px));}
-html.ios .mfs-bottombar{padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));}
-html.ios .toast-container{bottom:calc(26px + env(safe-area-inset-bottom,0px));}
-html.ios #shortcutsBtn{bottom:calc(24px + env(safe-area-inset-bottom,0px));}
-html.ios #shortcutsPanel{bottom:calc(80px + env(safe-area-inset-bottom,0px));}
-html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px));}
+@media (max-width: 900px){
+  .watch-layout{grid-template-columns:1fr;}
+  .anime-sidebar{position:static;max-width:none;}
+}
 
-@media (max-width: 820px){
-  :root{--nav-h:58px;}
+@media (max-width: 768px){
+  :root{--nav-h:60px;--bottomnav-h:64px;}
+  html.is-mobile input,
+  html.is-mobile select,
+  html.is-mobile textarea,
+  html.is-mobile .topbar-search input{font-size:16px !important;}
+  html.is-mobile{-webkit-tap-highlight-color:transparent;}
+  html.is-mobile body{overscroll-behavior-y:none;}
+  body{padding-bottom:var(--bottomnav-h);}
 
-  /* iOS safe area is handled above; ensure body knows about bottom too */
-  body{padding-bottom:env(safe-area-inset-bottom,0px);}
+  #mobileBottomNav{display:grid;}
 
-  /* ---- TOPBAR ---- */
-  .topbar-inner{padding:0 10px;gap:8px;}
-  .logo-icon{width:32px;height:32px;border-radius:9px;}
+  /* Topbar compact */
+  .topbar-inner{padding:0 12px;gap:8px;}
   .logo span{display:none;}
-  .icon-btn,.avatar-btn{width:36px;height:36px;border-radius:10px;}
+  .logo-icon{width:34px;height:34px;border-radius:10px;}
+  .icon-btn,.avatar-btn{width:38px;height:38px;border-radius:11px;}
+  .topbar-actions{gap:6px;}
+  .topbar-actions .icon-btn[onclick*="watchlist"]{display:none;}
   .mode-toggle{padding:3px;}
-  .mode-toggle-btn{padding:5px 9px;font-size:0.68rem;}
-  .mode-toggle-btn svg{width:11px;height:11px;}
-  .topbar-search{flex:1;min-width:0;max-width:none;}
-  .topbar-search input{padding:9px 12px 9px 34px;font-size:16px;height:38px;}
+  .mode-toggle-btn{padding:6px 10px;font-size:0.7rem;gap:4px;}
+  .mode-toggle-btn svg{width:12px;height:12px;}
+  .topbar-search{flex:1;min-width:0;max-width:none;margin-left:0;}
+  .topbar-search input{padding:9px 10px 9px 34px;height:38px;font-size:16px;}
   .topbar-search-icon{left:11px;}
   .topbar-search-kbd{display:none;}
 
-  /* ---- MAIN CONTAINER ---- */
-  .app{padding:calc(var(--nav-h) + 14px) 12px calc(28px + env(safe-area-inset-bottom,0px));}
+  /* Main container */
+  .app{padding:calc(var(--nav-h) + var(--safe-top) + 14px) 12px calc(24px + var(--bottomnav-h) + var(--safe-bottom));}
 
-  /* ---- HERO ---- */
+  /* Hero */
   .hero-section{
     aspect-ratio:4/5;
-    min-height:380px;
-    max-height:560px;
-    border-radius:18px;
-    margin-bottom:22px;
+    min-height:360px;
+    max-height:78vh;
+    border-radius:16px;
+    margin-bottom:20px;
   }
-  .hero-content{padding:22px 18px 20px;max-width:100%;}
+  .hero-section:hover .hero-bg{transform:none;}
+  .hero-content{padding:22px 18px;max-width:100%;}
   .hero-title{font-size:1.4rem;margin-bottom:10px;}
-  .hero-genres{gap:5px;margin-bottom:8px;}
+  .hero-desc{font-size:0.8rem;-webkit-line-clamp:3;margin-bottom:14px;}
+  .hero-actions{gap:8px;width:100%;}
+  .hero-actions .hero-btn{flex:1 1 0;justify-content:center;padding:11px 14px;font-size:0.78rem;min-width:0;}
+  .hero-badges{gap:6px;margin-bottom:10px;}
+  .hero-badge-pill{font-size:0.66rem;padding:4px 10px;}
+  .hero-genres{gap:5px;margin-bottom:10px;}
   .hero-genre-tag{font-size:0.66rem;padding:3px 9px;}
-  .hero-desc{font-size:0.8rem;-webkit-line-clamp:2;margin-bottom:14px;}
-  .hero-badges{gap:5px;margin-bottom:10px;}
-  .hero-badge-pill{font-size:0.64rem;padding:4px 9px;gap:4px;}
-  .hero-actions{gap:8px;}
-  .hero-btn{padding:10px 16px;font-size:0.8rem;border-radius:10px;gap:6px;}
-  .hero-pagination{bottom:12px;right:12px;gap:6px;}
-  .hero-page-arrow{width:30px;height:30px;border-radius:9px;}
-  .hero-page-label{font-size:0.66rem;padding:5px 10px;}
+  .hero-pagination{bottom:14px;right:14px;gap:6px;}
+  .hero-page-arrow{width:32px;height:32px;border-radius:9px;font-size:0.9rem;}
+  .hero-page-label{padding:6px 11px;font-size:0.68rem;}
   .hero-top-left{top:14px;left:14px;}
-  .hero-airing-badge{font-size:0.64rem;padding:5px 10px;}
+  .hero-airing-badge{padding:5px 11px;font-size:0.68rem;}
 
-  /* ---- SECTIONS ---- */
+  /* Sections */
   .section-block{margin-bottom:26px;}
   .section-header{margin-bottom:12px;gap:8px;}
-  .section-title{font-size:0.98rem;gap:8px;}
+  .section-title{font-size:1rem;}
   .section-title-icon{width:28px;height:28px;border-radius:8px;}
-  .section-clear-btn{font-size:0.7rem;padding:5px 10px;}
+  .section-clear-btn{padding:6px 11px;font-size:0.72rem;}
 
-  /* ---- CARDS ---- */
-  .history-card{flex:0 0 200px;border-radius:14px;}
-  .history-card-title{font-size:0.78rem;}
-  .history-remove-btn{opacity:1;}
-  .trending-card{flex:0 0 140px;}
-  .trending-number{font-size:4.6rem;-webkit-text-stroke:2px rgba(139,92,246,0.55);margin-right:-16px;margin-bottom:-4px;}
-  .trending-poster{width:105px;}
-  .recent-card{flex:0 0 200px;padding:8px;gap:10px;}
-  .recent-thumb{width:56px;height:76px;}
+  /* Rows */
+  .row-scroll{gap:10px;padding:2px 2px 10px;}
+  .history-card{flex:0 0 76vw;max-width:290px;}
+  .trending-card{flex:0 0 42vw;max-width:170px;}
+  .trending-number{font-size:4.8rem;-webkit-text-stroke:2px rgba(139,92,246,0.55);margin-right:-14px;margin-bottom:-4px;}
+  .trending-poster{width:44vw;max-width:130px;}
+  .recent-card{flex:0 0 72vw;max-width:270px;padding:9px;gap:10px;}
+  .recent-thumb{width:58px;height:78px;}
 
-  /* ---- GRIDS ---- */
-  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;}
-  .manga-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;}
-  .anime-card-info{padding:8px 10px 10px;}
+  /* Grids */
+  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+  .manga-grid{grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:10px;}
+  .anime-card-info{padding:8px 9px 10px;}
   .anime-card-title{font-size:0.76rem;}
-  .anime-card-sub{font-size:0.62rem;}
-  .anime-card-watchlist{opacity:1;}
-  .anime-card-play{width:44px;height:44px;}
-  .anime-card-badge{font-size:0.62rem;padding:2px 7px;}
-  .anime-card-ep-badge{font-size:0.58rem;padding:2px 7px;}
-  .anime-card-airing-badge{font-size:0.54rem;padding:2px 7px;}
+  .anime-card-sub{font-size:0.64rem;}
+  .anime-card-watchlist{width:30px;height:30px;font-size:0.9rem;}
+  .anime-card-badge{font-size:0.62rem;padding:3px 7px;}
+  .anime-card-ep-badge{font-size:0.6rem;padding:3px 7px;}
+  .anime-card-airing-badge{font-size:0.56rem;padding:3px 7px;}
 
-  /* ---- GENRE BAR ---- */
-  .genre-bar-row{gap:0;}
+  /* Genre bar */
+  .genre-bar-row{gap:0;margin-bottom:18px;}
   .genre-scroll-arrow{display:none;}
-  .genre-bar-inner{-webkit-overflow-scrolling:touch;padding:4px 0;}
-  .genre-btn{padding:7px 13px;font-size:0.72rem;border-radius:9px;}
+  .genre-btn{padding:8px 14px;font-size:0.74rem;}
 
-  /* ---- TABS ---- */
-  .tab-bar-row{flex-wrap:wrap;gap:8px;}
+  /* Tabs */
+  .tab-bar-row{flex-wrap:wrap;gap:6px;}
   .tab-btn{padding:10px 14px;font-size:0.8rem;}
+  .tab-bar-row > div:last-child{display:none !important;}
 
-  /* ---- DETAILS PAGE ---- */
-  .details-hero{border-radius:18px;margin-bottom:22px;}
+  /* Details page */
+  .details-hero{border-radius:16px;margin-bottom:22px;}
   .details-hero-content{
     flex-direction:column;
     align-items:center;
@@ -879,169 +856,170 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
   .details-poster{width:130px;border-radius:12px;}
   .details-title{font-size:1.3rem;letter-spacing:-0.02em;}
   .details-alt-title{font-size:0.76rem;margin-bottom:10px;}
-  .details-stats{justify-content:center;gap:12px;margin-bottom:14px;}
+  .details-stats{justify-content:center;gap:14px;margin-bottom:14px;}
   .details-stat-value{font-size:0.8rem;}
   .details-stat-label{font-size:0.58rem;}
-  .details-actions{justify-content:center;width:100%;}
-  .details-actions .hero-btn{flex:1 1 auto;justify-content:center;min-width:120px;}
+  .details-actions{justify-content:center;width:100%;gap:8px;}
+  .details-actions .hero-btn{flex:1 1 auto;justify-content:center;min-width:120px;padding:11px 16px;}
   .details-desc{font-size:0.84rem;line-height:1.7;}
   .details-genre{font-size:0.72rem;padding:5px 12px;}
 
-  /* ---- WATCH PAGE ---- */
-  .watch-top-bar{gap:8px;margin-bottom:12px;}
-  .back-btn{padding:8px 13px;font-size:0.78rem;border-radius:10px;}
-  .watch-title-bar{font-size:0.86rem;max-width:100%;flex:1;min-width:0;}
+  /* Watch page */
+  .watch-top-bar{gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .back-btn{padding:9px 13px;font-size:0.78rem;border-radius:10px;}
+  .watch-title-bar{font-size:0.86rem;max-width:100%;flex:1;min-width:0;text-align:right;}
   .watch-layout{gap:16px;}
-  .player-card{border-radius:14px;}
+  .player-card{border-radius:12px;}
   .controls-row{gap:8px;padding:12px 0;}
   .provider-dropdown-wrap{flex:1 1 100%;min-width:0;}
-  .provider-dropdown-btn{padding:10px 12px;font-size:0.78rem;}
+  .provider-dropdown-btn{padding:11px 13px;font-size:0.8rem;border-radius:11px;}
   .prov-desc{display:none;}
   .audio-toggle{flex:0 0 auto;}
-  .audio-btn{padding:7px 12px;font-size:0.72rem;}
+  .audio-btn{padding:8px 14px;font-size:0.76rem;}
+  .controls-row > .back-btn[onclick*="fullscreen"]{padding:10px 14px;font-size:0.85rem;margin-left:auto;}
   .episode-section{gap:8px;}
-  .episode-grid{max-height:180px;gap:5px;}
-  .episode-btn{width:38px;height:38px;font-size:0.72rem;border-radius:9px;}
-  .s5-ep-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px;max-height:260px;}
-  .s5-ep-label{font-size:0.66rem;padding:5px 7px;}
-  .s5-ep-label small{font-size:0.62rem;}
+  .episode-grid{max-height:190px;gap:6px;}
+  .episode-btn{width:42px;height:42px;font-size:0.76rem;border-radius:10px;}
+  .s5-ep-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:270px;}
 
-  /* Watch sidebar stacks below; constrain it */
-  .anime-sidebar{position:static;padding:16px;gap:12px;}
-  .anime-sidebar-cover{max-width:170px;margin:0 auto;width:100%;}
+  /* Watch sidebar collapses below */
+  .anime-sidebar{padding:16px;gap:12px;}
+  .anime-sidebar-cover{max-width:160px;margin:0 auto;width:100%;}
   .anime-sidebar h2{font-size:1rem;text-align:center;}
   .sidebar-tags{justify-content:center;}
   .sidebar-desc{max-height:none;font-size:0.8rem;}
-  .related-season-item span{font-size:0.74rem;}
 
   /* Last watched banner */
   #lastWatchedBanner{padding:10px 12px;gap:8px;}
-  .lw-icon{font-size:1.1rem;}
   .lw-title{font-size:0.76rem;}
   .lw-sub{font-size:0.66rem;}
-  .lw-pct{font-size:0.86rem;}
+  .lw-pct{font-size:0.88rem;}
   .lw-bar{width:60px;}
-  .lw-dismiss{padding:3px 8px;font-size:0.72rem;}
 
-  /* Progress labels */
-  .player-progress-label{padding:5px 12px 6px;font-size:0.62rem;}
-  .progress-resume-note{font-size:0.58rem;}
-
-  /* ---- MANGA READER ---- */
-  .manga-top-bar{gap:7px;padding:10px 0 10px;}
-  .manga-chapter-select{font-size:0.76rem;padding:8px 10px;flex:1 1 auto;min-width:110px;max-width:none;}
-  .manga-nav-btn{padding:8px 12px;font-size:0.74rem;border-radius:10px;}
-  .manga-fs-btn{padding:8px 13px;font-size:0.74rem;border-radius:10px;}
-  .manga-toolbar{gap:5px;padding:8px 0;}
-  .manga-tool-btn{font-size:0.68rem;padding:6px 10px;border-radius:8px;}
-  .manga-bookmark-btn{font-size:0.68rem;padding:6px 10px;}
-  .manga-pages-container{padding:8px;border-radius:14px;}
-  .manga-page-num{font-size:0.58rem;padding:2px 6px;}
-  .manga-bottom-nav{padding:14px 0;gap:8px;}
-
-  /* Hide the sidebar on mobile manga reader to keep focus on pages */
+  /* Manga reader */
+  .manga-top-bar{gap:7px;padding:10px 0 10px;flex-wrap:wrap;}
+  .manga-top-bar .back-btn{padding:8px 12px;font-size:0.76rem;}
+  .manga-top-bar .watch-title-bar{font-size:0.84rem;flex-basis:100%;text-align:left;order:-1;margin-bottom:4px;}
+  .manga-chapter-select{font-size:0.78rem;padding:9px 11px;flex:1 1 130px;min-width:0;max-width:none;}
+  .manga-nav-btn{padding:9px 12px;font-size:0.76rem;border-radius:10px;}
+  .manga-fs-btn{padding:9px 13px;font-size:0.76rem;border-radius:10px;}
+  .manga-toolbar{gap:6px;padding:8px 0;}
+  .manga-tool-btn{font-size:0.7rem;padding:7px 11px;}
+  .manga-bookmark-btn{font-size:0.7rem;padding:7px 11px;}
+  .manga-pages-container{padding:10px;border-radius:14px;}
+  .manga-bottom-nav{gap:8px;padding:14px 0;}
   #mangaSidebar{display:none !important;}
 
-  /* ---- MANGA FULLSCREEN ---- */
+  /* Manga fullscreen */
   .mfs-topbar{padding:8px 10px;flex-wrap:wrap;gap:6px;}
-  .mfs-title{font-size:0.8rem;width:100%;}
-  .mfs-chapter-info{font-size:0.68rem;}
-  .mfs-close-btn{padding:6px 10px;font-size:0.72rem;}
-  .mfs-toolbar{width:100%;justify-content:flex-end;flex-wrap:wrap;gap:5px;margin-left:0;}
-  .mfs-tool-btn{font-size:0.64rem;padding:5px 8px;}
-  .mfs-chapter-select{font-size:0.7rem;padding:6px 9px;max-width:130px;}
+  .mfs-title{font-size:0.8rem;order:1;flex:1 1 auto;min-width:0;}
+  .mfs-close-btn{order:0;padding:6px 10px;font-size:0.72rem;}
+  .mfs-chapter-info{display:none;}
+  .mfs-chapter-select{order:2;font-size:0.7rem;padding:6px 9px;max-width:130px;}
+  .mfs-toolbar{order:3;width:100%;justify-content:flex-end;flex-wrap:wrap;gap:5px;margin-left:0;}
+  .mfs-tool-btn{font-size:0.66rem;padding:6px 9px;}
   .mfs-bottombar{padding:8px 10px;gap:6px;}
-  .mfs-page-label{font-size:0.68rem;}
-  .mfs-nav-btn{width:34px;height:34px;border-radius:9px;}
-  .mfs-sp-nav{width:46px;height:46px;font-size:1.2rem;}
+  .mfs-nav-btn{width:36px;height:36px;}
+  .mfs-sp-nav{width:48px;height:48px;font-size:1.3rem;}
   #mfsSpLeft{left:8px;}
   #mfsSpRight{right:8px;}
-  .mfs-progress-track{height:3px;}
 
-  /* ---- SIDEBAR DRAWER ---- */
-  #appSidebar{width:78vw;max-width:300px;}
-  .sidebar-link{padding:12px 14px;font-size:0.86rem;}
+  /* Sidebar drawer */
+  #appSidebar{width:82vw;max-width:320px;}
+  .sidebar-link{padding:13px 15px;font-size:0.88rem;}
 
-  /* ---- DROPDOWNS ---- */
-  .dropdown-panel{left:12px;right:12px;width:auto;}
+  /* Dropdowns */
+  .dropdown-panel{left:10px;right:10px;width:auto;top:calc(var(--nav-h) + var(--safe-top) + 6px);}
 
-  /* ---- MODALS ---- */
-  #authModal{padding:12px;}
-  .auth-card{padding:28px 22px;border-radius:20px;max-width:100%;}
+  /* Modals */
+  #authModal{padding:14px;align-items:flex-start;padding-top:max(14px,var(--safe-top));}
+  .auth-card{padding:28px 22px;border-radius:20px;max-width:100%;margin:auto;}
   .auth-heading{font-size:1.2rem;}
   .auth-subtitle{font-size:0.78rem;}
   .auth-logo img{width:54px;height:54px;}
-  #promptModal{padding:12px;}
+  .auth-field input{padding:13px 14px;font-size:16px;}
+  .auth-submit{padding:14px;}
+  .auth-google-btn{padding:14px;font-size:0.9rem;}
+  #promptModal{padding:14px;}
   .prompt-card{padding:24px 22px;border-radius:18px;max-width:100%;}
-  #resumeModal{padding:12px;}
+  .prompt-field input{font-size:16px;padding:13px 14px;}
+  #resumeModal{padding:14px;}
   .resume-card{padding:24px 22px;border-radius:18px;max-width:100%;width:100%;}
   .resume-card h3{font-size:1rem;}
-  .resume-card p{font-size:0.8rem;}
-  .resume-btn{font-size:0.8rem;padding:11px 14px;}
+  .resume-btn{padding:12px 14px;font-size:0.82rem;}
 
-  /* ---- TOASTS ---- */
+  /* Toasts */
   .toast-container{
     left:12px;
     right:12px;
     transform:none;
     align-items:stretch;
-    bottom:calc(20px + env(safe-area-inset-bottom,0px));
+    bottom:calc(20px + var(--bottomnav-h) + var(--safe-bottom));
   }
-  .toast{
-    padding:11px 14px;
-    font-size:0.78rem;
-    text-align:center;
-    justify-content:center;
-    white-space:normal;
-  }
+  .toast{padding:12px 14px;font-size:0.8rem;text-align:center;justify-content:center;white-space:normal;}
 
-  /* ---- SHORTCUTS ---- */
-  #shortcutsBtn{right:12px;padding:8px 12px;font-size:0.68rem;bottom:calc(16px + env(safe-area-inset-bottom,0px));}
-  #shortcutsPanel{left:12px;right:12px;bottom:calc(60px + env(safe-area-inset-bottom,0px));min-width:0;}
+  /* Shortcuts */
+  #shortcutsBtn{display:none !important;}
+  #shortcutsPanel{left:12px;right:12px;bottom:calc(80px + var(--bottomnav-h) + var(--safe-bottom));min-width:0;}
 
-  /* ---- FOOTER ---- */
-  .footer{padding:34px 14px 22px;margin-top:40px;}
+  /* Footer */
+  .footer{padding:32px 14px 22px;margin-top:36px;}
   .footer-top{flex-direction:column;gap:22px;margin-bottom:24px;}
-  .footer-cols{gap:28px;}
-  .footer-bottom{flex-direction:column;text-align:center;gap:12px;}
+  .footer-cols{gap:24px;justify-content:space-between;}
+  .footer-col h4{font-size:0.68rem;}
+  .footer-col a{font-size:0.8rem;}
+  .footer-bottom{flex-direction:column;text-align:center;gap:14px;}
+  .footer-socials{justify-content:center;}
 
-  /* ---- SETTINGS ---- */
+  /* Settings */
   .settings-card{padding:18px;border-radius:14px;}
   .settings-profile{flex-direction:column;align-items:flex-start;gap:12px;}
   .settings-avatar{width:56px;height:56px;border-radius:14px;font-size:1.3rem;}
   .settings-actions .settings-btn{flex:1 1 100%;justify-content:center;}
   .settings-option{flex-wrap:wrap;gap:10px;}
+  .settings-option-info{padding-right:0;}
+
+  /* Pagination */
+  .pagination button{padding:11px 16px;font-size:0.78rem;}
 }
 
-/* Extra-small phones (iPhone SE, older) */
+/* Small phones */
 @media (max-width: 420px){
-  .hero-section{min-height:340px;border-radius:16px;}
+  .hero-section{min-height:330px;border-radius:14px;}
   .hero-title{font-size:1.2rem;}
-  .hero-desc{-webkit-line-clamp:2;font-size:0.76rem;}
-  .hero-btn{padding:9px 14px;font-size:0.76rem;}
-  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:8px;}
-  .manga-grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;}
+  .hero-desc{-webkit-line-clamp:2;font-size:0.74rem;}
+  .hero-actions .hero-btn{padding:10px 12px;font-size:0.74rem;}
+  .hero-badge-pill{font-size:0.62rem;padding:3px 8px;}
+  .hero-genre-tag{font-size:0.62rem;padding:3px 8px;}
+  .anime-grid{grid-template-columns:repeat(2,1fr);gap:9px;}
+  .manga-grid{grid-template-columns:repeat(2,1fr);gap:9px;}
   .anime-card-info{padding:7px 8px 9px;}
   .anime-card-title{font-size:0.72rem;}
-  .history-card{flex:0 0 180px;}
-  .trending-card{flex:0 0 130px;}
-  .trending-number{font-size:4rem;margin-right:-14px;}
-  .trending-poster{width:95px;}
-  .mode-toggle-btn{padding:4px 7px;font-size:0.62rem;}
-  .logo-icon{width:30px;height:30px;}
-  .icon-btn,.avatar-btn{width:32px;height:32px;}
+  .anime-card-sub{font-size:0.6rem;}
+  .history-card{flex:0 0 82vw;max-width:320px;}
+  .trending-card{flex:0 0 46vw;}
+  .trending-number{font-size:4rem;margin-right:-12px;}
+  .trending-poster{width:44vw;}
+  .mode-toggle-btn{padding:5px 8px;}
+  .logo-icon{width:32px;height:32px;}
+  .icon-btn,.avatar-btn{width:36px;height:36px;}
   .details-title{font-size:1.15rem;}
-  .section-title{font-size:0.92rem;}
+  .section-title{font-size:0.94rem;}
   .search-page-title{font-size:1.3rem;}
-  .filter-select{min-width:120px;font-size:0.76rem;padding:9px 11px;}
+  .filter-select{min-width:calc(50% - 5px);font-size:0.76rem;padding:10px 12px;}
+  .manga-chapter-select{flex-basis:110px;}
 }
 
-/* Very small heights (landscape on phones) */
+/* Landscape phones */
 @media (max-height: 500px) and (orientation: landscape){
-  .hero-section{aspect-ratio:21/9;min-height:280px;}
-  .hero-content{padding:18px 20px;}
-  .hero-title{font-size:1.2rem;}
+  :root{--nav-h:52px;--bottomnav-h:56px;}
+  .hero-section{aspect-ratio:21/9;min-height:260px;max-height:none;}
   .hero-desc{display:none;}
+  .hero-title{font-size:1.15rem;}
+  .hero-content{padding:16px 18px;}
+  #mobileBottomNav{padding:4px 8px calc(4px + var(--safe-bottom));}
+  .mbn-item{padding:5px 2px;font-size:0.58rem;}
+  .mbn-item svg{width:17px;height:17px;}
 }
 </style>
 </head>
@@ -1290,6 +1268,30 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     </div>
   </div>
 </header>
+
+<!-- Mobile bottom navigation -->
+<nav id="mobileBottomNav">
+  <button class="mbn-item active" data-nav="home" onclick="navigateTo('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="mbn-item" data-nav="browse" onclick="navigateTo('browse')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>Browse</span>
+  </button>
+  <button class="mbn-item" data-nav="search" onclick="focusMobileSearch()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+    <span>Search</span>
+  </button>
+  <button class="mbn-item" data-nav="watchlist" onclick="navigateTo('watchlist')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+    <span>Library</span>
+  </button>
+  <button class="mbn-item" data-nav="settings" onclick="navigateTo('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Me</span>
+  </button>
+</nav>
 
 <!-- Notifications panel -->
 <div class="dropdown-panel" id="notificationsPanel">
@@ -1620,12 +1622,12 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
 (async function () {
 
   // ══════════════════════════════════════════════════════════════════════════
-  // DEVICE / MOBILE DETECTION  (adds html.ios, html.android, html.is-mobile)
+  // DEVICE / MOBILE DETECTION
   // ══════════════════════════════════════════════════════════════════════════
   const _ua = navigator.userAgent || navigator.vendor || window.opera || '';
   const IS_IOS = /iPad|iPhone|iPod/.test(_ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const IS_ANDROID = /Android/i.test(_ua);
-  const IS_MOBILE = IS_IOS || IS_ANDROID || (window.matchMedia && window.matchMedia('(max-width: 820px)').matches);
+  const IS_MOBILE = IS_IOS || IS_ANDROID || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
   if (IS_IOS) document.documentElement.classList.add('ios');
   if (IS_ANDROID) document.documentElement.classList.add('android');
   if (IS_MOBILE) document.documentElement.classList.add('is-mobile');
@@ -1646,7 +1648,6 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Firebase Auth
   let auth = null;
   let authAvailable = false;
   let googleProvider = null;
@@ -2088,6 +2089,10 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     if (!document.fullscreenElement&&!document.webkitFullscreenElement) (pw.requestFullscreen||pw.webkitRequestFullscreen||function(){}).call(pw);
     else (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document);
   };
+  window.focusMobileSearch = () => {
+    const s = document.getElementById('searchInput');
+    if (s) { s.focus(); s.scrollIntoView({block:'center',behavior:'smooth'}); }
+  };
 
   // Last-watched banner
   const lwBanner  = document.getElementById('lastWatchedBanner');
@@ -2366,17 +2371,27 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
   const promptModal = document.getElementById('promptModal');
 
   // ══════════════════════════════════════════════════════════════════════════
-  // CLOUD SYNC (Firebase) — history, watchlist, progress per episode
+  // CLOUD SYNC (Firebase) — history, watchlist, per-episode progress
   // ══════════════════════════════════════════════════════════════════════════
   let _syncPushTimer = null;
   let _isPullingFromRemote = false;
   let _lastPushHash = '';
   let _lastPullAt = 0;
+  let _userDataListener = null;
+  let _userDataListenerUid = null;
+  let _periodicPullTimer = null;
 
   function _sanitizeFbKey(s){ return String(s).replace(/[.#$\[\]\/]/g, '_'); }
 
   function _trimHistoryEntry(h) {
     if (!h || h.id == null) return null;
+    const ep = {};
+    if (h.epProgress && typeof h.epProgress === 'object') {
+      Object.keys(h.epProgress).forEach(k => {
+        const v = h.epProgress[k];
+        if (v && typeof v === 'object') ep[k] = { time: Number(v.time) || 0, duration: Number(v.duration) || 0, ts: Number(v.ts) || 0 };
+      });
+    }
     return {
       id: h.id,
       title: h.title || '',
@@ -2386,7 +2401,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
       isManga: !!h.isManga,
       episode: h.episode || 1,
       timestamp: h.timestamp || Date.now(),
-      epProgress: h.epProgress || {},
+      epProgress: ep,
       lastProvider: h.lastProvider || null,
       lastAudio: h.lastAudio || null,
       _url: h._url || null,
@@ -2434,7 +2449,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     if (!currentUser) return;
     if (_isPullingFromRemote) return;
     if (_syncPushTimer) clearTimeout(_syncPushTimer);
-    _syncPushTimer = setTimeout(pushUserDataToFirebase, 1200);
+    _syncPushTimer = setTimeout(pushUserDataToFirebase, 900);
   }
 
   async function pushUserDataToFirebase() {
@@ -2454,22 +2469,24 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
         wlObj[key] = v;
       });
       const payload = {
-        watchlist: wlObj,
         history: histObj,
+        watchlist: wlObj,
         lastSync: Date.now()
       };
-      const hash = JSON.stringify(payload);
+      const hash = JSON.stringify({h: histObj, w: wlObj});
       if (hash === _lastPushHash) return;
       await db.ref('users/' + currentUser.uid).update(payload);
       _lastPushHash = hash;
     } catch(e) { console.warn('[sync] push failed', e); }
   }
 
-  async function pullUserDataFromFirebase(uid) {
+  async function pullUserDataFromFirebase(uid, opts = {}) {
+    if (!uid) return;
     try {
       const snap = await db.ref('users/' + uid).get();
       if (!snap.exists()) return;
       const data = snap.val();
+      const wasPulling = _isPullingFromRemote;
       _isPullingFromRemote = true;
       let changed = false;
 
@@ -2479,7 +2496,6 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
         Object.values(data.watchlist).forEach(v => {
           if (v && typeof v === 'object' && v.id != null) remoteWL[String(v.id)] = v;
         });
-        // Old format support (id-keyed)
         Object.entries(data.watchlist).forEach(([k, v]) => {
           if (v && typeof v === 'object' && v.id != null && !remoteWL[String(v.id)]) remoteWL[String(v.id)] = v;
           else if (v && typeof v === 'object' && v.title && v.id == null && !isNaN(Number(k))) remoteWL[String(k)] = { ...v, id: Number(k) };
@@ -2500,14 +2516,15 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
         if (Array.isArray(data.history)) remoteHist = data.history.filter(Boolean);
         else if (typeof data.history === 'object') remoteHist = Object.values(data.history).filter(h => h && h.id != null);
         if (remoteHist.length) {
+          const beforeJSON = JSON.stringify(state.watchHistory);
           state.watchHistory = _mergeHistory(state.watchHistory, remoteHist);
           try { localStorage.setItem('thyAnime_history', JSON.stringify(state.watchHistory)); } catch(_) {}
-          changed = true;
+          if (JSON.stringify(state.watchHistory) !== beforeJSON) changed = true;
         }
       }
 
       if (changed) {
-        _lastPushHash = ''; // let the next push go through
+        _lastPushHash = '';
         renderWatchHistory();
         if (currentPage === 'watchlist') renderWatchlistPage();
         if (currentPage === 'settings') renderSettingsPage();
@@ -2519,11 +2536,72 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     }
   }
 
+  // Attach real-time listeners on the user's cloud data.
+  function attachUserDataListener(uid) {
+    detachUserDataListener();
+    if (!uid) return;
+    _userDataListenerUid = uid;
+    _userDataListener = db.ref('users/' + uid);
+    _userDataListener.on('value', snap => {
+      const data = snap.val();
+      if (!data) return;
+      // Prevent our own pushes from looping back into this listener.
+      const incomingHash = JSON.stringify({h: data.history || {}, w: data.watchlist || {}});
+      if (incomingHash === _lastPushHash) return;
+      // Merge remote state into local without re-triggering a push.
+      applyRemoteData(data);
+    });
+    if (_periodicPullTimer) clearInterval(_periodicPullTimer);
+    _periodicPullTimer = setInterval(() => {
+      if (currentUser) pullUserDataFromFirebase(currentUser.uid, {silent: true});
+    }, 45000);
+  }
+  function detachUserDataListener() {
+    if (_userDataListener && _userDataListenerUid) {
+      try { _userDataListener.off(); } catch(_) {}
+    }
+    _userDataListener = null;
+    _userDataListenerUid = null;
+    if (_periodicPullTimer) { clearInterval(_periodicPullTimer); _periodicPullTimer = null; }
+  }
+  function applyRemoteData(data) {
+    const wasPulling = _isPullingFromRemote;
+    _isPullingFromRemote = true;
+    let changed = false;
+    try {
+      if (data.watchlist && typeof data.watchlist === 'object') {
+        Object.values(data.watchlist).forEach(v => {
+          if (!v || typeof v !== 'object' || v.id == null) return;
+          const id = String(v.id);
+          const local = state.watchlist[id];
+          if (!local || (v.ts || 0) >= (local.ts || 0)) { state.watchlist[id] = v; changed = true; }
+        });
+        try { localStorage.setItem('thyAnime_watchlist', JSON.stringify(state.watchlist)); } catch(_) {}
+      }
+      if (data.history) {
+        let remoteHist = Array.isArray(data.history)
+          ? data.history.filter(Boolean)
+          : Object.values(data.history || {}).filter(h => h && h.id != null);
+        if (remoteHist.length) {
+          const beforeJSON = JSON.stringify(state.watchHistory);
+          state.watchHistory = _mergeHistory(state.watchHistory, remoteHist);
+          try { localStorage.setItem('thyAnime_history', JSON.stringify(state.watchHistory)); } catch(_) {}
+          if (JSON.stringify(state.watchHistory) !== beforeJSON) changed = true;
+        }
+      }
+      if (changed) {
+        renderWatchHistory();
+        if (currentPage === 'watchlist') renderWatchlistPage();
+        if (currentPage === 'settings') renderSettingsPage();
+      }
+    } finally {
+      _isPullingFromRemote = wasPulling;
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   // AUTH SYSTEM
   // ══════════════════════════════════════════════════════════════════════════
-
-  // Generic prompt modal
   let _promptSubmit = null;
   window.closePromptModal = () => {
     promptModal.classList.add('hidden');
@@ -2601,6 +2679,16 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
       document.getElementById('authSubmitBtn').disabled = false;
       document.getElementById('googleBtn').disabled = false;
     }
+  }
+
+  // After sign-in, ensure local (guest) data is uploaded to the cloud.
+  async function afterSignIn(uid) {
+    try {
+      await pullUserDataFromFirebase(uid);
+      _lastPushHash = '';
+      await pushUserDataToFirebase();
+      attachUserDataListener(uid);
+    } catch(e) { console.warn('[afterSignIn]', e); }
   }
 
   window.handleGoogleSignIn = async () => {
@@ -2704,14 +2792,6 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     }
   }
 
-  function providerLabel() {
-    if (!currentUser) return '';
-    const p = currentUser.providerData[0]?.providerId;
-    if (p === 'google.com') return 'google';
-    if (p === 'password') return 'password';
-    return p || 'unknown';
-  }
-
   function renderUserMenu() {
     if (currentUser) {
       const name = currentUser.displayName || currentUser.email?.split('@')[0] || 'User';
@@ -2760,12 +2840,13 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
   window.handleSignOut = async () => {
     if (!authAvailable || !currentUser) return;
     try {
+      try { await pushUserDataToFirebase(); } catch(_) {}
+      detachUserDataListener();
       await auth.signOut();
       showToast('Signed out', '👋');
     } catch (e) { showToast('Sign out failed'); }
   };
 
-  // Edit username
   window.editUsername = () => {
     if (!currentUser) return;
     const current = currentUser.displayName || '';
@@ -2795,7 +2876,6 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     });
   };
 
-  // Change password
   window.changePassword = () => {
     if (!currentUser) return;
     const provider = currentUser.providerData[0]?.providerId;
@@ -2839,8 +2919,10 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
       updateAvatarUI();
       renderUserMenu();
       if (user) {
-        await pullUserDataFromFirebase(user.uid);
+        await afterSignIn(user.uid);
         if (!wasSignedIn) showToast(`Welcome, ${user.displayName || user.email}`, '👋');
+      } else {
+        detachUserDataListener();
       }
       if (currentPage === 'settings') renderSettingsPage();
     });
@@ -2849,14 +2931,18 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     renderUserMenu();
   }
 
-  // Re-pull when the tab becomes visible (get latest progress from other devices)
+  // Pull fresh data when the tab regains focus, and when the network comes back
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && currentUser && Date.now() - _lastPullAt > 30000) {
-      _lastPullAt = Date.now();
-      pullUserDataFromFirebase(currentUser.uid);
+    if (document.visibilityState === 'visible' && currentUser) {
+      if (Date.now() - _lastPullAt > 15000) {
+        _lastPullAt = Date.now();
+        pullUserDataFromFirebase(currentUser.uid, {silent: true});
+      }
     }
   });
-  window.addEventListener('online', () => { if (currentUser) { _lastPullAt = Date.now(); pullUserDataFromFirebase(currentUser.uid); } });
+  window.addEventListener('online', () => {
+    if (currentUser) { _lastPullAt = Date.now(); pullUserDataFromFirebase(currentUser.uid, {silent: true}); }
+  });
 
   // ══════════════════════════════════════════════════════════════════════════
   // SETTINGS PAGE
@@ -2994,7 +3080,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
         <div style="font-size:0.82rem;color:var(--text-2);line-height:1.75;">
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">ThyAnime</strong> is a free anime and manga streaming platform. Not affiliated with any content provider — all artwork belongs to its respective owners.</p>
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">Data Sources:</strong> AniList (primary), Jikan/MAL, Kitsu, MangaProx</p>
-          <p><strong style="color:var(--text);">Version:</strong> 2.2.0</p>
+          <p><strong style="color:var(--text);">Version:</strong> 2.3.0</p>
         </div>
       </div>`;
     grid.innerHTML = accountHTML + prefsHTML;
@@ -3045,9 +3131,16 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     showToast('Notifications cleared');
   };
 
+  function updateMobileBottomNav(page) {
+    document.querySelectorAll('#mobileBottomNav .mbn-item').forEach(b => {
+      b.classList.toggle('active', b.dataset.nav === page);
+    });
+  }
+
   window.navigateTo = (page) => {
     document.querySelectorAll('.nav-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
     document.querySelectorAll('.sidebar-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
+    updateMobileBottomNav(page);
     currentPage = page;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     if (page === 'home') { homePage.classList.add('active'); goHome(true); }
@@ -3094,7 +3187,6 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     saveWatchlist();
     document.querySelectorAll(`.anime-card-watchlist[data-id="${id}"]`).forEach(b => b.classList.toggle('in-list', isInWatchlist(id)));
   };
-  window.toggleWatchlistDrawer = () => { navigateTo('watchlist'); };
 
   function renderWatchlistPage() {
     const items = Object.values(state.watchlist).sort((a,b) => (b.ts || 0) - (a.ts || 0));
@@ -3245,7 +3337,16 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
       historyRow.appendChild(card);
     });
   }
-  window.clearHistory=()=>{state.watchHistory=[];saveHistory();renderWatchHistory();showToast('History cleared');};
+  window.clearHistory=()=>{
+    state.watchHistory=[];
+    saveHistory();
+    // ensure the clear propagates to the cloud even if the hash of the new
+    // payload happens to match something we pushed before
+    _lastPushHash = '';
+    if (currentUser) { try { pushUserDataToFirebase(); } catch(_) {} }
+    renderWatchHistory();
+    showToast('History cleared');
+  };
   window.removeHistoryItem=(id,isManga)=>{ state.watchHistory = state.watchHistory.filter(h=>!(String(h.id)===String(id) && !!h.isManga===!!isManga)); saveHistory(); renderWatchHistory(); };
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -3283,6 +3384,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     detailsPage.classList.add('active');
     currentPage = 'details';
+    updateMobileBottomNav('home');
     window.scrollTo({top:0, behavior:'smooth'});
     let full = anime;
     if (_activeSource === DataSource.ANILIST && !anime._loaded) {
@@ -3879,7 +3981,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
   function populateGrid(container, data) {
     container.innerHTML = '';
     if (!data?.length) {
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < 12; i++) {
         const s = document.createElement('div');
         s.className = 'skeleton';
         s.style.cssText = 'aspect-ratio:3/4;border-radius:12px;';
@@ -4074,6 +4176,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     shortcutsBtn.classList.remove('visible'); shortcutsPanel.classList.remove('visible');
     document.querySelectorAll('.nav-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === 'home'));
     document.querySelectorAll('.sidebar-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === 'home'));
+    updateMobileBottomNav('home');
     if (!skipReload) renderWatchHistory();
     return Promise.resolve();
   };
@@ -4081,6 +4184,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     watchPage.classList.add('active');
     currentPage = 'watch';
+    updateMobileBottomNav('home');
     window.scrollTo({top:0, behavior:'smooth'});
     shortcutsBtn.classList.add('visible');
   }
@@ -4088,6 +4192,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     mangaReadPage.classList.add('active');
     currentPage = 'manga';
+    updateMobileBottomNav('home');
     window.scrollTo({top:0, behavior:'smooth'});
     shortcutsBtn.classList.add('visible');
   }
@@ -4097,7 +4202,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
     if (state.isLoadingBrowse) return;
     state.isLoadingBrowse = true;
     browseGrid.innerHTML = '';
-    for (let i = 0; i < 20; i++) { const s = document.createElement('div'); s.className = 'skeleton'; s.style.cssText = 'aspect-ratio:3/4;border-radius:12px;'; browseGrid.appendChild(s); }
+    for (let i = 0; i < 16; i++) { const s = document.createElement('div'); s.className = 'skeleton'; s.style.cssText = 'aspect-ratio:3/4;border-radius:12px;'; browseGrid.appendChild(s); }
     try {
       const { media, pageInfo } = await fetchBrowsePage(page, filters);
       state.browsePage = page;
@@ -4290,7 +4395,7 @@ html.ios #announcementBanner{padding-top:calc(10px + env(safe-area-inset-top,0px
 
   window.addEventListener('beforeunload', () => {
     stopProgressTracking();
-    if (currentUser) { // best-effort flush
+    if (currentUser) {
       try { pushUserDataToFirebase(); } catch(_) {}
     }
   });
