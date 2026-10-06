@@ -1073,6 +1073,39 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .nf-btn{padding:11px 22px;border-radius:12px;border:1px solid var(--border-2);background:rgba(255,255,255,.06);color:#fff;font-family:var(--font);font-weight:700;cursor:pointer;text-decoration:none;}
 .nf-btn.primary{background:linear-gradient(135deg,var(--primary),var(--accent));border-color:transparent;}
 .top-airing-list{max-height:min(62vh,640px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(139,92,246,.5) transparent;}
+
+#errPage{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:calc(24px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));background:#06060c;overflow:hidden;text-align:center;font-family:var(--font);}
+#errPage.open{display:flex;animation:bannerIn .3s var(--ease);}
+.err-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:.55;animation:errFloat 9s ease-in-out infinite;}
+.err-orb.o1{width:420px;height:420px;background:rgba(139,92,246,.45);top:-120px;left:-100px;}
+.err-orb.o2{width:380px;height:380px;background:rgba(59,130,246,.35);bottom:-120px;right:-80px;animation-delay:-4s;}
+@keyframes errFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,24px)}}
+.err-box{position:relative;z-index:2;max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;}
+.err-icon{font-size:2.6rem;animation:errBob 3s ease-in-out infinite;}
+@keyframes errBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.err-code{font-weight:900;font-size:clamp(4.5rem,22vw,9rem);line-height:1;letter-spacing:-.05em;background:linear-gradient(135deg,#fff 10%,var(--primary-3) 50%,var(--accent-2) 90%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 40px rgba(139,92,246,.45));}
+.err-box h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:800;letter-spacing:-.02em;}
+.err-box p{color:var(--text-2);line-height:1.7;max-width:420px;font-family:var(--font-body);}
+#errDetail{display:none;max-width:100%;padding:8px 14px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border-2);color:var(--text-3);font-size:.74rem;word-break:break-all;}
+.err-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;}
+.err-box small{color:var(--text-3);font-size:.7rem;margin-top:6px;}
+
+/* ── Responsive fixes: phone/tablet home layout ── */
+@media(max-width:1100px){
+  .home-layout{flex-direction:column;align-items:stretch;gap:22px;}
+  .main-col{width:100%;max-width:100%;}
+  .sidebar-col{display:flex!important;position:static;width:100%;max-height:none;overflow:visible;padding:0;gap:16px;}
+  .top-airing-list{flex-direction:row;max-height:none;overflow-x:auto;overflow-y:hidden;gap:10px;padding:12px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+  .top-airing-item{flex:0 0 min(78vw,300px);border:1px solid var(--border-3);border-radius:12px;background:rgba(255,255,255,.03);scroll-snap-align:start;}
+  .top-airing-item:last-child{border-bottom:1px solid var(--border-3);}
+  .airing-schedule-list,.upcoming-list{max-height:340px;overflow-y:auto;}
+}
+@media(max-width:768px){
+  html,body{max-width:100%;overflow-x:hidden;}
+  .hero-pagination{top:14px;bottom:auto;right:14px;}
+  .row-scroll{scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+  .section-header{gap:8px;}
+}
 </style>
 </head>
 <body>
@@ -3211,6 +3244,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   }
 
   window.navigateTo = (page) => {
+    if (!['home','browse','popular','trending','seasonal','watchlist','settings'].includes(page)) { showErrorPage('404', 'Unknown page: ' + page); return; }
     document.querySelectorAll('.nav-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
     document.querySelectorAll('.sidebar-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
     updateMobileBottomNav(page);
@@ -4552,6 +4586,57 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function _syncReadFromAccount(data) { if (data && data.readNotifs) { let c = false; Object.keys(data.readNotifs).forEach(k => { if (!_readSet.has(k)) { _readSet.add(k); c = true; } }); if (c) { _saveRead(); renderNotifs(); } } }
   const _origApply = applyRemoteData; applyRemoteData = function(d) { _origApply(d); _syncReadFromAccount(d); };
   window.state = state;
+  // ── Error pages: 404 (bad #/route or bad path), offline, and generic errors
+  const _ERR = {
+    '404': { code: '404', icon: '🔍', title: 'Page not found', msg: "We couldn't find what you were looking for. It may have been moved, renamed, or never existed.", p: 'Back to Home', s: 'Search anime' },
+    'offline': { code: 'OFFLINE', icon: '📡', title: "You're offline", msg: 'Check your internet connection. Your history and watchlist are saved and will sync when you reconnect.', p: 'Try again', s: 'Dismiss' },
+    'error': { code: '500', icon: '⚠️', title: 'Something went wrong', msg: 'An unexpected error occurred. Reloading usually fixes it.', p: 'Reload', s: 'Go Home' }
+  };
+  let _errType = null, _badPath = false;
+  function showErrorPage(type, detail) {
+    const c = _ERR[type] || _ERR.error; _errType = _ERR[type] ? type : 'error';
+    const set = (id, t) => { const e = document.getElementById(id); if (e) e.textContent = t; };
+    set('errIcon', c.icon); set('errCode', c.code); set('errTitle', c.title); set('errMsg', c.msg); set('errPrimary', c.p); set('errSecondary', c.s);
+    const d = document.getElementById('errDetail'); if (d) { d.textContent = detail || ''; d.style.display = detail ? 'block' : 'none'; }
+    document.getElementById('errPage')?.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  window.showErrorPage = showErrorPage;
+  window.hideErrorPage = () => {
+    document.getElementById('errPage')?.classList.remove('open');
+    document.body.style.overflow = ''; _errType = null;
+    try {
+      const path = _badPath ? location.pathname.replace(/[^/]*$/, '') : location.pathname;
+      if (_badPath || location.hash.startsWith('#/')) history.replaceState(null, '', path + location.search);
+      _badPath = false;
+    } catch(_) {}
+  };
+  window.errPrimary = () => { if (_errType === '404') { hideErrorPage(); navigateTo('home'); } else location.reload(); };
+  window.errSecondary = () => {
+    const t = _errType; hideErrorPage();
+    if (t === 'offline') return;
+    navigateTo('home'); if (t === '404') setTimeout(() => searchInput.focus(), 50);
+  };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && _errType) hideErrorPage(); });
+  window.addEventListener('offline', () => showErrorPage('offline'));
+  window.addEventListener('online', () => { if (_errType === 'offline') { hideErrorPage(); showToast('Back online', '✅'); } });
+  const _ROUTES = ['home','browse','popular','trending','seasonal','watchlist','settings'];
+  function handleRoute() {
+    const h = location.hash; if (!h.startsWith('#/')) return;
+    const page = (h.slice(2).split(/[/?]/)[0] || 'home').toLowerCase();
+    if (_ROUTES.includes(page)) { document.getElementById('errPage')?.classList.remove('open'); document.body.style.overflow = ''; _errType = null; navigateTo(page); }
+    else showErrorPage('404', 'Unknown address: ' + h);
+  }
+  window.addEventListener('hashchange', handleRoute);
+  function initErrorRouting() {
+    if (/^https?:$/.test(location.protocol)) {   // real server 404s (e.g. host serves this file as 404.html)
+      const seg = location.pathname.split('/').pop();
+      if (seg && !/\.html?$/i.test(seg) && seg !== 'index') { _badPath = true; showErrorPage('404', location.pathname); return; }
+    }
+    if (!navigator.onLine) { showErrorPage('offline'); return; }
+    handleRoute();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initErrorRouting); else initErrorRouting();
   window.openMangaFullscreen = openMangaFullscreen;
   window.navigateChapter = navigateChapter;
   window.setMode = setMode;
@@ -4572,7 +4657,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   updateSearchPlaceholder();
   renderAnimeGenreBar();
   setAuthNotice();
-  loadHomePage();
+  loadHomePage().catch(e => showErrorPage('error', (e && e.message) || 'Failed to start'));
 
   setTimeout(() => {
     const loader = document.getElementById('logoLoader');
@@ -4582,5 +4667,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 })();
 </script>
 <div id="notifFull" onclick="if(event.target===this)closeNotifFull()"><div class="nf-card" id="nfCard"></div></div>
+<div id="errPage" role="alert" aria-live="assertive"><div class="err-orb o1"></div><div class="err-orb o2"></div><div class="err-box"><div class="err-icon" id="errIcon"></div><div class="err-code" id="errCode"></div><h1 id="errTitle"></h1><p id="errMsg"></p><code id="errDetail"></code><div class="err-actions"><button class="nf-btn primary" id="errPrimary" onclick="errPrimary()"></button><button class="nf-btn" id="errSecondary" onclick="errSecondary()"></button></div><small>Press Esc to dismiss</small></div></div>
 </body>
 </html>
