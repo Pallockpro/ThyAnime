@@ -1106,6 +1106,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   .row-scroll{scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
   .section-header{gap:8px;}
 }
+
+.anime-card-fav{position:absolute;top:42px;right:8px;z-index:3;width:28px;height:28px;border-radius:8px;background:rgba(8,8,13,.8);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.9);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all var(--t) var(--ease);}
+.anime-card-fav:hover{background:rgba(245,158,11,.35);border-color:rgba(245,158,11,.7);color:#fff;}
+.anime-card-fav.on{background:linear-gradient(135deg,#f59e0b,#ec4899);border-color:transparent;color:#fff;}
+.anime-card-watchlist,.anime-card-fav{opacity:.92;}
+.anime-card,.trending-card,.recent-card,.top-airing-item,.history-card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+#ctxMenu{position:fixed;z-index:100001;min-width:220px;max-width:min(300px,92vw);padding:6px;border-radius:14px;background:var(--glass-strong);backdrop-filter:blur(24px);border:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,.7);display:none;}
+#ctxMenu.open{display:block;animation:dropIn .15s var(--ease);}
+#ctxMenu .cm-title{padding:8px 12px 6px;font-family:var(--font);font-weight:800;font-size:.76rem;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid var(--border-3);margin-bottom:4px;}
+#ctxMenu button{display:block;width:100%;text-align:left;padding:10px 12px;border:none;background:transparent;color:var(--text);font-family:var(--font);font-weight:600;font-size:.82rem;border-radius:9px;cursor:pointer;}
+#ctxMenu button:hover{background:rgba(139,92,246,.18);}
+#ctxMenu button.danger{color:#f87171;}
 </style>
 </head>
 <body>
@@ -1291,6 +1303,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     <button class="sidebar-link" data-nav="watchlist" onclick="navigateTo('watchlist')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
       Watchlist
+    </button>
+    <button class="sidebar-link" data-nav="favorites" onclick="navigateTo('favorites')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Favorites
     </button>
     <button class="sidebar-link" data-nav="history" onclick="navigateTo('home'); document.getElementById('continueWatchingSection')?.scrollIntoView({behavior:'smooth'}); toggleSidebar();">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
@@ -1515,6 +1531,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <option value="START_DATE_DESC">Newest</option>
       </select>
     </div>
+    <div id="libTabs" class="tab-bar" style="display:none;margin-bottom:16px;"><button class="tab-btn" data-p="watchlist" onclick="navigateTo('watchlist')">❤️ Watchlist</button><button class="tab-btn" data-p="favorites" onclick="navigateTo('favorites')">⭐ Favorites</button></div>
     <div class="anime-grid" id="browseGrid"></div>
     <div class="pagination" id="browsePagination"></div>
   </section>
@@ -2226,6 +2243,40 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function saveHistory(){try{localStorage.setItem('thyAnime_history',JSON.stringify(state.watchHistory));}catch(e){} syncUserDataDebounced();}
   function saveBookmarks(){try{localStorage.setItem('thyAnime_bookmarks',JSON.stringify(state.mangaMode.bookmarks));}catch(e){}}
   function saveWatchlist(){try{localStorage.setItem('thyAnime_watchlist',JSON.stringify(state.watchlist));}catch(e){} syncUserDataDebounced();}
+  const _cardItem = new WeakMap();
+  state.favorites = {};
+  try { const f = JSON.parse(localStorage.getItem('thyAnime_favorites') || '{}'); if (f && typeof f === 'object' && !Array.isArray(f)) state.favorites = f; } catch(_) {}
+  function saveFavorites(){ try { localStorage.setItem('thyAnime_favorites', JSON.stringify(state.favorites)); } catch(_) {} syncUserDataDebounced(); }
+  function isFav(it){ return !!(it && state.favorites[_hk(!!it.isManga, it.id)]); }
+  function mergeFavs(remote) {
+    if (!remote || typeof remote !== 'object') return false; let c = false;
+    Object.values(remote).forEach(v => { if (!v || v.id == null) return; const k = _hk(!!v.isManga, v.id), l = state.favorites[k]; if (!l || (v.ts || 0) > (l.ts || 0)) { state.favorites[k] = v; c = true; } });
+    if (c) { try { localStorage.setItem('thyAnime_favorites', JSON.stringify(state.favorites)); } catch(_) {} }
+    return c;
+  }
+  window.toggleFavorite = (it, e) => {
+    if (e) e.stopPropagation(); if (!it || it.id == null) return;
+    const k = _hk(!!it.isManga, it.id);
+    if (state.favorites[k]) { delete state.favorites[k]; _tomb['f' + k] = Date.now(); tombSave(); showToast('Removed from favorites', '💔'); }
+    else { state.favorites[k] = { id: it.id, title: it.title || '', coverImage: it.coverImage || '', format: it.format || null, averageScore: it.averageScore || null, isManga: !!it.isManga, ts: Date.now() }; showToast('Added to favorites', '⭐'); }
+    saveFavorites(); refreshFavUI();
+    if (currentPage === 'favorites') renderFavoritesPage();
+  };
+  function refreshFavUI() {
+    document.querySelectorAll('.anime-card-fav').forEach(b => { try { const on = isFav(JSON.parse(b.dataset.wl)); b.classList.toggle('on', on); b.textContent = on ? '★' : '☆'; } catch(_) {} });
+    const d = document.getElementById('detailsFavBtn'); if (d && window.__detailsItem) d.innerHTML = isFav(window.__detailsItem) ? '⭐ Favorited' : '☆ Favorite';
+  }
+  window.handleCardFav = (e, btn) => { e.stopPropagation(); try { toggleFavorite(JSON.parse(btn.dataset.wl), e); } catch(err) { console.warn('fav payload error', err); } };
+  function renderFavoritesPage() {
+    const items = Object.values(state.favorites).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    if (!items.length) { browseGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-3);font-family:var(--font);">No favorites yet. Tap the ☆ on any card, or right-click / long-press it.</div>'; browsePagination.innerHTML = ''; return; }
+    populateGrid(browseGrid, items); browsePagination.innerHTML = '';
+  }
+  function updateLibTabs(page) {
+    const t = document.getElementById('libTabs'); if (!t) return;
+    t.style.display = (page === 'watchlist' || page === 'favorites') ? 'flex' : 'none';
+    t.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.p === page));
+  }
 
   function getHistoryEntry(id){return state.watchHistory.find(h=>String(h.id)===String(id))||null;}
   function getEpProgress(animeId, epNum){return getHistoryEntry(animeId)?.epProgress?.[epNum]||null;}
@@ -2476,7 +2527,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     let wlChanged = false;
     Object.keys(state.watchlist).forEach(id => { const v = state.watchlist[id]; if (v && _tomb[_hk(!!v.isManga, v.id)] >= (v.ts || 0)) { delete state.watchlist[id]; wlChanged = true; } });
     try { localStorage.setItem('thyAnime_history', JSON.stringify(state.watchHistory)); localStorage.setItem('thyAnime_watchlist', JSON.stringify(state.watchlist)); } catch(_) {}
-    return wlChanged || state.watchHistory.length !== h0;
+    let favChanged = false;
+    Object.keys(state.favorites || {}).forEach(k => { const v = state.favorites[k]; if (v && _tomb['f' + k] >= (v.ts || 0)) { delete state.favorites[k]; favChanged = true; } });
+    if (favChanged) { try { localStorage.setItem('thyAnime_favorites', JSON.stringify(state.favorites)); } catch(_) {} }
+    return wlChanged || favChanged || state.watchHistory.length !== h0;
   }
   let _userDataListener = null;
   let _userDataListenerUid = null;
@@ -2567,15 +2621,17 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       Object.entries(state.watchlist).forEach(([k, v]) => {
         if (!v || v.id == null) return;
         const key = _sanitizeFbKey((v.isManga ? 'm_' : 'a_') + String(v.id));
-        wlObj[key] = v;
+        wlObj[key] = JSON.parse(JSON.stringify(v));
       });
+      const favObj = {}; Object.entries(state.favorites).forEach(([k, v]) => { if (v && v.id != null) favObj[_sanitizeFbKey(k)] = JSON.parse(JSON.stringify(v)); });
       const payload = {
         history: histObj,
         watchlist: wlObj,
         tombs: _tomb,
+        favorites: favObj,
         lastSync: Date.now()
       };
-      const hash = JSON.stringify({h: histObj, w: wlObj, t: _tomb});
+      const hash = JSON.stringify({h: histObj, w: wlObj, t: _tomb, f: favObj});
       if (hash === _lastPushHash) return;
       await db.ref('users/' + currentUser.uid).update(payload);
       _lastPushHash = hash;
@@ -2593,6 +2649,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       let changed = false;
 
       tombMerge(data.tombs);
+      if (mergeFavs(data.favorites)) changed = true;
       // Watchlist
       if (data.watchlist && typeof data.watchlist === 'object') {
         const remoteWL = {};
@@ -2650,7 +2707,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       const data = snap.val();
       if (!data) return;
       // Prevent our own pushes from looping back into this listener.
-      const incomingHash = JSON.stringify({h: data.history || {}, w: data.watchlist || {}, t: data.tombs || {}});
+      const incomingHash = JSON.stringify({h: data.history || {}, w: data.watchlist || {}, t: data.tombs || {}, f: data.favorites || {}});
       if (incomingHash === _lastPushHash) return;
       // Merge remote state into local without re-triggering a push.
       applyRemoteData(data);
@@ -2674,6 +2731,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     let changed = false;
     try {
       tombMerge(data.tombs);
+      if (mergeFavs(data.favorites)) changed = true;
       if (data.watchlist && typeof data.watchlist === 'object') {
         Object.values(data.watchlist).forEach(v => {
           if (!v || typeof v !== 'object' || v.id == null) return;
@@ -3244,7 +3302,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   }
 
   window.navigateTo = (page) => {
-    if (!['home','browse','popular','trending','seasonal','watchlist','settings'].includes(page)) { showErrorPage('404', 'Unknown page: ' + page); return; }
+    if (!['home','browse','popular','trending','seasonal','watchlist','favorites','settings'].includes(page)) { showErrorPage('404', 'Unknown page: ' + page); return; }
+    updateLibTabs(page);
     document.querySelectorAll('.nav-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
     document.querySelectorAll('.sidebar-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
     updateMobileBottomNav(page);
@@ -3255,6 +3314,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     else if (page === 'popular') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = appMode === 'manga' ? 'Popular Manga' : 'Popular Anime'; populateGrid(browseGrid, appMode === 'manga' ? state.mangaMode.popularData : state.popularData); renderBrowsePagination(); }
     else if (page === 'trending') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'Trending Now'; populateGrid(browseGrid, appMode === 'manga' ? state.mangaMode.trendingData : state.trendingData); renderBrowsePagination(); }
     else if (page === 'seasonal') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'Seasonal'; loadSeasonal(); }
+    else if (page === 'favorites') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'My Favorites'; renderFavoritesPage(); }
     else if (page === 'watchlist') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'My Watchlist'; renderWatchlistPage(); }
     else if (page === 'settings') { settingsPage.classList.add('active'); renderSettingsPage(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3293,7 +3353,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       showToast(`Added to watchlist`, '❤️');
     }
     saveWatchlist();
-    document.querySelectorAll(`.anime-card-watchlist[data-id="${id}"]`).forEach(b => b.classList.toggle('in-list', isInWatchlist(id)));
+    document.querySelectorAll(`.anime-card-watchlist[data-id="${id}"]`).forEach(b => { const on = isInWatchlist(id); b.classList.toggle('in-list', on); b.textContent = on ? '♥' : '♡'; });
   };
 
   function renderWatchlistPage() {
@@ -3460,7 +3520,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       const timeStr=prog&&prog.time>10?fmtTime(prog.time):'';
       const isManga=!!h.isManga;
       const card=document.createElement('div');
-      card.className='history-card';
+      card.className='history-card'; _cardItem.set(card, h);
       card.innerHTML=`<div class="history-card-thumb"><img src="${escapeHTML(h.coverImage||'')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"/><div class="history-card-thumb-overlay"></div><span class="history-ep-badge${isManga?' manga':''}">EP ${h.episode||1}</span><button class="history-remove-btn" onclick="event.stopPropagation();removeHistoryItem('${escapeHTML(String(h.id))}',${isManga})">✕</button>${timeStr?`<span class="history-time-badge">${timeStr}</span>`:''}<div class="history-play-btn"><span>&#9654;</span></div><div class="history-progress-bar"><div class="history-progress-fill" style="width:${Math.round(pct)}%"></div></div></div><div class="history-card-body"><div class="history-card-title">${escapeHTML(h.title)}</div><div class="history-card-meta">${h.format?`<span>${escapeHTML(h.format)}</span>`:''}${pct>0?`<span class="pct">${Math.round(pct)}%</span>`:''}</div></div>`;
       card.addEventListener('click',()=>{ if (isManga) selectManga(h,h.episode); else selectAnime(h,h.episode); });
       historyRow.appendChild(card);
@@ -3546,6 +3606,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
             <div class="details-actions">
               <button class="hero-btn primary" onclick='window.__detailsWatch()'>▶ Watch Now</button>
               <button class="hero-btn secondary" id="detailsWLBtn" onclick="toggleWatchlistDetails()">${inWL?'❤️ In Watchlist':'♡ Add to Watchlist'}</button>
+              <button class="hero-btn secondary" id="detailsFavBtn" onclick="toggleFavorite(window.__detailsItem)">${isFav(full)?'⭐ Favorited':'☆ Favorite'}</button>
             </div>
           </div>
         </div>
@@ -3561,6 +3622,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       recs.slice(0,12).forEach(r => recsContainer.appendChild(createAnimeCard(r)));
     }
     window.__detailsWatch = () => selectAnime(full);
+    window.__detailsItem = full;
     window.toggleWatchlistDetails = () => {
       toggleWatchlist(full);
       const btn = document.getElementById('detailsWLBtn');
@@ -3962,7 +4024,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function renderTopAiring(data, clickFn) {
     topAiringList.innerHTML='';
     (data||[]).slice(0,20).forEach((anime,i)=>{
-      const item=document.createElement('div'); item.className='top-airing-item';
+      const item=document.createElement('div'); item.className='top-airing-item'; _cardItem.set(item, anime);
       const rankClass=i<3?['gold','silver','bronze'][i]:'';
       const rating=anime.averageScore?(anime.averageScore/10).toFixed(1):'';
       item.innerHTML=`<span class="top-airing-rank ${rankClass}">${i+1}</span><img class="top-airing-thumb" src="${escapeHTML(anime.coverImage)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"><div class="top-airing-info"><div class="top-airing-name">${escapeHTML(anime.title)}</div><div class="top-airing-meta">${escapeHTML(anime.format||'')}${rating?' · '+rating:''}</div></div>`;
@@ -4092,13 +4154,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       ${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}
       ${isAiring?`<span class="anime-card-airing-badge">Airing</span>`:''}
       <button class="anime-card-watchlist${inWL?' in-list':''}" data-id="${escapeHTML(String(item.id))}" data-wl='${wlPayload}' onclick="handleCardWatchlist(event,this)" title="Add to Watchlist">${inWL?'♥':'♡'}</button>
+      <button class="anime-card-fav${isFav(item)?' on':''}" data-wl='${wlPayload}' onclick="handleCardFav(event,this)" title="Favorite">${isFav(item)?'★':'☆'}</button>
       <div class="anime-card-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21"/></svg></div>
     </div>
     <div class="anime-card-info">
       <span class="anime-card-title">${escapeHTML(item.title)}</span>
       <span class="anime-card-sub">${escapeHTML(item.format || '')}${item.genres && item.genres.length ? ' · ' + escapeHTML(item.genres.slice(0,2).join(', ')) : ''}</span>
     </div>`;
-    div.addEventListener('click', (e) => { if (e.target.closest('.anime-card-watchlist')) return; if (isManga) selectManga(item); else openDetails(item); });
+    div.addEventListener('click', (e) => { if (e.target.closest('.anime-card-watchlist, .anime-card-fav')) return; if (isManga) selectManga(item); else openDetails(item); });
+    _cardItem.set(div, item);
     return div;
   }
   window.handleCardWatchlist = (e, btn) => {
@@ -4126,7 +4190,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     trendingRow.innerHTML = '';
     (data || []).slice(0, 10).forEach((anime, i) => {
       const card = document.createElement('div');
-      card.className = 'trending-card';
+      card.className = 'trending-card'; _cardItem.set(card, anime);
       const rating = anime.averageScore ? (anime.averageScore/10).toFixed(1) : '';
       card.innerHTML = `
         <div class="trending-number">${i+1}</div>
@@ -4149,7 +4213,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (!items.length) { recentRow.innerHTML = '<div style="color:var(--text-3);font-size:0.8rem;padding:12px;">No recent updates</div>'; return; }
     items.forEach(anime => {
       const card = document.createElement('div');
-      card.className = 'recent-card';
+      card.className = 'recent-card'; _cardItem.set(card, anime);
       const epNum = anime.nextAiringEpisode?.episode || anime.episodes || 1;
       card.innerHTML = `
         <img class="recent-thumb" src="${escapeHTML(anime.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"/>
@@ -4620,7 +4684,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && _errType) hideErrorPage(); });
   window.addEventListener('offline', () => showErrorPage('offline'));
   window.addEventListener('online', () => { if (_errType === 'offline') { hideErrorPage(); showToast('Back online', '✅'); } });
-  const _ROUTES = ['home','browse','popular','trending','seasonal','watchlist','settings'];
+  const _ROUTES = ['home','browse','popular','trending','seasonal','watchlist','favorites','settings'];
   function handleRoute() {
     const h = location.hash; if (!h.startsWith('#/')) return;
     const page = (h.slice(2).split(/[/?]/)[0] || 'home').toLowerCase();
@@ -4637,6 +4701,44 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     handleRoute();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initErrorRouting); else initErrorRouting();
+  // ── Right-click / long-press card menu
+  const _CARD_SEL = '.anime-card,.trending-card,.recent-card,.top-airing-item,.history-card';
+  const ctxMenu = document.createElement('div'); ctxMenu.id = 'ctxMenu'; document.body.appendChild(ctxMenu);
+  let _ctxScrollY = 0, _ctxItem = null, _ctxEl = null, _lpT = null, _lpXY = null, _lpFired = false;
+  function closeCtx() { ctxMenu.classList.remove('open'); }
+  function openCtx(el, x, y) {
+    const it = _cardItem.get(el); if (!it) return;
+    const hist = el.classList.contains('history-card');
+    _ctxItem = it; _ctxEl = el;
+    ctxMenu.innerHTML = `<div class="cm-title">${escapeHTML(it.title || '')}</div><button data-a="open">${hist ? '▶ Resume' : '▶ Open'}</button><button data-a="wl">${isInWatchlist(it.id) ? '💔 Remove from Watchlist' : '❤️ Add to Watchlist'}</button><button data-a="fav">${isFav(it) ? '☆ Remove from Favorites' : '⭐ Add to Favorites'}</button>${hist ? '<button data-a="rm" class="danger">🗑 Remove from History</button>' : ''}`;
+    ctxMenu.classList.add('open'); _ctxScrollY = scrollY;
+    const w = ctxMenu.offsetWidth, h = ctxMenu.offsetHeight;
+    ctxMenu.style.left = Math.max(8, Math.min(x, innerWidth - w - 8)) + 'px';
+    ctxMenu.style.top = Math.max(8, Math.min(y, innerHeight - h - 8)) + 'px';
+  }
+  ctxMenu.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !_ctxItem) return;
+    const it = _ctxItem, hist = _ctxEl && _ctxEl.classList.contains('history-card'), a = b.dataset.a; closeCtx();
+    if (a === 'open') { if (hist) { it.isManga ? selectManga(it, it.episode) : selectAnime(it, it.episode); } else { it.isManga ? selectManga(it) : openDetails(it); } }
+    else if (a === 'wl') toggleWatchlist(it);
+    else if (a === 'fav') toggleFavorite(it);
+    else if (a === 'rm') removeHistoryItem(it.id, !!it.isManga);
+  });
+  document.addEventListener('contextmenu', e => {
+    const el = e.target.closest && e.target.closest(_CARD_SEL);
+    if (el && _cardItem.has(el)) { e.preventDefault(); openCtx(el, e.clientX, e.clientY); } else closeCtx();
+  });
+  document.addEventListener('click', e => { if (_lpFired) { _lpFired = false; e.preventDefault(); e.stopPropagation(); return; } if (!ctxMenu.contains(e.target)) closeCtx(); }, true);
+  document.addEventListener('touchstart', e => {
+    const el = e.target.closest && e.target.closest(_CARD_SEL);
+    if (!el || !_cardItem.has(el) || e.touches.length !== 1 || e.target.closest('.anime-card-watchlist,.anime-card-fav')) return;
+    const t = e.touches[0]; _lpXY = [t.clientX, t.clientY]; clearTimeout(_lpT);
+    _lpT = setTimeout(() => { _lpFired = true; if (navigator.vibrate) try { navigator.vibrate(15); } catch(_) {} openCtx(el, _lpXY[0], _lpXY[1]); }, 550);
+  }, { passive: true });
+  document.addEventListener('touchmove', e => { const t = e.touches[0]; if (_lpXY && t && Math.hypot(t.clientX - _lpXY[0], t.clientY - _lpXY[1]) > 10) clearTimeout(_lpT); }, { passive: true });
+  ['touchend', 'touchcancel'].forEach(n => document.addEventListener(n, () => { clearTimeout(_lpT); setTimeout(() => { _lpFired = false; }, 350); }, { passive: true }));
+  window.addEventListener('scroll', () => { if (ctxMenu.classList.contains('open') && Math.abs(scrollY - _ctxScrollY) > 60) closeCtx(); }, { passive: true });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCtx(); });
   window.openMangaFullscreen = openMangaFullscreen;
   window.navigateChapter = navigateChapter;
   window.setMode = setMode;
