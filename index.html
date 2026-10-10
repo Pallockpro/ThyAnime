@@ -3501,6 +3501,64 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     const ab=episodeGrid.querySelector('.episode-btn.active'); if (ab) ab.scrollIntoView({behavior:'smooth',block:'nearest'});
     episodeGrid.querySelectorAll('.episode-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ const ep=parseInt(btn.dataset.ep); state.selectedEpisode=ep; renderStdEpisodes(); updateHistory(state.selectedAnime,ep); const p=getEpProgress(animeId,ep); if (p&&p.time>10&&p.duration>0&&(p.time/p.duration)<0.92) showResumeModal(ep,p.time,p.duration,()=>loadStream(p.time),()=>loadStream(0)); else loadStream(0); }); });
   }
+  // Cache so we don't re-fetch on every episode click
+  const _yumeEpCache = {};
+
+  async function renderYumelistEpisodes() {
+    const anime = state.selectedAnime;
+    if (!anime) { episodeSection.style.display='none'; return; }
+
+    // Use known episode count or fetch from AniList
+    let total = anime.episodes || 0;
+    if (!total) {
+      // Check cache first
+      if (_yumeEpCache[anime.id]) {
+        total = _yumeEpCache[anime.id];
+      } else {
+        try {
+          const r = await fetch('https://graphql.anilist.co', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ query: 'query($id:Int){Media(id:$id,type:ANIME){episodes}}', variables: { id: anime.id } }),
+          });
+          const j = await r.json();
+          total = j?.data?.Media?.episodes || 0;
+          if (total) _yumeEpCache[anime.id] = total;
+        } catch(_) {}
+      }
+    }
+
+    // Still nothing — show at least 1 so the user can start watching
+    if (!total) total = 1;
+
+    episodeSection.style.display = 'flex';
+    const maxShow = Math.min(total, 200);
+    const animeId = anime.id;
+    let html = '';
+    for (let i = 1; i <= maxShow; i++) {
+      const prog = getEpProgress(animeId, i);
+      const pct = prog && prog.duration > 0 ? (prog.time / prog.duration) * 100 : 0;
+      let cls = 'episode-btn';
+      if (i === state.selectedEpisode) cls += ' active';
+      else if (pct >= 90) cls += ' completed';
+      else if (pct > 5) cls += ' in-progress';
+      html += `<button class="${cls}" data-ep="${i}">${i}</button>`;
+    }
+    if (total > maxShow) html += `<span style="padding:10px;color:var(--text-3);font-family:var(--font);font-size:0.74rem;">+${total - maxShow} more</span>`;
+    episodeGrid.innerHTML = html;
+    const ab = episodeGrid.querySelector('.episode-btn.active');
+    if (ab) ab.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    episodeGrid.querySelectorAll('.episode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ep = parseInt(btn.dataset.ep);
+        state.selectedEpisode = ep;
+        updateHistory(anime, ep);
+        renderYumelistEpisodes();
+        loadYumelistPlayer(anime, ep, state.selectedAudio);
+      });
+    });
+  }
+
   function syncEpisodeUI() {
     const pid = state.selectedProvider.id;
     if (pid==='anistream') {
@@ -3508,8 +3566,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       if (state.anistream.cacheKey===cKey && state.anistream.epData.length) { episodeSection.style.display='none'; s5EpSection.style.display='flex'; renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode); }
       else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
     } else if (pid==='yumelist') {
-      // Yumelist has its own episode switcher inside the iframe — hide both sidebars.
-      s5EpSection.style.display='none'; episodeSection.style.display='none';
+      s5EpSection.style.display='none';
+      renderYumelistEpisodes();
     }
     else { s5EpSection.style.display='none'; renderStdEpisodes(); }
   }
