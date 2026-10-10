@@ -2457,22 +2457,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function loadYumelistPlayer(anime, epNum, audio) {
     hideLWBanner();
     const url = `${YUMELIST_BASE}/embed?id=${anime.id}&ep=${epNum}&audio=${audio}`;
-    // Show a friendly loading state while the embed bootstraps its download job
-    playerPlaceholder.style.display = 'flex';
-    playerPlaceholder.innerHTML = `<div class="server5-loading"><div class="spinner"></div><span class="status-text">Connecting to Server 5…</span><span class="sub-text">Yumelist is fetching the episode — usually ready in 5–20 s</span></div>`;
-    playerIframe.style.display = 'none';
+    // Show the iframe immediately — the embed has its own loading UI (progress bar + status text).
+    // We don't wait for onload because the embed's SSE pipeline means content streams in gradually.
+    playerIframe.onload = null;
     playerIframe.src = '';
     playerIframe.removeAttribute('sandbox');
     playerIframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
-    playerIframe.onload = null;
+    playerPlaceholder.style.display = 'none';
+    playerIframe.style.display = 'block';
     playerIframe.src = url;
-    playerIframe.onload = () => {
-      playerPlaceholder.style.display = 'none';
-      playerIframe.style.display = 'block';
-      startProgressTracking(0);
-      const prog = getEpProgress(anime.id, epNum);
-      if (prog && prog.time > 5) showLastWatchedBanner(anime.title, epNum, prog.time, prog.duration);
-    };
+    startProgressTracking(0);
   }
 
   function renderAnistreamEpSidebar(epData, activeEpNum) {
@@ -3513,7 +3507,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       const cKey = String(state.selectedAnime?.id);
       if (state.anistream.cacheKey===cKey && state.anistream.epData.length) { episodeSection.style.display='none'; s5EpSection.style.display='flex'; renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode); }
       else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
-    } else if (pid==='yumelist') { s5EpSection.style.display='none'; renderStdEpisodes(); }
+    } else if (pid==='yumelist') {
+      // Yumelist has its own episode switcher inside the iframe — hide both sidebars.
+      s5EpSection.style.display='none'; episodeSection.style.display='none';
+    }
     else { s5EpSection.style.display='none'; renderStdEpisodes(); }
   }
 
