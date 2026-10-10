@@ -2165,8 +2165,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     { id:'animeplay', name:'Server 1', icon:'S1', color:'#8b5cf6', description:'Fast & reliable', getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
     { id:'megaplay',  name:'Server 2', icon:'S2', color:'#3b82f6', description:'Full HiAnime library', getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
     { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'url-start' },
-    { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'none' },
-    { id:'yumelist',  name:'Server 5', icon:'S5', color:'#22c55e', description:'Yumelist — downloads & streams', getUrl:(id,s,ep,a='sub')=>`${YUMELIST_BASE}/embed?id=${id}&ep=${ep}&audio=${a}`, supportsAudio:true, external:false, resumeSupport:'none' },
+    { id:'yumelist',  name:'Server 4', icon:'S4', color:'#22c55e', description:'Yumelist — downloads & streams', getUrl:(id,s,ep,a='sub')=>`${YUMELIST_BASE}/embed?id=${id}&ep=${ep}&audio=${a}`, supportsAudio:true, external:false, resumeSupport:'none' },
   ];
 
   // Helpers
@@ -2472,7 +2471,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function renderAnistreamEpSidebar(epData, activeEpNum) {
     s5EpGrid.innerHTML = '';
     const lbl = document.getElementById('s5SectionLabel');
-    if (lbl) lbl.textContent = 'Episodes — Server 4';
+    if (lbl) lbl.textContent = 'Episodes';
     episodeSection.style.display = 'none'; s5EpSection.style.display = 'flex';
     epData.forEach((ep, i) => {
       const num = ep.number || (i + 1);
@@ -3469,9 +3468,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   async function loadStream(resumeAtSec=0) {
     if (!state.selectedAnime||!state.selectedProvider) return;
     const prov=state.selectedProvider, anime=state.selectedAnime, ep=state.selectedEpisode;
-    stopProgressTracking(); hideLWBanner(); playerIframe.style.display='none'; playerIframe.src='';
-    if (prov.id==='anistream'){await loadAnistreamPlayer(anime,ep,resumeAtSec);return;}
+    stopProgressTracking(); hideLWBanner();
     if (prov.id==='yumelist'){loadYumelistPlayer(anime,ep,state.selectedAudio);return;}
+    playerIframe.style.display='none'; playerIframe.src='';
     const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
     playerIframe.removeAttribute('sandbox');
     playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
@@ -3561,11 +3560,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
   function syncEpisodeUI() {
     const pid = state.selectedProvider.id;
-    if (pid==='anistream') {
-      const cKey = String(state.selectedAnime?.id);
-      if (state.anistream.cacheKey===cKey && state.anistream.epData.length) { episodeSection.style.display='none'; s5EpSection.style.display='flex'; renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode); }
-      else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
-    } else if (pid==='yumelist') {
+    if (pid==='yumelist') {
       s5EpSection.style.display='none';
       renderYumelistEpisodes();
     }
@@ -3578,8 +3573,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function updateHistory(anime,ep) {
     if (!anime) return;
     const idx=state.watchHistory.findIndex(h=>String(h.id)===String(anime.id));
-    if (idx>=0) { const existing=state.watchHistory[idx]; state.watchHistory[idx]={...anime,epProgress:existing.epProgress||{},lastProvider:existing.lastProvider||null,lastAudio:existing.lastAudio||null,episode:ep,timestamp:Date.now()}; }
-    else state.watchHistory.unshift({...anime,episode:ep,timestamp:Date.now(),epProgress:{}});
+    const provId=state.selectedProvider?.id||null;
+    const audioVal=state.selectedAudio||null;
+    if (idx>=0) { const existing=state.watchHistory[idx]; state.watchHistory[idx]={...anime,epProgress:existing.epProgress||{},lastProvider:provId||existing.lastProvider||null,lastAudio:audioVal||existing.lastAudio||null,episode:ep,timestamp:Date.now()}; }
+    else state.watchHistory.unshift({...anime,episode:ep,timestamp:Date.now(),epProgress:{},lastProvider:provId,lastAudio:audioVal});
     if (state.watchHistory.length>30) state.watchHistory=state.watchHistory.slice(0,30);
     saveHistory();
   }
@@ -3627,16 +3624,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (!animeData) return;
     state.selectedAnime=animeData;
     state.anistream={slug:null,epData:[],isLoading:false,cacheKey:null,targetSeason:1,allSeasons:[]};
-    state.selectedProvider=PROVIDERS[0];
-    state.selectedAudio='sub';
+    // Preserve the currently active provider; only fall back to history or default if none is set
     const hist=getHistoryEntry(animeData.id);
-    if (hist?.lastProvider){const lp=PROVIDERS.find(p=>p.id===hist.lastProvider);if(lp)state.selectedProvider=lp;}
+    if (!state.selectedProvider) {
+      state.selectedProvider = PROVIDERS[0];
+      if (hist?.lastProvider){const lp=PROVIDERS.find(p=>p.id===hist.lastProvider);if(lp)state.selectedProvider=lp;}
+    }
+    if (!state.selectedAudio) state.selectedAudio='sub';
     if (hist?.lastAudio) state.selectedAudio=hist.lastAudio;
     const startEp=forceEpisode!==null?forceEpisode:(hist?.episode||1);
     state.selectedEpisode=startEp; state.currentTime=0; state.duration=0;
     updateHistory(animeData,startEp); updateWatchUI();
     renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
-    showPlayerIdle(); openWatchPage(); $('#watchPageTitle').textContent=animeData.title;
+    openWatchPage(); $('#watchPageTitle').textContent=animeData.title;
     showToast(animeData.title);
     loadAnimeRelations(animeData.id);
     const prog=getEpProgress(animeData.id,startEp);
@@ -4564,7 +4564,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
           if (idx >= 0) { state.watchHistory[idx].lastProvider = prov.id; saveHistory(); }
           renderProviderDropdown(); updateAudioToggle();
           if (changed) {
-            if (prov.id !== 'anistream') state.anistream.isLoading = false;
             syncEpisodeUI();
             const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
             if (prog && prog.time > 10 && prog.duration > 0 && (prog.time/prog.duration) < 0.92) showResumeModal(state.selectedEpisode, prog.time, prog.duration, () => loadStream(prog.time), () => loadStream(0));
