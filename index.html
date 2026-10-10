@@ -2160,11 +2160,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   }
 
   // Providers
+  const YUMELIST_BASE = 'https://public-reach-trend.ngrok-free.dev';
   const PROVIDERS = [
     { id:'animeplay', name:'Server 1', icon:'S1', color:'#8b5cf6', description:'Fast & reliable', getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
     { id:'megaplay',  name:'Server 2', icon:'S2', color:'#3b82f6', description:'Full HiAnime library', getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
     { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'url-start' },
     { id:'anistream', name:'Server 4', icon:'S4', color:'#f97316', description:'Multi-server HLS (Best)', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'none' },
+    { id:'yumelist',  name:'Server 5', icon:'S5', color:'#22c55e', description:'Yumelist — downloads & streams', getUrl:(id,s,ep,a='sub')=>`${YUMELIST_BASE}/embed?id=${id}&ep=${ep}&audio=${a}`, supportsAudio:true, external:false, resumeSupport:'none' },
   ];
 
   // Helpers
@@ -2449,6 +2451,30 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     } catch(err) { showPlayerError(`Server 4: ${err.message}. Try another server.`); showToast('Server 4 failed — try another server'); }
     finally { state.anistream.isLoading = false; }
   }
+  // ══════════════════════════════════════════════════════════════════════════
+  // SERVER 5 — YUMELIST
+  // ══════════════════════════════════════════════════════════════════════════
+  function loadYumelistPlayer(anime, epNum, audio) {
+    hideLWBanner();
+    const url = `${YUMELIST_BASE}/embed?id=${anime.id}&ep=${epNum}&audio=${audio}`;
+    // Show a friendly loading state while the embed bootstraps its download job
+    playerPlaceholder.style.display = 'flex';
+    playerPlaceholder.innerHTML = `<div class="server5-loading"><div class="spinner"></div><span class="status-text">Connecting to Server 5…</span><span class="sub-text">Yumelist is fetching the episode — usually ready in 5–20 s</span></div>`;
+    playerIframe.style.display = 'none';
+    playerIframe.src = '';
+    playerIframe.removeAttribute('sandbox');
+    playerIframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+    playerIframe.onload = null;
+    playerIframe.src = url;
+    playerIframe.onload = () => {
+      playerPlaceholder.style.display = 'none';
+      playerIframe.style.display = 'block';
+      startProgressTracking(0);
+      const prog = getEpProgress(anime.id, epNum);
+      if (prog && prog.time > 5) showLastWatchedBanner(anime.title, epNum, prog.time, prog.duration);
+    };
+  }
+
   function renderAnistreamEpSidebar(epData, activeEpNum) {
     s5EpGrid.innerHTML = '';
     const lbl = document.getElementById('s5SectionLabel');
@@ -3451,6 +3477,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     const prov=state.selectedProvider, anime=state.selectedAnime, ep=state.selectedEpisode;
     stopProgressTracking(); hideLWBanner(); playerIframe.style.display='none'; playerIframe.src='';
     if (prov.id==='anistream'){await loadAnistreamPlayer(anime,ep,resumeAtSec);return;}
+    if (prov.id==='yumelist'){loadYumelistPlayer(anime,ep,state.selectedAudio);return;}
     const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
     playerIframe.removeAttribute('sandbox');
     playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
@@ -3486,7 +3513,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       const cKey = String(state.selectedAnime?.id);
       if (state.anistream.cacheKey===cKey && state.anistream.epData.length) { episodeSection.style.display='none'; s5EpSection.style.display='flex'; renderAnistreamEpSidebar(state.anistream.epData, state.selectedEpisode); }
       else { episodeSection.style.display='none'; s5EpSection.style.display='none'; }
-    } else { s5EpSection.style.display='none'; renderStdEpisodes(); }
+    } else if (pid==='yumelist') { s5EpSection.style.display='none'; renderStdEpisodes(); }
+    else { s5EpSection.style.display='none'; renderStdEpisodes(); }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
