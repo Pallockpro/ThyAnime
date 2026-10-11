@@ -1218,6 +1218,52 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   .hero-btn{padding:12px 20px;}
   #lastWatchedBanner{bottom:56px;}
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROVIDER DROPDOWN FIX  (must stay LAST in the stylesheet)
+   ───────────────────────────────────────────────────────────────────
+   Root cause: .controls-row has backdrop-filter, which forces it to
+   become its own stacking context. That trapped the dropdown's
+   z-index:150 inside the row, so the episode buttons below (which are
+   position:relative and come later in the DOM) painted on top of the
+   open menu and stole every click.
+
+   Fix:
+     1. Lift the whole row above the episode section.
+     2. Give the dropdown an opaque background + a solid fallback so
+        nothing behind it shows through on browsers that don't
+        render backdrop-filter.
+   ═══════════════════════════════════════════════════════════════════ */
+.controls-row{
+  position:relative;
+  z-index:60;
+}
+
+.provider-dropdown-wrap.open{
+  z-index:70;
+}
+
+.provider-dropdown-menu{
+  background:#141122;                                   /* solid fallback */
+  background:linear-gradient(180deg,rgba(28,23,48,.985),rgba(14,12,24,.985));
+  backdrop-filter:blur(20px) saturate(1.4);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid rgba(139,92,246,.28);
+  box-shadow:0 24px 60px rgba(0,0,0,.85),
+             0 0 0 1px rgba(139,92,246,.10),
+             0 0 40px rgba(139,92,246,.10);
+  z-index:150;
+}
+
+/* stronger hover / selected so the active row is obvious on an opaque panel */
+.provider-option:hover{background:rgba(139,92,246,.22);color:#fff;}
+.provider-option.selected{background:rgba(139,92,246,.30);color:var(--primary-3);}
+.provider-option.selected .prov-desc{color:var(--primary-3);}
+
+/* browsers with no backdrop-filter support: hard opaque panel */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .provider-dropdown-menu{background:#141122;}
+}
 </style>
 </head>
 <body>
