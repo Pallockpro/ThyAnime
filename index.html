@@ -2262,12 +2262,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // Providers
   const YUMELIST_BASE = 'https://public-reach-trend.ngrok-free.dev';
   const THYANIME_API  = 'https://server5-9i3k.onrender.com';
-   const PROVIDERS = [
-    { id:'animeplay', name:'Server 1', icon:'S1', color:'#8b5cf6', description:'Fast & reliable', getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
-    { id:'megaplay',  name:'Server 2', icon:'S2', color:'#3b82f6', description:'Full HiAnime library', getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`, supportsAudio:true, external:false, resumeSupport:'url-t' },
-    { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, external:false, resumeSupport:'url-start' },
-    { id:'yumelist',  name:'Server 4', icon:'S4', color:'#22c55e', description:'Yumelist — downloads & streams', getUrl:(id,s,ep,a='sub')=>`${YUMELIST_BASE}/embed?id=${id}&ep=${ep}&audio=${a}`, supportsAudio:true, external:false, resumeSupport:'none' },
-    { id:'thyapi',    name:'Server 5', icon:'S5', color:'#f59e0b', description:'Custom player — Skip Intro/Outro', getUrl:(id,s,ep,a='sub')=>`${THYANIME_API}/embed/${id}/${ep}/${a}?minimal=1`, supportsAudio:true, external:false, resumeSupport:'url-t' },
+       const PROVIDERS = [
+    { id:'animeplay', name:'Server 1', icon:'S1', color:'#8b5cf6', description:'Fast & reliable', getUrl:(id,s,ep,a='sub')=>`https://animeplay.cfd/stream/ani/${id}/${ep}/${a}`, supportsAudio:true,  showAudioToggle:true,  showEpisodes:true,  external:false, resumeSupport:'url-t' },
+    { id:'megaplay',  name:'Server 2', icon:'S2', color:'#3b82f6', description:'Full HiAnime library', getUrl:(id,s,ep,a='sub')=>`https://megaplay.buzz/stream/ani/${id}/${ep}/${a}`, supportsAudio:true,  showAudioToggle:true,  showEpisodes:true,  external:false, resumeSupport:'url-t' },
+    { id:'filmu',     name:'Server 3', icon:'S3', color:'#ec4899', description:'Multi-server HLS', getUrl:(id,s,ep)=>`https://embed.filmu.in/anime/${id}/${ep}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'url-start' },
+    { id:'yumelist',  name:'Server 4', icon:'S4', color:'#22c55e', description:'Yumelist — downloads & streams', getUrl:(id,s,ep,a='sub')=>`${YUMELIST_BASE}/embed?id=${id}&ep=${ep}&audio=${a}`, supportsAudio:true,  showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'thyapi',    name:'Server 5', icon:'S5', color:'#f59e0b', description:'Custom player — Skip Intro/Outro', getUrl:(id,s,ep,a='sub')=>`${THYANIME_API}/embed/${id}/${ep}/${a}?minimal=1`, supportsAudio:true,  showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'url-t' },
   ];
 
   // Helpers
@@ -3660,13 +3660,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     });
   }
 
-  function syncEpisodeUI() {
-    const pid = state.selectedProvider.id;
-    if (pid==='yumelist') {
-      s5EpSection.style.display='none';
-      renderYumelistEpisodes();
-    }
-    else { s5EpSection.style.display='none'; renderStdEpisodes(); }
+   function syncEpisodeUI() {
+    // Hide both episode containers first so nothing lingers between switches
+    episodeSection.style.display = 'none';
+    s5EpSection.style.display  = 'none';
+
+    const show = !!(state.selectedAnime && state.selectedProvider.showEpisodes);
+    if (!show) return;
+
+    renderStdEpisodes();  // only Servers 1 & 2 reach here
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -4680,11 +4682,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   window.toggleProviderDropdown = () => { state.providerDropdownOpen = !state.providerDropdownOpen; provWrap.classList.toggle('open', state.providerDropdownOpen); };
   document.addEventListener('click', e => { if (!provWrap.contains(e.target)) { state.providerDropdownOpen = false; provWrap.classList.remove('open'); } });
 
-  function updateAudioToggle() {
-    if (state.selectedProvider.supportsAudio && state.selectedAnime) {
-      audioToggle.style.display = 'flex';
+    function updateAudioToggle() {
+    const show = !!(state.selectedAnime && state.selectedProvider.showAudioToggle);
+    audioToggle.style.display = show ? 'flex' : 'none';
+    if (show) {
       audioToggle.querySelectorAll('.audio-btn').forEach(b => b.classList.toggle('active', b.dataset.audio === state.selectedAudio));
-    } else audioToggle.style.display = 'none';
+    }
   }
   window.setAudio = audio => {
     state.selectedAudio = audio;
@@ -4768,7 +4771,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (onFS) { if (e.key === 'ArrowRight') { e.preventDefault(); if (_mfsSinglePage) mfsSpNav(1); else mfsNavChapter(1); return; } if (e.key === 'ArrowLeft') { e.preventDefault(); if (_mfsSinglePage) mfsSpNav(-1); else mfsNavChapter(-1); return; } }
     if (!onWatch) return;
     if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); return; }
-    if (e.key === 'd' || e.key === 'D') { if (state.selectedProvider.supportsAudio) { setAudio(state.selectedAudio === 'sub' ? 'dub' : 'sub'); showToast(`Audio: ${state.selectedAudio.toUpperCase()}`); } return; }
+      if (e.key === 'd' || e.key === 'D') { if (state.selectedProvider.showAudioToggle) { setAudio(state.selectedAudio === 'sub' ? 'dub' : 'sub'); showToast(`Audio: ${state.selectedAudio.toUpperCase()}`); } return; }
     if (e.key === 'p' || e.key === 'P') {
       const curr = PROVIDERS.findIndex(p => p.id === state.selectedProvider.id);
       const nxt = PROVIDERS[(curr+1) % PROVIDERS.length];
