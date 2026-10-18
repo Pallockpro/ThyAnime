@@ -1262,6 +1262,45 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .provider-dropdown-menu{background:#141122;}
 }
+
+/* ===== v2: routing, error page & UI polish ===== */
+:focus-visible{outline:2px solid var(--primary-3);outline-offset:2px;border-radius:6px;}
+.page-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.page-toolbar .crumbs{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:.78rem;color:var(--text-3);min-width:0;}
+.page-toolbar .crumbs a{color:var(--text-2);text-decoration:none;cursor:pointer;transition:color var(--t) var(--ease);}
+.page-toolbar .crumbs a:hover{color:var(--primary-3);}
+.page-toolbar .crumbs .cur{color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw;}
+.page-toolbar .spacer{flex:1;}
+.link-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:11px;background:rgba(255,255,255,0.05);border:1px solid var(--border-2);color:var(--text-2);cursor:pointer;font-family:var(--font);font-size:.8rem;font-weight:600;transition:all var(--t) var(--ease);}
+.link-btn:hover{background:rgba(59,130,246,0.14);border-color:rgba(59,130,246,0.4);color:var(--accent-3);}
+.link-btn.copied{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.45);color:#86efac;}
+.watch-top-bar .link-btn{margin-left:auto;}
+.details-hero{animation:heroRise .55s var(--ease) both;}
+@keyframes heroRise{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:none}}
+.details-poster{transition:transform .35s var(--ease),box-shadow .35s var(--ease);}
+.details-poster:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:0 20px 50px rgba(139,92,246,.35),0 14px 40px rgba(0,0,0,.7);}
+.details-hero-content .details-main{backdrop-filter:none;}
+#toTopBtn{position:fixed;right:calc(18px + var(--safe-right));bottom:calc(18px + var(--bottomnav-h) + var(--safe-bottom));z-index:900;width:44px;height:44px;border-radius:14px;border:1px solid var(--border);background:var(--glass-strong);backdrop-filter:blur(14px);color:var(--primary-3);font-size:1.1rem;cursor:pointer;opacity:0;transform:translateY(14px);pointer-events:none;transition:all .25s var(--ease);box-shadow:0 8px 28px rgba(0,0,0,.5);}
+#toTopBtn.show{opacity:1;transform:none;pointer-events:auto;}
+#toTopBtn:hover{background:rgba(139,92,246,.25);color:#fff;}
+/* error page v2 */
+#errPage{overflow-y:auto;align-items:flex-start;}
+.err-box{margin:auto;padding:24px 0;max-width:640px;}
+.err-search{display:none;width:100%;max-width:440px;gap:8px;margin-top:6px;}
+.err-search.show{display:flex;}
+.err-search input{flex:1;min-width:0;padding:12px 16px;border-radius:12px;border:1px solid var(--border-2);background:rgba(255,255,255,.06);color:#fff;font-family:var(--font-body);font-size:.92rem;outline:none;transition:border-color var(--t) var(--ease),background var(--t) var(--ease);}
+.err-search input:focus{border-color:rgba(139,92,246,.6);background:rgba(255,255,255,.09);}
+.err-search input::placeholder{color:var(--text-3);}
+.err-suggest{display:none;width:100%;margin-top:14px;}
+.err-suggest.show{display:block;}
+.err-suggest h3{font-family:var(--font);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;}
+.err-suggest-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.err-sg{width:92px;cursor:pointer;text-align:center;transition:transform .2s var(--ease);}
+.err-sg:hover{transform:translateY(-4px);}
+.err-sg img{width:92px;aspect-ratio:3/4;object-fit:cover;border-radius:10px;border:1px solid var(--border);display:block;background:var(--surface-solid);box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.err-sg span{display:block;margin-top:6px;font-family:var(--font);font-size:.68rem;color:var(--text-2);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
+@media (max-width:640px){.page-toolbar .crumbs{display:none;}.page-toolbar .link-btn{margin-left:auto;}}
 </style>
 </head>
 <body>
@@ -1691,8 +1730,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <!-- WATCH PAGE -->
   <section class="page" id="watchPage">
     <div class="watch-top-bar">
-      <button class="back-btn" onclick="goHome()">← Back</button>
+      <button class="back-btn" onclick="goBack()">← Back</button>
       <span class="watch-title-bar" id="watchPageTitle"></span>
+      <button class="link-btn" onclick="copyPageLink(this)" title="Copy a link to this episode">🔗 Copy link</button>
     </div>
     <div class="watch-layout">
       <div>
@@ -1772,7 +1812,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   <!-- MANGA READ PAGE -->
   <section class="page" id="mangaReadPage">
     <div class="manga-top-bar">
-      <button class="back-btn" onclick="goHome()">← Back</button>
+      <button class="back-btn" onclick="goBack()">← Back</button>
       <span class="watch-title-bar" id="mangaReadTitle"></span>
       <select class="manga-chapter-select" id="mangaChapterSelect" onchange="selectChapterByIndex(parseInt(this.value))"></select>
       <button class="manga-nav-btn" id="mangaPrevChBtn" onclick="navigateChapter(-1)" disabled>◀ Prev</button>
@@ -3467,6 +3507,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
   window.navigateTo = (page) => {
     if (!['home','browse','popular','trending','seasonal','watchlist','favorites','settings'].includes(page)) { showErrorPage('404', 'Unknown page: ' + page); return; }
+    if (currentPage === 'watch' || currentPage === 'manga') stopMedia();
+    routeSet(page === 'home' ? '#/' : '#/' + page); setTitle(PAGE_TITLES[page] || '');
     updateLibTabs(page);
     document.querySelectorAll('.nav-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
     document.querySelectorAll('.sidebar-link[data-nav]').forEach(l => l.classList.toggle('active', l.dataset.nav === page));
@@ -3611,6 +3653,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   }
 
   async function loadStream(resumeAtSec=0) {
+    syncWatchRoute();
     if (!state.selectedAnime||!state.selectedProvider) return;
     const prov=state.selectedProvider, anime=state.selectedAnime, ep=state.selectedEpisode;
     stopProgressTracking(); hideLWBanner();
@@ -3781,6 +3824,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (hist?.lastAudio) state.selectedAudio=hist.lastAudio;
     const startEp=forceEpisode!==null?forceEpisode:(hist?.episode||1);
     state.selectedEpisode=startEp; state.currentTime=0; state.duration=0;
+    routeSet(watchHash(animeData, startEp)); setTitle(animeData.title + ' · Episode ' + startEp);
     updateHistory(animeData,startEp); updateWatchUI();
     renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
     openWatchPage(); $('#watchPageTitle').textContent=animeData.title;
@@ -3798,6 +3842,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   window.openDetails = async (anime) => {
     if (!anime) return;
     if (anime.isManga) { selectManga(anime); return; }
+    if (currentPage === 'watch' || currentPage === 'manga') stopMedia();
+    routeSet(detailsHash(anime)); setTitle(anime.title || 'Anime');
     detailsPage.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading details…</p></div>`;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     detailsPage.classList.add('active');
@@ -3812,11 +3858,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       fetchRelations(full.id).catch(()=>[]),
       fetchRecommendations(full.id).catch(()=>[])
     ]);
+    if (currentPage !== 'details') return;   // user navigated away while loading
+    routeSet(detailsHash(full), true); setTitle(full.title);
+    const _hist = getHistoryEntry(full.id);
     const banner = full.bannerImage || full.coverImage;
     const inWL = isInWatchlist(full.id);
     const genresHTML = (full.genres||[]).slice(0,10).map(g=>`<span class="details-genre" onclick="setGenre('${g}',null); navigateTo('home');">${escapeHTML(g)}</span>`).join('');
     detailsPage.innerHTML = `
-      <button class="back-btn" onclick="navigateTo('home')" style="margin-bottom:20px;">← Back to Home</button>
+      <div class="page-toolbar">
+        <button class="back-btn" onclick="goBack()">← Back</button>
+        <div class="crumbs"><a onclick="navigateTo('home')">Home</a><span>/</span><span class="cur">${escapeHTML(full.title)}</span></div>
+        <span class="spacer"></span>
+        <button class="link-btn" onclick="copyPageLink(this)" title="Copy a link to this anime">🔗 Copy link</button>
+      </div>
       <div class="details-hero">
         <img class="details-hero-bg" src="${escapeHTML(banner)}" alt="" onerror="this.style.display='none'"/>
         <div class="details-hero-overlay"></div>
@@ -3834,7 +3888,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
               ${full.studios?.length?`<div class="details-stat"><span class="details-stat-label">Studio</span><span class="details-stat-value">${escapeHTML(full.studios[0])}</span></div>`:''}
             </div>
             <div class="details-actions">
-              <button class="hero-btn primary" onclick='window.__detailsWatch()'>▶ Watch Now</button>
+              <button class="hero-btn primary" onclick='window.__detailsWatch()'>${_hist && _hist.episode > 1 ? '▶ Continue Ep ' + _hist.episode : '▶ Watch Now'}</button>
               <button class="hero-btn secondary" id="detailsWLBtn" onclick="toggleWatchlistDetails()">${inWL?'❤️ In Watchlist':'♡ Add to Watchlist'}</button>
               <button class="hero-btn secondary" id="detailsFavBtn" onclick="toggleFavorite(window.__detailsItem)">${isFav(full)?'⭐ Favorited':'☆ Favorite'}</button>
             </div>
@@ -3869,6 +3923,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     mm.selectedManga = mangaData;
     mm.chapters = []; mm.currentPages = []; mm.isLoadingChapter = false; mm.currentSinglePage = 0;
     const startChIdx = forceChapter != null ? Math.max(0, forceChapter - 1) : 0;
+    routeSet(readHash(mangaData, startChIdx + 1)); setTitle(mangaData.title);
     updateHistory(mangaData, startChIdx + 1);
     openMangaReadPage();
     $('#mangaReadTitle').textContent = mangaData.title;
@@ -4043,6 +4098,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     [document.getElementById('mangaPrevChBtn'), document.getElementById('mangaPrevChBtn2')].forEach(b => { if(b) b.disabled = chapterIndex <= 0; });
     [document.getElementById('mangaNextChBtn'), document.getElementById('mangaNextChBtn2')].forEach(b => { if(b) b.disabled = chapterIndex >= mm.chapters.length - 1; });
     updateHistory(mm.selectedManga, chapterIndex + 1);
+    if (currentPage === 'manga' && mm.selectedManga) { routeSet(readHash(mm.selectedManga, chapterIndex + 1), true); setTitle(mm.selectedManga.title + ' · Ep ' + chNum); }
     updateBookmarkBtn();
     try {
       const pages = await cachedFetch(`pages_${chapter.id}`, () => mdGetPages(chapter.id, chapter.attributes));
@@ -4586,6 +4642,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // NAVIGATION
   // ══════════════════════════════════════════════════════════════════════════
   window.goHome = (skipReload=false) => {
+    routeSet('#/'); setTitle('');
     state.activeGenre = 'All';
     stopProgressTracking(); hideLWBanner();
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -4802,7 +4859,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       if (!authModal.classList.contains('hidden')) { closeAuthModal(); return; }
       if (!resumeModal.classList.contains('hidden')) { resumeModal.classList.add('hidden'); return; }
       if (appSidebar.classList.contains('open')) { toggleSidebar(); return; }
-      if (onWatch || onManga || currentPage !== 'home') navigateTo('home');
+      if (onWatch || onManga || currentPage !== 'home') goBack();
       else { searchDropdown.classList.remove('active'); searchInput.blur(); }
       return;
     }
@@ -4881,57 +4938,206 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function _syncReadFromAccount(data) { if (data && data.readNotifs) { let c = false; Object.keys(data.readNotifs).forEach(k => { if (!_readSet.has(k)) { _readSet.add(k); c = true; } }); if (c) { _saveRead(); renderNotifs(); } } }
   const _origApply = applyRemoteData; applyRemoteData = function(d) { _origApply(d); _syncReadFromAccount(d); };
   window.state = state;
-  // ── Error pages: 404 (bad #/route or bad path), offline, and generic errors
+  // ── Router + error pages ────────────────────────────────────────────────
+  // Every page has its own address (hash based, so it works on any static host):
+  //   #/                       home            #/anime/<id>/<slug>        anime details
+  //   #/browse /popular ...    library pages   #/watch/<id>/<ep>/<slug>   player
+  //   #/read/<id>/<ch>/<slug>  manga reader
   const _ERR = {
-    '404': { code: '404', icon: '🔍', title: 'Page not found', msg: "We couldn't find what you were looking for. It may have been moved, renamed, or never existed.", p: 'Back to Home', s: 'Search anime' },
+    '404': { code: '404', icon: '🔍', title: 'Page not found', msg: "We couldn't find what you were looking for. It may have been moved, renamed, or never existed.", p: 'Back to Home', s: 'Search anime', search: true },
+    '404anime': { code: '404', icon: '🎞️', title: 'Anime not found', msg: "That anime doesn't exist, or we couldn't load it right now. Double-check the link or try searching for it.", p: 'Back to Home', s: 'Browse anime', search: true },
+    '404ep': { code: '404', icon: '📺', title: 'Episode not found', msg: "This anime doesn't have that episode number. Pick another episode from the anime's page.", p: 'Back to Home', s: 'Search anime', search: true },
+    '404manga': { code: '404', icon: '📖', title: 'Manga not found', msg: "We couldn't reopen that manga from its link. Search for it by name and it will open normally.", p: 'Back to Home', s: 'Search manga', search: true },
     'offline': { code: 'OFFLINE', icon: '📡', title: "You're offline", msg: 'Check your internet connection. Your history and watchlist are saved and will sync when you reconnect.', p: 'Try again', s: 'Dismiss' },
     'error': { code: '500', icon: '⚠️', title: 'Something went wrong', msg: 'An unexpected error occurred. Reloading usually fixes it.', p: 'Reload', s: 'Go Home' }
   };
-  let _errType = null, _badPath = false;
+  const BASE_TITLE = document.title;
+  const PAGE_TITLES = { home: '', browse: 'Browse', popular: 'Popular', trending: 'Trending Now', seasonal: 'Seasonal', watchlist: 'My Watchlist', favorites: 'My Favorites', settings: 'Settings' };
+  const _ROUTES = ['home','browse','popular','trending','seasonal','watchlist','favorites','settings'];
+  var _errType = null, _badPath = false, _routing = false, _replaceNext = false;
+  function setTitle(t) { document.title = t ? t + ' | ThyAnime' : BASE_TITLE; }
+  const slugify = t => String(t || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+  function detailsHash(a) { const s = slugify(a.title); return '#/anime/' + encodeURIComponent(a.id) + (s ? '/' + s : ''); }
+  function watchHash(a, ep) { const s = slugify(a.title); return '#/watch/' + encodeURIComponent(a.id) + '/' + (ep || 1) + (s ? '/' + s : ''); }
+  function readHash(m, ch) { const s = slugify(m.title); return '#/read/' + encodeURIComponent(m.id) + '/' + (ch || 1) + (s ? '/' + s : ''); }
+  function normHash(h) { h = h || ''; return (h === '' || h === '#' || h === '#/' || h === '#/home') ? '#/' : h; }
+  // push (or replace) a history entry so the browser Back button works between pages
+  function routeSet(h, replace) {
+    h = normHash(h);
+    if (normHash(location.hash) === h) return;
+    const st = history.state || {}, i = st.i || 0;
+    try {
+      if (replace || _routing || _replaceNext) history.replaceState({ ...st, i }, '', h);
+      else { history.replaceState({ ...st, i, y: window.scrollY }, ''); history.pushState({ i: i + 1 }, '', h); }
+    } catch (_) { try { location.hash = h; } catch (__) {} }
+  }
+  function syncWatchRoute() {
+    const a = state.selectedAnime;
+    if (!a || currentPage !== 'watch') return;
+    routeSet(watchHash(a, state.selectedEpisode), true);
+    setTitle(a.title + ' · Episode ' + state.selectedEpisode);
+  }
+  window.goBack = () => {
+    if (history.state && history.state.i > 0) history.back();
+    else navigateTo('home');
+  };
+  window.copyPageLink = async (btn) => {
+    const url = location.href, title = document.title;
+    const ok = () => { if (btn) { const t = btn.textContent; btn.classList.add('copied'); btn.textContent = '✓ Copied'; setTimeout(() => { btn.classList.remove('copied'); btn.textContent = t; }, 1600); } showToast('Link copied', '🔗'); };
+    try { await navigator.clipboard.writeText(url); ok(); return; } catch (_) {}
+    try { const ta = document.createElement('textarea'); ta.value = url; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); return; } catch (_) {}
+    if (navigator.share) { try { await navigator.share({ title, url }); } catch (_) {} } else showToast(url);
+  };
+  function stopMedia() {
+    stopProgressTracking(); hideLWBanner(); closeMangaFullscreen();
+    playerIframe.src = ''; playerIframe.style.display = 'none'; showPlayerIdle();
+    episodeSection.style.display = 'none'; s5EpSection.style.display = 'none';
+    audioToggle.style.display = 'none'; progressTrackWrap.style.display = 'none';
+    shortcutsBtn.classList.remove('visible'); shortcutsPanel.classList.remove('visible');
+  }
+
   function showErrorPage(type, detail) {
     const c = _ERR[type] || _ERR.error; _errType = _ERR[type] ? type : 'error';
     const set = (id, t) => { const e = document.getElementById(id); if (e) e.textContent = t; };
     set('errIcon', c.icon); set('errCode', c.code); set('errTitle', c.title); set('errMsg', c.msg); set('errPrimary', c.p); set('errSecondary', c.s);
     const d = document.getElementById('errDetail'); if (d) { d.textContent = detail || ''; d.style.display = detail ? 'block' : 'none'; }
+    document.getElementById('errSearch')?.classList.toggle('show', !!c.search);
+    const back = document.getElementById('errBack'); if (back) back.style.display = (history.state && history.state.i > 0) ? '' : 'none';
+    const sg = document.getElementById('errSuggest'), row = document.getElementById('errSuggestRow');
+    const pool = c.search ? (state.trendingData || []).filter(a => a && a.coverImage).slice(0, 6) : [];
+    if (sg && row) {
+      row.innerHTML = '';
+      pool.forEach(a => {
+        const el = document.createElement('div'); el.className = 'err-sg'; el.tabIndex = 0;
+        el.innerHTML = `<img src="${escapeHTML(a.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"><span>${escapeHTML(a.title)}</span>`;
+        const go = () => { hideErrorPage(); openDetails(a); };
+        el.addEventListener('click', go); el.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+        row.appendChild(el);
+      });
+      sg.classList.toggle('show', pool.length > 0);
+    }
+    document.title = c.code === 'OFFLINE' ? 'Offline | ThyAnime' : c.title + ' | ThyAnime';
     document.getElementById('errPage')?.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
   window.showErrorPage = showErrorPage;
-  window.hideErrorPage = () => {
+  function hideErrorPage() {
     document.getElementById('errPage')?.classList.remove('open');
     document.body.style.overflow = ''; _errType = null;
-    try {
-      const path = _badPath ? location.pathname.replace(/[^/]*$/, '') : location.pathname;
-      if (_badPath || location.hash.startsWith('#/')) history.replaceState(null, '', path + location.search);
-      _badPath = false;
-    } catch(_) {}
-  };
-  window.errPrimary = () => { if (_errType === '404') { hideErrorPage(); navigateTo('home'); } else location.reload(); };
-  window.errSecondary = () => {
-    const t = _errType; hideErrorPage();
-    if (t === 'offline') return;
-    navigateTo('home'); if (t === '404') setTimeout(() => searchInput.focus(), 50);
-  };
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && _errType) hideErrorPage(); });
-  window.addEventListener('offline', () => showErrorPage('offline'));
-  window.addEventListener('online', () => { if (_errType === 'offline') { hideErrorPage(); showToast('Back online', '✅'); } });
-  const _ROUTES = ['home','browse','popular','trending','seasonal','watchlist','favorites','settings'];
-  function handleRoute() {
-    const h = location.hash; if (!h.startsWith('#/')) return;
-    const page = (h.slice(2).split(/[/?]/)[0] || 'home').toLowerCase();
-    if (_ROUTES.includes(page)) { document.getElementById('errPage')?.classList.remove('open'); document.body.style.overflow = ''; _errType = null; navigateTo(page); }
-    else showErrorPage('404', 'Unknown address: ' + h);
   }
-  window.addEventListener('hashchange', handleRoute);
+  window.hideErrorPage = hideErrorPage;
+  function leaveBadPath() {
+    if (!_badPath) return;
+    _badPath = false;
+    try { history.replaceState({ i: 0 }, '', location.pathname.replace(/[^/]*$/, '') + location.search + '#/'); } catch (_) {}
+  }
+  // leave an error page for a real page, replacing the bad entry so Back doesn't land on the error again
+  function goFromError(p) {
+    leaveBadPath(); hideErrorPage(); _replaceNext = true;
+    try { navigateTo(p || 'home'); } finally { _replaceNext = false; }
+  }
+  window.errPrimary = () => {
+    if (_errType && _errType.startsWith('404')) goFromError('home');
+    else if (_errType === 'offline') { if (navigator.onLine) { hideErrorPage(); handleRoute(); showToast('Back online', '✅'); } else showToast('Still offline', '📡'); }
+    else location.reload();
+  };
+  window.errSecondary = () => {
+    const t = _errType;
+    if (t === 'offline') { hideErrorPage(); setTitle(PAGE_TITLES[currentPage] || ''); return; }
+    if (t && t.startsWith('404')) { goFromError(t === '404anime' && appMode === 'anime' ? 'browse' : 'home'); if (t !== '404anime') setTimeout(() => searchInput.focus(), 50); return; }
+    hideErrorPage(); navigateTo('home');
+  };
+  window.errBack = () => { hideErrorPage(); goBack(); };
+  window.errSearchSubmit = (e) => {
+    e.preventDefault();
+    const v = document.getElementById('errSearchInput').value.trim();
+    goFromError('home');
+    if (v) setTimeout(() => { searchInput.value = v; searchInput.dispatchEvent(new Event('input', { bubbles: true })); searchInput.focus(); }, 80);
+    return false;
+  };
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape' || !_errType) return; if (_errType.startsWith('404')) goFromError('home'); else { hideErrorPage(); setTitle(PAGE_TITLES[currentPage] || ''); } });
+  window.addEventListener('offline', () => showErrorPage('offline'));
+  window.addEventListener('online', () => { if (_errType === 'offline') { hideErrorPage(); setTitle(PAGE_TITLES[currentPage] || ''); showToast('Back online', '✅'); } });
+
+  // fetch an anime by id; returns null when it can't be found
+  async function loadAnimeById(id) {
+    if (!/^\d+$/.test(String(id))) return null;
+    try { const f = await fetchById(Number(id)); return f ? { ...f, _loaded: true } : null; } catch (_) { return null; }
+  }
+  function findMangaLocal(id) {
+    const mm = state.mangaMode, sid = String(id);
+    const pools = [state.watchHistory.filter(h => h.isManga), ...Object.values(state.watchlist || {}), ...Object.values(state.favorites || {}), mm.trendingData, mm.popularData, mm.topRatedData, mm.selectedManga ? [mm.selectedManga] : []];
+    for (const p of pools) for (const m of (Array.isArray(p) ? p : [])) if (m && m.isManga && String(m.id) === sid && m._url) return m;
+    return null;
+  }
+  async function loadMangaById(id, slug) {
+    let m = findMangaLocal(id);
+    if (m || !_mangaVisible) return m;
+    if (appMode !== 'manga') { try { await window.setMode('manga'); } catch (_) {} m = findMangaLocal(id); if (m) return m; }
+    if (slug) { try { const r = await mdSearchManga(slug.replace(/-/g, ' ')); m = r.find(x => String(x.id) === String(id)) || null; } catch (_) {} }
+    return m;
+  }
+
+  async function handleRoute() {
+    const hash = location.hash, st = history.state || {};
+    document.getElementById('errPage')?.classList.remove('open'); document.body.style.overflow = ''; _errType = null;
+    closeCtx && closeCtx();
+    _routing = true;
+    const fail = (type, detail) => { try { history.replaceState(history.state, '', hash || '#/'); } catch (_) {} showErrorPage(type, detail); };
+    try {
+      const parts = hash.replace(/^#\/?/, '').split('?')[0].split('/').filter(Boolean).map(p => { try { return decodeURIComponent(p); } catch (_) { return p; } });
+      const page = (parts[0] || 'home').toLowerCase();
+      if (currentPage === 'watch' || currentPage === 'manga') { if (page !== 'watch' && page !== 'read') stopMedia(); }
+      if (_ROUTES.includes(page)) { navigateTo(page); }
+      else if (page === 'anime' || page === 'watch') {
+        if (appMode !== 'anime') await window.setMode('anime');
+        const ep = page === 'watch' ? parseInt(parts[2], 10) : null;
+        if (page === 'watch' && !(ep >= 1)) { fail('404ep', 'Invalid episode in: ' + hash); return; }
+        if (page === 'anime') {
+          detailsPage.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading anime…</p></div>`;
+          document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+          detailsPage.classList.add('active'); currentPage = 'details';
+        }
+        const a = await loadAnimeById(parts[1]);
+        if (!a) { if (page === 'anime') detailsPage.classList.remove('active'); fail('404anime', 'No anime with id “' + parts[1] + '”'); return; }
+        if (page === 'watch') {
+          if (a.episodes && ep > a.episodes) { fail('404ep', a.title + ' has ' + a.episodes + ' episodes (asked for ' + ep + ')'); return; }
+          selectAnime(a, ep);
+        } else { await window.openDetails(a); }
+      }
+      else if (page === 'read') {
+        const m = await loadMangaById(parts[1], parts[3]);
+        if (!m) { fail('404manga', 'Manga “' + (parts[3] || parts[1]) + '” could not be reopened'); return; }
+        const ch = parseInt(parts[2], 10);
+        selectManga(m, ch >= 1 ? ch : null);
+      }
+      else { fail('404', 'Unknown address: ' + hash); return; }
+      if (st.y > 0) setTimeout(() => window.scrollTo({ top: st.y, behavior: 'instant' }), 350);
+    } catch (e) {
+      console.error('[route]', e);
+      showErrorPage('error', (e && e.message) || 'Failed to open page');
+    } finally { _routing = false; }
+  }
+  window.addEventListener('popstate', () => handleRoute());
+
   function initErrorRouting() {
-    if (/^https?:$/.test(location.protocol)) {   // real server 404s (e.g. host serves this file as 404.html)
-      const seg = location.pathname.split('/').pop();
-      if (seg && !/\.html?$/i.test(seg) && seg !== 'index') { _badPath = true; showErrorPage('404', location.pathname); return; }
+    if (/^https?:$/.test(location.protocol)) {
+      // clean-URL style links (/anime/21) are converted to the hash routes
+      const clean = location.pathname.replace(/^\/+|\/+$/g, '');
+      const first = clean.split('/')[0].toLowerCase();
+      if (clean && !location.hash && (_ROUTES.includes(first) || ['anime', 'watch', 'read'].includes(first))) {
+        try { history.replaceState({ i: 0 }, '', '/#/' + clean + location.search); } catch (_) {}
+      } else {
+        const seg = location.pathname.split('/').pop();
+        if (seg && !/\.html?$/i.test(seg) && seg !== 'index') { _badPath = true; showErrorPage('404', location.pathname); return; }
+      }
     }
     if (!navigator.onLine) { showErrorPage('offline'); return; }
-    handleRoute();
+    if (location.hash && normHash(location.hash) !== '#/') handleRoute();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initErrorRouting); else initErrorRouting();
+  const _toTop = document.getElementById('toTopBtn');
+  window.addEventListener('scroll', () => _toTop && _toTop.classList.toggle('show', window.scrollY > 700), { passive: true });
   // ── Right-click / long-press card menu
   const _CARD_SEL = '.anime-card,.trending-card,.recent-card,.top-airing-item,.history-card';
   const ctxMenu = document.createElement('div'); ctxMenu.id = 'ctxMenu'; document.body.appendChild(ctxMenu);
@@ -4999,7 +5205,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
 })();
 </script>
+<button id="toTopBtn" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 <div id="notifFull" onclick="if(event.target===this)closeNotifFull()"><div class="nf-card" id="nfCard"></div></div>
-<div id="errPage" role="alert" aria-live="assertive"><div class="err-orb o1"></div><div class="err-orb o2"></div><div class="err-box"><div class="err-icon" id="errIcon"></div><div class="err-code" id="errCode"></div><h1 id="errTitle"></h1><p id="errMsg"></p><code id="errDetail"></code><div class="err-actions"><button class="nf-btn primary" id="errPrimary" onclick="errPrimary()"></button><button class="nf-btn" id="errSecondary" onclick="errSecondary()"></button></div><small>Press Esc to dismiss</small></div></div>
+<div id="errPage" role="alert" aria-live="assertive"><div class="err-orb o1"></div><div class="err-orb o2"></div><div class="err-box"><div class="err-icon" id="errIcon"></div><div class="err-code" id="errCode"></div><h1 id="errTitle"></h1><p id="errMsg"></p><code id="errDetail"></code><form class="err-search" id="errSearch" onsubmit="return errSearchSubmit(event)"><input id="errSearchInput" type="search" placeholder="Search for an anime…" autocomplete="off" aria-label="Search anime"><button class="nf-btn primary" type="submit">Search</button></form><div class="err-actions"><button class="nf-btn primary" id="errPrimary" onclick="errPrimary()"></button><button class="nf-btn" id="errSecondary" onclick="errSecondary()"></button><button class="nf-btn" id="errBack" onclick="errBack()" style="display:none">← Go back</button></div><div class="err-suggest" id="errSuggest"><h3>Popular right now</h3><div class="err-suggest-row" id="errSuggestRow"></div></div><small>Press Esc to dismiss</small></div></div>
 </body>
 </html>
