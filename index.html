@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- GitHub Pages: upload this same file twice: as index.html AND as 404.html (repo root). -->
 <title>ThyAnime — Watch Anime & Read Manga Free</title>
 <link rel="icon" type="image/gif" href="https://media1.tenor.com/m/fSskkWtbhHIAAAAC/delta-eminence-in-shadow.gif">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4954,7 +4955,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   const BASE_TITLE = document.title;
   const PAGE_TITLES = { home: '', browse: 'Browse', popular: 'Popular', trending: 'Trending Now', seasonal: 'Seasonal', watchlist: 'My Watchlist', favorites: 'My Favorites', settings: 'Settings' };
   const _ROUTES = ['home','browse','popular','trending','seasonal','watchlist','favorites','settings'];
-  var _errType = null, _badPath = false, _routing = false, _replaceNext = false;
+  var _errType = null, _badPath = false, _routing = false, _replaceNext = false, _siteBase = '/';
   function setTitle(t) { document.title = t ? t + ' | ThyAnime' : BASE_TITLE; }
   const slugify = t => String(t || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
   function detailsHash(a) { const s = slugify(a.title); return '#/anime/' + encodeURIComponent(a.id) + (s ? '/' + s : ''); }
@@ -5029,7 +5030,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function leaveBadPath() {
     if (!_badPath) return;
     _badPath = false;
-    try { history.replaceState({ i: 0 }, '', location.pathname.replace(/[^/]*$/, '') + location.search + '#/'); } catch (_) {}
+    try { history.replaceState({ i: 0 }, '', _siteBase + '#/'); } catch (_) {}
   }
   // leave an error page for a real page, replacing the bad entry so Back doesn't land on the error again
   function goFromError(p) {
@@ -5120,16 +5121,40 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   }
   window.addEventListener('popstate', () => handleRoute());
 
-  function initErrorRouting() {
+  // GitHub Pages serves this same file as 404.html for any unknown path (with an HTTP 404 status).
+  // We ask the server whether the current URL really exists, and work out the site's base path
+  // (so it also works on https://user.github.io/<repo>/ as well as a custom domain).
+  const _KNOWN_FIRST = new Set([..._ROUTES, 'anime', 'watch', 'read']);
+  async function _pathExists(p) {
+    try { const r = await fetch(p, { method: 'HEAD', cache: 'no-store' }); return r.status !== 404; } catch (_) { return true; }
+  }
+  async function _findBase(segs) {
+    for (let n = segs.length - 1; n > 0; n--) {          // deepest ancestor first
+      const p = '/' + segs.slice(0, n).join('/') + '/';
+      if (await _pathExists(p)) return p;
+    }
+    return '/';
+  }
+  async function initErrorRouting() {
     if (/^https?:$/.test(location.protocol)) {
-      // clean-URL style links (/anime/21) are converted to the hash routes
-      const clean = location.pathname.replace(/^\/+|\/+$/g, '');
-      const first = clean.split('/')[0].toLowerCase();
-      if (clean && !location.hash && (_ROUTES.includes(first) || ['anime', 'watch', 'read'].includes(first))) {
-        try { history.replaceState({ i: 0 }, '', '/#/' + clean + location.search); } catch (_) {}
-      } else {
-        const seg = location.pathname.split('/').pop();
-        if (seg && !/\.html?$/i.test(seg) && seg !== 'index') { _badPath = true; showErrorPage('404', location.pathname); return; }
+      const segs = location.pathname.split('/').filter(Boolean).map(x => { try { return decodeURIComponent(x); } catch (_) { return x; } });
+      const last = segs[segs.length - 1] || '';
+      const trivial = !segs.length || (segs.length === 1 && /^index(\.html?)?$/i.test(last));
+      if (!trivial) {
+        const ri = segs.findIndex(x => _KNOWN_FIRST.has(x.toLowerCase()));
+        if (ri >= 0 && !location.hash) {
+          // clean link like /anime/21/one-piece (served via 404.html) -> hash route
+          const base = ri ? '/' + segs.slice(0, ri).join('/') + '/' : '/';
+          try { history.replaceState({ i: 0 }, '', base + location.search + '#/' + segs.slice(ri).map(encodeURIComponent).join('/')); } catch (_) {}
+          _siteBase = base;
+        } else if (!(await _pathExists(location.pathname))) {
+          _siteBase = await _findBase(segs);
+          _badPath = true;
+          showErrorPage('404', location.pathname + location.search + location.hash);
+          return;
+        } else {
+          _siteBase = location.pathname.replace(/[^/]*$/, '');
+        }
       }
     }
     if (!navigator.onLine) { showErrorPage('offline'); return; }
