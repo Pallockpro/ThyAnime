@@ -8,7 +8,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- GitHub Pages: upload this same file twice: as index.html AND as 404.html (repo root). -->
-<title>ThyAnime — Watch Anime & Read Manga Free</title>
+<title>ThyAnime — Watch Anime, Movies & Read Manga Free</title>
 <link rel="icon" type="image/gif" href="https://media1.tenor.com/m/fSskkWtbhHIAAAAC/delta-eminence-in-shadow.gif">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,6 +103,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .mode-toggle-btn{padding:6px 14px;border:none;background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font);font-weight:600;font-size:0.74rem;border-radius:999px;transition:all var(--t) var(--ease);display:flex;align-items:center;gap:6px;white-space:nowrap;}
 .mode-toggle-btn:hover{color:var(--text);}
 .mode-toggle-btn.active{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;box-shadow:0 4px 14px var(--glow);}
+.mode-toggle-btn[data-mode="movie"].active{background:linear-gradient(135deg,#b45309,var(--gold));box-shadow:0 4px 14px rgba(245,158,11,0.35);}
+.hero-btn.primary-movie{background:linear-gradient(135deg,#b45309,var(--gold));color:#fff;box-shadow:0 8px 26px rgba(245,158,11,0.4);}
+.hero-btn.primary-movie:hover{transform:translateY(-2px);filter:brightness(1.1);}
+.anime-card.movie-card:hover{border-color:rgba(245,158,11,0.5);box-shadow:0 22px 50px rgba(0,0,0,0.7),0 0 30px rgba(245,158,11,0.14);}
+.anime-card-badge.movie-badge{color:#fcd34d;border-color:rgba(245,158,11,0.3);}
+.history-ep-badge.movie{background:linear-gradient(135deg,#b45309,var(--gold));}
+.search-filters.movie-mode #filterYear,.search-filters.movie-mode #filterStatus{display:none;}
+.cast-chip{cursor:default;}
 .mode-toggle-btn[data-mode="manga"].active{background:linear-gradient(135deg,#be185d,var(--pink));box-shadow:0 4px 14px var(--glow-pink);}
 
 .topbar-search{position:relative;flex:1;max-width:420px;margin-left:auto;}
@@ -1529,6 +1537,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         <span class="mode-label">Anime</span>
       </button>
+      <button class="mode-toggle-btn" data-mode="movie" onclick="setMode('movie')" title="Movies mode">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+        <span class="mode-label">Movies</span>
+      </button>
       <button class="mode-toggle-btn" data-mode="manga" onclick="setMode('manga')" title="Manga mode">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         <span class="mode-label">Manga</span>
@@ -1885,6 +1897,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
           <h4>Library</h4>
           <a onclick="navigateTo('watchlist')">Watchlist</a>
           <a onclick="navigateTo('settings')">Settings</a>
+          <a onclick="setMode('movie')">Movies</a>
           <a onclick="setMode('manga')">Manga</a>
         </div>
         <div class="footer-col">
@@ -2347,6 +2360,139 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     return imgs.map(i => fixMangaUrl(i.proxy_url || i.url)).filter(Boolean);
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // MOVIES — catalog via Cinemeta (free, no API key) + multi-server embeds
+  // ══════════════════════════════════════════════════════════════════════════
+  const DEFAULT_MODE = 'anime';   // which section the site opens on: 'anime' or 'movie'
+  const CINEMETA = 'https://v3-cinemeta.strem.io';
+  const MOVIE_GENRES = ['Action','Adventure','Animation','Biography','Comedy','Crime','Documentary','Drama','Family','Fantasy','History','Horror','Music','Mystery','Romance','Sci-Fi','Sport','Thriller','War','Western'];
+  const MOVIE_PAGE_SIZE = 20, MOVIE_BLOCK = 100;
+  const _thisYear = new Date().getFullYear();
+
+  async function cineFetch(path) {
+    const raw = CINEMETA + path;
+    for (const proxy of PROXIES) {
+      try {
+        const r = await fetch(proxy(raw), { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(12000) });
+        if (!r.ok) throw 0;
+        return await r.json();
+      } catch(_) {}
+    }
+    throw new Error('Movie catalog unreachable');
+  }
+  function fmtRuntime(mins) {
+    mins = Number(mins) || 0; if (!mins) return '';
+    const h = Math.floor(mins / 60), m = mins % 60;
+    return h ? (h + 'h' + (m ? ' ' + m + 'm' : '')) : (m + 'm');
+  }
+  function fmtMovie(m) {
+    if (!m) return null;
+    const imdb = String(m.imdb_id || m.id || '');
+    if (!/^tt\d+$/.test(imdb)) return null;
+    const title = m.name || m.title; if (!title) return null;
+    const yr = parseInt(String(m.year || m.releaseInfo || '').slice(0, 4), 10) || null;
+    const mins = parseInt(String(m.runtime || ''), 10) || 0;
+    const rating = parseFloat(m.imdbRating);
+    const poster = m.poster || ('https://images.metahub.space/poster/medium/' + imdb + '/img');
+    return {
+      id: imdb, title: String(title), altTitle: '',
+      coverImage: poster, bannerImage: m.background || '',
+      episodes: 0, duration: mins || null, runtimeSec: mins ? mins * 60 : 0,
+      description: m.description ? String(m.description).replace(/<[^>]*>/g, '') : '',
+      genres: Array.isArray(m.genres) ? m.genres : (Array.isArray(m.genre) ? m.genre : []),
+      averageScore: isNaN(rating) ? null : Math.round(rating * 10),
+      format: 'Movie', season: yr ? String(yr) : '', status: null, studios: [],
+      startYear: yr, nextAiringEpisode: null,
+      isManga: false, isMovie: true,
+      _imdb: imdb, _tmdb: m.moviedb_id || m.tmdb_id || null,
+      cast: Array.isArray(m.cast) ? m.cast : [],
+      director: Array.isArray(m.director) ? m.director : (m.director ? [m.director] : []),
+      _source: 'cinemeta'
+    };
+  }
+  async function movieCatalog(catalog, opts) {
+    const { genre = '', search = '', skip = 0 } = opts || {};
+    const extras = [];
+    if (search) extras.push('search=' + encodeURIComponent(search));
+    if (genre) extras.push('genre=' + encodeURIComponent(genre));
+    if (skip) extras.push('skip=' + skip);
+    const path = '/catalog/movie/' + catalog + (extras.length ? '/' + extras.join('&') : '') + '.json';
+    const key = 'movie_' + path;
+    const hit = cacheGet(key); if (hit) return hit;
+    try {
+      const j = await cineFetch(path);
+      const list = (j.metas || []).map(fmtMovie).filter(Boolean);
+      if (list.length) cacheSet(key, list);
+      return list;
+    } catch(_) { return []; }
+  }
+  function sortNewest(list) {
+    return (list || []).filter(m => !m.startYear || m.startYear <= _thisYear).sort((a, b) => (b.startYear || 0) - (a.startYear || 0));
+  }
+  async function movieNewest(genre) {
+    if (!genre) { const l = sortNewest(await movieCatalog('year')); if (l.length >= 10) return l; }
+    return sortNewest(await movieCatalog('top', { genre }));
+  }
+  async function movieTopRated(genre) {
+    const l = await movieCatalog('imdbRating', { genre });
+    if (l.length) return l;
+    return (await movieCatalog('top', { genre })).slice().sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
+  }
+  async function searchMovies(q) {
+    if (!q || q.trim().length < 2) return [];
+    return (await movieCatalog('top', { search: q.trim() })).slice(0, 12);
+  }
+  async function movieBrowse(page, genre, sort) {
+    const offset = (page - 1) * MOVIE_PAGE_SIZE, skip = Math.floor(offset / MOVIE_BLOCK) * MOVIE_BLOCK, start = offset - skip;
+    let list = [];
+    if (sort === 'SCORE_DESC') list = await movieCatalog('imdbRating', { genre, skip });
+    else if (sort === 'START_DATE_DESC') list = sortNewest(genre ? await movieCatalog('top', { genre, skip }) : await movieCatalog('year', { skip }));
+    if (!list.length) list = await movieCatalog('top', { genre, skip });
+    return { media: list.slice(start, start + MOVIE_PAGE_SIZE), hasNext: list.length > start + MOVIE_PAGE_SIZE || list.length >= MOVIE_BLOCK };
+  }
+  // Full details (adds TMDB id, cast, runtime...). Always resolves — falls back to the data we already have.
+  async function movieMeta(imdb) {
+    const key = 'moviemeta_' + imdb, hit = cacheGet(key); if (hit) return hit;
+    const j = await cineFetch('/meta/movie/' + imdb + '.json');
+    const f = j && j.meta ? fmtMovie(j.meta) : null;
+    if (f) cacheSet(key, f);
+    return f;
+  }
+  async function ensureMovieMeta(m) {
+    if (!m) return m;
+    if (m._loaded) return m;
+    const merged = { ...m, isMovie: true, isManga: false, _imdb: m._imdb || String(m.id), _loaded: true };
+    try {
+      const f = await movieMeta(merged._imdb);
+      if (f) Object.keys(f).forEach(k => { const v = f[k]; if (v !== null && v !== undefined && v !== '' && !(Array.isArray(v) && !v.length)) merged[k] = v; });
+    } catch(_) {}
+    return merged;
+  }
+
+  // Movie servers — Server 1 is Filmu. Each takes the movie object and returns an embed URL.
+  // need:'tmdb' servers are only offered when the TMDB id is known; the others work from the IMDb id alone.
+  const FILMU_MOVIE_BASE = 'https://embed.filmu.in/movie';
+  const MOVIE_PROVIDERS = [
+    { id:'m_filmu',   name:'Server 1', icon:'S1', color:'#ec4899', description:'Filmu — multi-server HLS', need:'tmdb', getUrl:m=>`${FILMU_MOVIE_BASE}/${m._tmdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'url-start' },
+    { id:'m_vidsrc',  name:'Server 2', icon:'S2', color:'#3b82f6', description:'VidSrc', need:'imdb', getUrl:m=>`https://vidsrc.to/embed/movie/${m._imdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'m_vidsrc2', name:'Server 3', icon:'S3', color:'#8b5cf6', description:'VidSrc 2', need:'imdb', getUrl:m=>`https://vidsrc.xyz/embed/movie?imdb=${m._imdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'m_vidplus', name:'Server 4', icon:'S4', color:'#22c55e', description:'VidPlus — fast HLS', need:'tmdb', getUrl:m=>`https://player.vidplus.to/embed/movie/${m._tmdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'m_vidrift', name:'Server 5', icon:'S5', color:'#f59e0b', description:'VidRift — subtitles', need:'tmdb', getUrl:m=>`https://embed.vidrift.net/embed/movie/${m._tmdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'m_yapgrid', name:'Server 6', icon:'S6', color:'#06b6d4', description:'YapGrid — multi-server', need:'tmdb', getUrl:m=>`https://yapgrid.com/embed/movie/${m._tmdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'m_vidlove', name:'Server 7', icon:'S7', color:'#ef4444', description:'VidLove', need:'tmdb', getUrl:m=>`https://player.vidlove.cc/embed/movie/${m._tmdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+    { id:'m_2embed',  name:'Server 8', icon:'S8', color:'#a855f7', description:'2Embed', need:'imdb', getUrl:m=>`https://www.2embed.cc/embed/${m._imdb}`, supportsAudio:false, showAudioToggle:false, showEpisodes:false, external:false, resumeSupport:'none' },
+  ];
+  function movieProvidersFor(m) {
+    const list = MOVIE_PROVIDERS.filter(p => p.need !== 'tmdb' || !!(m && m._tmdb));
+    return list.length ? list : MOVIE_PROVIDERS.filter(p => p.need === 'imdb');
+  }
+  function provList() { const a = state.selectedAnime; return a && a.isMovie ? movieProvidersFor(a) : PROVIDERS; }
+  function modeNoun() { return appMode === 'manga' ? 'Manga' : appMode === 'movie' ? 'Movies' : 'Anime'; }
+  function modeData(kind) {
+    const src = appMode === 'manga' ? state.mangaMode : appMode === 'movie' ? state.movieMode : state;
+    return src[kind + 'Data'] || [];
+  }
+
   // Providers
   const YUMELIST_BASE = 'https://public-reach-trend.ngrok-free.dev';
   const THYANIME_API  = 'https://api.thyanime.me';
@@ -2363,7 +2509,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function fmtTime(s){if(!s||isNaN(s)||s<0)return '0:00';s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;if(h>0)return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;return `${m}:${String(sec).padStart(2,'0')}`;}
   function fmtCountdown(seconds){if(!seconds||seconds<0)return 'Airing now';const d=Math.floor(seconds/86400),h=Math.floor((seconds%86400)/3600),m=Math.floor((seconds%3600)/60);if(d>0)return `${d}d ${h}h`;if(h>0)return `${h}h ${m}m`;return `${m}m`;}
   function buildStreamUrl(prov, anime, ep, audio, resumeAtSec) {
-    let url = prov.getUrl(anime.id, anime.season, ep, audio);
+    let url = anime.isMovie ? prov.getUrl(anime) : prov.getUrl(anime.id, anime.season, ep, audio);
+    if (!url) return '';
     const t = Math.floor(resumeAtSec || 0);
     if (t >= 3) {
       if (prov.resumeSupport === 'url-t') url += (url.includes('?')?'&':'?') + `t=${t}`;
@@ -2399,7 +2546,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   function showLastWatchedBanner(t, epNum, timeSec, durationSec) {
     if (!timeSec || timeSec < 5) return;
     const pct = durationSec > 0 ? Math.min(Math.round((timeSec/durationSec)*100), 100) : null;
-    lwTitle.textContent = `${t} — Episode ${epNum}`;
+    lwTitle.textContent = state.selectedAnime?.isMovie ? t : `${t} — Episode ${epNum}`;
     lwTime.textContent = fmtTime(timeSec);
     if (pct !== null) { lwPct.textContent = pct+'%'; lwBarFill.style.width = pct+'%'; lwSub.innerHTML = `Last watched at <strong>${fmtTime(timeSec)}</strong>`; }
     else { lwPct.textContent=''; lwBarFill.style.width='0%'; }
@@ -2424,6 +2571,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     anistream:{ slug:null, epData:[], isLoading:false, cacheKey:null, targetSeason:1, allSeasons:[] },
     currentTime:0, duration:0,
     watchlist:{},
+    movieMode:{ trendingData:[], popularData:[], topRatedData:[], newestData:[] },
     mangaMode:{ selectedManga:null, chapters:[], currentChapterIndex:0, currentPages:[], isLoadingChapter:false, trendingData:[], popularData:[], topRatedData:[], readMode:'strip', fitMode:'width', currentSinglePage:0, bookmarks:{} }
   };
 
@@ -2449,7 +2597,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (e) e.stopPropagation(); if (!it || it.id == null) return;
     const k = _hk(!!it.isManga, it.id);
     if (state.favorites[k]) { delete state.favorites[k]; _tomb['f' + k] = Date.now(); tombSave(); showToast('Removed from favorites', '💔'); }
-    else { state.favorites[k] = { id: it.id, title: it.title || '', coverImage: it.coverImage || '', format: it.format || null, averageScore: it.averageScore || null, isManga: !!it.isManga, ts: Date.now() }; showToast('Added to favorites', '⭐'); }
+    else { state.favorites[k] = { id: it.id, title: it.title || '', coverImage: it.coverImage || '', format: it.format || null, averageScore: it.averageScore || null, isManga: !!it.isManga, isMovie: !!it.isMovie, ts: Date.now() }; showToast('Added to favorites', '⭐'); }
     saveFavorites(); refreshFavUI();
     if (currentPage === 'favorites') renderFavoritesPage();
   };
@@ -2493,7 +2641,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     stopProgressTracking();
     _startWall=Date.now(); _startSec=Math.max(0,startAtSec);
     state.currentTime=_startSec;
-    if (!state.duration||state.duration<10) state.duration=state.selectedAnime?.format==='MOVIE'?5400:1440;
+    if (!state.duration||state.duration<10) state.duration=state.selectedAnime?.isMovie?(state.selectedAnime.runtimeSec||6600):(state.selectedAnime?.format==='MOVIE'?5400:1440);
     progressTrackWrap.style.display='block';
     progressResumeNote.textContent=_startSec>5?`↩ Resumed from ${fmtTime(_startSec)}`:'';
     _saveTimer=setInterval(()=>{
@@ -2537,7 +2685,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   const resumeNoBtn=document.getElementById('resumeNoBtn');
   function showResumeModal(episode,time,duration,onResume,onFresh) {
     const pct=duration>0?Math.round((time/duration)*100):null;
-    resumeModalText.innerHTML=`Continue <strong>Episode ${episode}</strong> from <strong>${fmtTime(time)}</strong>${pct!==null?` (${pct}% watched)`:''}`;
+    resumeModalText.innerHTML=`Continue ${state.selectedAnime?.isMovie?'<strong>the movie</strong>':`<strong>Episode ${episode}</strong>`} from <strong>${fmtTime(time)}</strong>${pct!==null?` (${pct}% watched)`:''}`;
     const prov=state.selectedProvider;
     let noteClass='warn',noteText='';
     if (prov.resumeSupport==='url-t'||prov.resumeSupport==='url-start'){noteClass='good';noteText=`${prov.name} supports auto-seek — will jump to ${fmtTime(time)}`;}
@@ -2763,6 +2911,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       format: h.format || '',
       averageScore: h.averageScore || null,
       isManga: !!h.isManga,
+      isMovie: !!h.isMovie,
+      _imdb: h._imdb || null,
+      _tmdb: h._tmdb || null,
+      runtimeSec: h.runtimeSec || 0,
+      startYear: h.startYear || null,
       episode: h.episode || 1,
       timestamp: h.timestamp || Date.now(),
       epProgress: ep,
@@ -3452,7 +3605,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         </div>
         <div style="font-size:0.82rem;color:var(--text-2);line-height:1.75;">
           <p style="margin-bottom:10px;"><strong style="color:var(--text);">ThyAnime</strong> is a free anime and manga streaming platform. Not affiliated with any content provider — all artwork belongs to its respective owners.</p>
-          <p style="margin-bottom:10px;"><strong style="color:var(--text);">Data Sources:</strong> AniList (primary), Jikan/MAL, Kitsu, MangaProx</p>
+          <p style="margin-bottom:10px;"><strong style="color:var(--text);">Data Sources:</strong> AniList (primary), Jikan/MAL, Kitsu, MangaProx, Cinemeta (movies)</p>
           <p><strong style="color:var(--text);">Version:</strong> 2.3.1</p>
         </div>
       </div>`;
@@ -3520,11 +3673,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     updateMobileBottomNav(page);
     currentPage = page;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    if (page === 'home') { homePage.classList.add('active'); goHome(true); if (appMode === 'manga') { renderMangaGenreBar(); refreshMangaGrids(); } else { renderAnimeGenreBar(); if (state.trendingData.length) refreshTabGrid(); } }
-    else if (page === 'browse') { browsePage_el.classList.add('active'); syncFilterGenres(); document.getElementById('browseTitle').textContent = appMode === 'manga' ? 'Browse Manga' : 'Browse Anime'; loadBrowsePage(1); }
-    else if (page === 'popular') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = appMode === 'manga' ? 'Popular Manga' : 'Popular Anime'; populateGrid(browseGrid, appMode === 'manga' ? state.mangaMode.popularData : state.popularData); renderBrowsePagination(); }
-    else if (page === 'trending') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'Trending Now'; populateGrid(browseGrid, appMode === 'manga' ? state.mangaMode.trendingData : state.trendingData); renderBrowsePagination(); }
-    else if (page === 'seasonal') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'Seasonal'; loadSeasonal(); }
+    if (page === 'home') { homePage.classList.add('active'); goHome(true); renderWatchHistory(); if (appMode === 'movie') { renderMovieGenreBar(); if (state.movieMode.popularData.length) refreshMovieGrids(); } else if (appMode === 'manga') { renderMangaGenreBar(); refreshMangaGrids(); } else { renderAnimeGenreBar(); if (state.trendingData.length) refreshTabGrid(); } }
+    else if (page === 'browse') { browsePage_el.classList.add('active'); syncFilterGenres(); document.getElementById('browseTitle').textContent = 'Browse ' + modeNoun(); loadBrowsePage(1); }
+    else if (page === 'popular') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'Popular ' + modeNoun(); populateGrid(browseGrid, modeData('popular')); renderBrowsePagination(); }
+    else if (page === 'trending') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'Trending Now'; populateGrid(browseGrid, modeData('trending')); renderBrowsePagination(); }
+    else if (page === 'seasonal') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = appMode === 'movie' ? 'New Releases' : 'Seasonal'; loadSeasonal(); }
     else if (page === 'favorites') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'My Favorites'; renderFavoritesPage(); }
     else if (page === 'watchlist') { browsePage_el.classList.add('active'); document.getElementById('browseTitle').textContent = 'My Watchlist'; renderWatchlistPage(); }
     else if (page === 'settings') { settingsPage.classList.add('active'); renderSettingsPage(); }
@@ -3534,6 +3687,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
   async function loadSeasonal() {
     populateGrid(browseGrid, []);
+    if (appMode === 'movie') {
+      let d = state.movieMode.newestData;
+      if (!d.length) { d = await movieNewest(''); state.movieMode.newestData = d; }
+      if (appMode === 'movie') populateGrid(browseGrid, d);
+      browsePagination.innerHTML = '';
+      return;
+    }
     try {
       const data = await fetchSeasonal();
       const normalized = data.map(m => m._source ? m : fmtAnime(m)).filter(Boolean);
@@ -3560,7 +3720,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       delete state.watchlist[id];
       showToast(`Removed from watchlist`, '💔');
     } else {
-      state.watchlist[id] = { id: anime.id, title: anime.title, coverImage: anime.coverImage, format: anime.format, averageScore: anime.averageScore, isManga: !!anime.isManga, ts: Date.now() };
+      state.watchlist[id] = { id: anime.id, title: anime.title, coverImage: anime.coverImage, format: anime.format, averageScore: anime.averageScore, isManga: !!anime.isManga, isMovie: !!anime.isMovie, ts: Date.now() };
       showToast(`Added to watchlist`, '❤️');
     }
     saveWatchlist();
@@ -3600,7 +3760,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   let _fgMode = null;
   function syncFilterGenres() {
     const sel = document.getElementById('filterGenre'); if (!sel || _fgMode === appMode) return;
-    const list = appMode === 'manga' ? mangaGenreList() : ANIME_GENRES.filter(g => g !== 'All');
+    const list = appMode === 'manga' ? mangaGenreList() : appMode === 'movie' ? MOVIE_GENRES.slice() : ANIME_GENRES.filter(g => g !== 'All');
     if (appMode === 'manga' && !list.length) return;
     _fgMode = appMode;
     sel.innerHTML = '<option value="">All Genres</option>' + list.map(g => `<option value="${escapeHTML(g)}">${escapeHTML(g)}</option>`).join('');
@@ -3624,6 +3784,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     updateSearchPlaceholder();
     await goHome(true);
     if (mode === 'anime') { renderAnimeGenreBar(); await loadHomePage(); }
+    else if (mode === 'movie') { renderMovieGenreBar(); await loadMovieHome(); }
     else { renderMangaGenreBar(); await loadMangaHome(); }
     _fgMode = null; syncFilterGenres();
     navigateTo('home');
@@ -3631,7 +3792,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 
   function updateSearchPlaceholder() {
     if (searchInput) {
-      searchInput.placeholder = appMode === 'manga' ? 'Search for manga...' : 'Search for anime...';
+      searchInput.placeholder = appMode === 'manga' ? 'Search for manga...' : appMode === 'movie' ? 'Search for movies...' : 'Search for anime...';
+      const _sf = document.getElementById('searchFilters'); if (_sf) _sf.classList.toggle('movie-mode', appMode === 'movie');
     }
   }
 
@@ -3665,6 +3827,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (prov.id==='yumelist'){loadYumelistPlayer(anime,ep,state.selectedAudio);return;}
     playerIframe.style.display='none'; playerIframe.src='';
     const url=buildStreamUrl(prov,anime,ep,state.selectedAudio,resumeAtSec);
+    if (!url){ showPlayerError('This server has no source for this title. Try another server.'); return; }
     playerIframe.removeAttribute('sandbox');
     playerIframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');
     playerPlaceholder.style.display='none'; playerIframe.style.display='block';
@@ -3782,9 +3945,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     historyRow.innerHTML='';
     const seen=new Set(), unique=[];
     for (const h of state.watchHistory){
-      const isMangaItem = !!h.isManga;
-      if (appMode==='anime' && isMangaItem) continue;
+      const isMangaItem = !!h.isManga, isMovieItem = !!h.isMovie;
+      if (appMode==='anime' && (isMangaItem || isMovieItem)) continue;
       if (appMode==='manga' && !isMangaItem) continue;
+      if (appMode==='movie' && !isMovieItem) continue;
       if (!seen.has(String(h.id))){seen.add(String(h.id));unique.push(h);}
       if (unique.length>=12) break;
     }
@@ -3796,7 +3960,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       const isManga=!!h.isManga;
       const card=document.createElement('div');
       card.className='history-card'; _cardItem.set(card, h);
-      card.innerHTML=`<div class="history-card-thumb"><img src="${escapeHTML(h.coverImage||'')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"/><div class="history-card-thumb-overlay"></div><span class="history-ep-badge${isManga?' manga':''}">EP ${h.episode||1}</span><button class="history-remove-btn" onclick="event.stopPropagation();removeHistoryItem('${escapeHTML(String(h.id))}',${isManga})">✕</button>${timeStr?`<span class="history-time-badge">${timeStr}</span>`:''}<div class="history-play-btn"><span>&#9654;</span></div><div class="history-progress-bar"><div class="history-progress-fill" style="width:${Math.round(pct)}%"></div></div></div><div class="history-card-body"><div class="history-card-title">${escapeHTML(h.title)}</div><div class="history-card-meta">${h.format?`<span>${escapeHTML(h.format)}</span>`:''}${pct>0?`<span class="pct">${Math.round(pct)}%</span>`:''}</div></div>`;
+      card.innerHTML=`<div class="history-card-thumb"><img src="${escapeHTML(h.coverImage||'')}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'"/><div class="history-card-thumb-overlay"></div><span class="history-ep-badge${isManga?' manga':''}${h.isMovie?' movie':''}">${h.isMovie?'MOVIE':'EP '+(h.episode||1)}</span><button class="history-remove-btn" onclick="event.stopPropagation();removeHistoryItem('${escapeHTML(String(h.id))}',${isManga})">✕</button>${timeStr?`<span class="history-time-badge">${timeStr}</span>`:''}<div class="history-play-btn"><span>&#9654;</span></div><div class="history-progress-bar"><div class="history-progress-fill" style="width:${Math.round(pct)}%"></div></div></div><div class="history-card-body"><div class="history-card-title">${escapeHTML(h.title)}</div><div class="history-card-meta">${h.format?`<span>${escapeHTML(h.format)}</span>`:''}${pct>0?`<span class="pct">${Math.round(pct)}%</span>`:''}</div></div>`;
       card.addEventListener('click',()=>{ if (isManga) selectManga(h,h.episode); else selectAnime(h,h.episode); });
       historyRow.appendChild(card);
     });
@@ -3817,11 +3981,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // ══════════════════════════════════════════════════════════════════════════
   async function selectAnime(animeData, forceEpisode=null) {
     if (!animeData) return;
+    if (animeData.isMovie) return selectMovie(animeData);
     state.selectedAnime=animeData;
     state.anistream={slug:null,epData:[],isLoading:false,cacheKey:null,targetSeason:1,allSeasons:[]};
     // Preserve the currently active provider; only fall back to history or default if none is set
     const hist=getHistoryEntry(animeData.id);
-    if (!state.selectedProvider) {
+    if (!state.selectedProvider || !PROVIDERS.some(p => p.id === state.selectedProvider.id)) {
       state.selectedProvider = PROVIDERS[0];
       if (hist?.lastProvider){const lp=PROVIDERS.find(p=>p.id===hist.lastProvider);if(lp)state.selectedProvider=lp;}
     }
@@ -3846,6 +4011,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // ══════════════════════════════════════════════════════════════════════════
   window.openDetails = async (anime) => {
     if (!anime) return;
+    if (anime.isMovie) { return openMovieDetails(anime); }
     if (anime.isManga) { selectManga(anime); return; }
     if (currentPage === 'watch' || currentPage === 'manga') stopMedia();
     routeSet(detailsHash(anime)); setTitle(anime.title || 'Anime');
@@ -4384,6 +4550,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // ══════════════════════════════════════════════════════════════════════════
   const ANIME_GENRE_ID_MAP = { 'Action':1,'Adventure':2,'Comedy':4,'Drama':8,'Ecchi':9,'Fantasy':10,'Horror':14,'Mahou Shoujo':16,'Mecha':18,'Mystery':7,'Psychological':40,'Romance':22,'Sci-Fi':24,'Slice of Life':36,'Sports':30,'Supernatural':37,'Thriller':41 };
   window.setGenre = async (genre, btn) => {
+    if (appMode === 'movie') return setMovieGenre(genre);
     if (appMode === 'manga') { state.activeGenre = genre; document.querySelectorAll('.genre-btn').forEach(b => b.classList.toggle('active', b.dataset.g === genre)); refreshMangaGrids(); return; }
     state.activeGenre = genre;
     document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
@@ -4418,6 +4585,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     refreshTabGrid();
   };
   function refreshTabGrid() {
+    if (appMode === 'movie') { refreshMovieGrids(); return; }
     if (appMode === 'manga') { refreshMangaGrids(); return; }
     if (state.activeGenre !== 'All') { loadAnimeByGenre(state.activeGenre); return; }
     if (state.activeTab === 'newest') populateGrid(newestGrid, filterByGenre(state.trendingData));
@@ -4432,16 +4600,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (!item) return document.createElement('div');
     const isManga = !!item.isManga;
     const rating = item.averageScore ? (item.averageScore / 10).toFixed(1) : null;
-    const epText = isManga ? (item.chapters && item.chapters !== '?' ? `${item.chapters} ep` : '') : (item.episodes ? `${item.episodes} eps` : '');
+    const epText = item.isMovie ? (item.startYear ? String(item.startYear) : '') : isManga ? (item.chapters && item.chapters !== '?' ? `${item.chapters} ep` : '') : (item.episodes ? `${item.episodes} eps` : '');
     const isAiring = !isManga && item.status && (item.status === 'RELEASING' || item.status === 'Ongoing');
     const inWL = isInWatchlist(item.id);
-    const wlPayload = JSON.stringify({id:item.id,title:item.title,coverImage:item.coverImage,format:item.format,averageScore:item.averageScore,isManga:!!item.isManga}).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+    const wlPayload = JSON.stringify({id:item.id,title:item.title,coverImage:item.coverImage,format:item.format,averageScore:item.averageScore,isManga:!!item.isManga,isMovie:!!item.isMovie}).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
     const div = document.createElement('div');
-    div.className = 'anime-card' + (isManga ? ' manga-card' : '');
+    div.className = 'anime-card' + (isManga ? ' manga-card' : '') + (item.isMovie ? ' movie-card' : '');
     div.innerHTML = `<div class="anime-card-img-wrap">
       <img src="${escapeHTML(item.coverImage)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="if(!this.dataset.retried){this.dataset.retried=1;this.src='https://api.allorigins.win/raw?url='+encodeURIComponent(this.src);}else{this.style.display='none';this.parentElement.style.background='var(--surface-solid)';}"/>
       <div class="anime-card-overlay"></div>
-      ${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}">${rating}</span>`:''}
+      ${rating?`<span class="anime-card-badge${isManga?' manga-badge':''}${item.isMovie?' movie-badge':''}">${rating}</span>`:''}
       ${epText?`<span class="anime-card-ep-badge">${epText}</span>`:''}
       ${isAiring?`<span class="anime-card-airing-badge">Airing</span>`:''}
       <button class="anime-card-watchlist${inWL?' in-list':''}" data-id="${escapeHTML(String(item.id))}" data-wl='${wlPayload}' onclick="handleCardWatchlist(event,this)" title="Add to Watchlist">${inWL?'♥':'♡'}</button>
@@ -4551,7 +4719,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (state.heroPool.length > 1) { heroPagination.style.display = 'flex'; heroPageLabel.textContent = `${state.heroIndex+1} / ${state.heroPool.length}`; } else heroPagination.style.display = 'none';
   }
   window.shuffleRandomAnime = () => {
-    const pool = appMode === 'manga' ? state.mangaMode.trendingData : state.trendingData;
+    const pool = modeData('trending');
     if (!pool || !pool.length) { showToast('Still loading — try again in a sec'); return; }
     const pick = pool[Math.floor(Math.random()*pool.length)];
     if (appMode === 'manga') selectManga(pick); else openDetails(pick);
@@ -4640,6 +4808,169 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     renderMangaGenreBar();
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // MOVIES — home page, genres, details, player
+  // ══════════════════════════════════════════════════════════════════════════
+  function renderMovieGenreBar() {
+    const list = ['All', ...MOVIE_GENRES];
+    genreBarInner.innerHTML = list.map(g => `<button class="genre-btn${state.activeGenre===g?' active':''}" data-g="${escapeHTML(g)}" onclick="setGenre(this.dataset.g,this)">${escapeHTML(g)}</button>`).join('');
+  }
+  async function setMovieGenre(genre) {
+    state.activeGenre = genre;
+    document.querySelectorAll('.genre-btn').forEach(b => b.classList.toggle('active', b.dataset.g === genre));
+    await refreshMovieGrids();
+  }
+  let _movieGridToken = 0;
+  async function refreshMovieGrids() {
+    const mm = state.movieMode, g = state.activeGenre, token = ++_movieGridToken;
+    if (g === 'All') {
+      setGridList(newestGrid, mm.newestData); setGridList(popularGrid, mm.popularData); setGridList(topRatedGrid, mm.topRatedData);
+      return;
+    }
+    populateGrid(newestGrid, []); populateGrid(popularGrid, []); populateGrid(topRatedGrid, []);
+    const [a, b, c] = await Promise.all([movieNewest(g), movieCatalog('top', { genre: g }), movieTopRated(g)]);
+    if (token !== _movieGridToken || state.activeGenre !== g || appMode !== 'movie') return;
+    setGridList(newestGrid, a); setGridList(popularGrid, b); setGridList(topRatedGrid, c);
+  }
+  async function loadMovieHome() {
+    document.getElementById('topListHeader').textContent = 'Top Movies';
+    const hb = document.getElementById('heroWatchBtn'); hb.className = 'hero-btn primary-movie'; hb.textContent = '▶ Watch Movie';
+    document.getElementById('browseTitle').innerHTML = 'Browse All Movies';
+    document.getElementById('trendingBlock').style.display = '';
+    document.getElementById('recentBlock').style.display = 'none';
+    document.getElementById('airingScheduleWidget').style.display = 'none';
+    document.getElementById('upcomingWidget').style.display = 'none';
+    document.getElementById('tabBar').innerHTML = `<button class="tab-btn active" onclick="setTab('newest',this)">Latest</button><button class="tab-btn" onclick="setTab('popular',this)">Popular</button><button class="tab-btn" onclick="setTab('toprated',this)">Top Rated</button>`;
+    ['newestGrid','popularGrid','topRatedGrid'].forEach(id => { const g = document.getElementById(id); if (g) g.className = 'anime-grid'; });
+    populateGrid(newestGrid, []); populateGrid(popularGrid, []); populateGrid(topRatedGrid, []);
+    trendingRow.innerHTML = ''; recentRow.innerHTML = '';
+    try {
+      const mm = state.movieMode;
+      const [pop, newest, top] = await Promise.all([movieCatalog('top'), movieNewest(''), movieTopRated('')]);
+      mm.popularData = pop; mm.newestData = newest.length ? newest : pop; mm.topRatedData = top.length ? top : pop; mm.trendingData = pop;
+      if (appMode !== 'movie') return;
+      if (!pop.length) throw new Error('empty catalog');
+      let pool = pop.filter(m => m.bannerImage).slice(0, 8);
+      if (pool.length < 3) pool = pop.slice(0, 8);
+      state.heroPool = pool; state.heroIndex = 0; state.heroIsManga = false; state.heroAnime = pool[0];
+      renderHeroSlide(pool[0], false);
+      state.activeGenre = state.activeGenre || 'All';
+      refreshMovieGrids();
+      renderTopAiring(mm.popularData, openDetails);
+      renderTrendingRow(mm.popularData);
+    } catch(e) {
+      console.error('[ThyAnime movies]', e);
+      if (appMode !== 'movie') return;
+      heroTitle.textContent = 'Could not load movies';
+      heroPagination.style.display = 'none'; heroAiringBadge.style.display = 'none';
+      showToast('Movie catalog error — try again in a moment');
+      newestGrid.innerHTML = '<div style="color:var(--text-3);text-align:center;padding:40px;grid-column:1/-1;font-family:var(--font);font-size:0.85rem;">Failed to load movies. Check your connection and switch modes to retry.</div>';
+    }
+    renderWatchHistory();
+    renderMovieGenreBar();
+  }
+  async function loadMovieById(id) {
+    if (!/^tt\d+$/.test(String(id || ''))) return null;
+    try { const f = await movieMeta(String(id)); return f ? { ...f, _loaded: true } : null; } catch(_) { return null; }
+  }
+  window.movieGenreFromDetails = async (g) => {
+    if (appMode !== 'movie') await window.setMode('movie');
+    navigateTo('home');
+    state.activeGenre = g; renderMovieGenreBar(); refreshMovieGrids();
+    setTimeout(() => document.querySelector('.genre-bar-row')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+  };
+
+  // Details page
+  window.openMovieDetails = async (movie) => {
+    if (!movie) return;
+    if (currentPage === 'watch' || currentPage === 'manga') stopMedia();
+    routeSet(detailsHash(movie)); setTitle(movie.title || 'Movie');
+    detailsPage.innerHTML = `<div class="manga-chapter-loading"><div class="manga-spinner"></div><p>Loading movie…</p></div>`;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    detailsPage.classList.add('active'); currentPage = 'details';
+    updateMobileBottomNav('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const full = await ensureMovieMeta(movie);
+    let sims = [];
+    try { const g0 = (full.genres || [])[0]; if (g0) sims = (await movieCatalog('top', { genre: g0 })).filter(x => x.id !== full.id).slice(0, 12); } catch(_) {}
+    if (currentPage !== 'details') return;   // user navigated away while loading
+    routeSet(detailsHash(full), true); setTitle(full.title);
+    const prog = getEpProgress(full.id, 1);
+    const resumable = !!(prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92);
+    const banner = full.bannerImage || full.coverImage;
+    const inWL = isInWatchlist(full.id);
+    const genresHTML = (full.genres || []).slice(0, 10).map(g => `<span class="details-genre" data-g="${escapeHTML(g)}" onclick="movieGenreFromDetails(this.dataset.g)">${escapeHTML(g)}</span>`).join('');
+    const castHTML = (full.cast || []).slice(0, 10).map(c => `<span class="details-genre cast-chip">${escapeHTML(c)}</span>`).join('');
+    detailsPage.innerHTML = `
+      <div class="page-toolbar">
+        <button class="back-btn" onclick="goBack()">← Back</button>
+        <div class="crumbs"><a onclick="navigateTo('home')">Home</a><span>/</span><span class="cur">${escapeHTML(full.title)}</span></div>
+        <span class="spacer"></span>
+        <button class="link-btn" onclick="copyPageLink(this)" title="Copy a link to this movie">🔗 Copy link</button>
+      </div>
+      <div class="details-hero">
+        <img class="details-hero-bg" src="${escapeHTML(banner)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'"/>
+        <div class="details-hero-overlay"></div>
+        <div class="details-hero-content">
+          <div class="details-poster"><img src="${escapeHTML(full.coverImage)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'"/></div>
+          <div class="details-main">
+            <h1 class="details-title">${escapeHTML(full.title)}</h1>
+            <div class="details-stats">
+              ${full.averageScore?`<div class="details-stat"><span class="details-stat-label">IMDb</span><span class="details-stat-value score">★ ${(full.averageScore/10).toFixed(1)}</span></div>`:''}
+              <div class="details-stat"><span class="details-stat-label">Format</span><span class="details-stat-value">Movie</span></div>
+              ${full.duration?`<div class="details-stat"><span class="details-stat-label">Runtime</span><span class="details-stat-value">${escapeHTML(fmtRuntime(full.duration))}</span></div>`:''}
+              ${full.startYear?`<div class="details-stat"><span class="details-stat-label">Year</span><span class="details-stat-value">${full.startYear}</span></div>`:''}
+              ${full.director && full.director.length?`<div class="details-stat"><span class="details-stat-label">Director</span><span class="details-stat-value">${escapeHTML(full.director[0])}</span></div>`:''}
+            </div>
+            <div class="details-actions">
+              <button class="hero-btn primary-movie" onclick='window.__detailsWatch()'>${resumable ? '▶ Resume' : '▶ Watch Now'}</button>
+              <button class="hero-btn secondary" id="detailsWLBtn" onclick="toggleWatchlistDetails()">${inWL?'❤️ In Watchlist':'♡ Add to Watchlist'}</button>
+              <button class="hero-btn secondary" id="detailsFavBtn" onclick="toggleFavorite(window.__detailsItem)">${isFav(full)?'⭐ Favorited':'☆ Favorite'}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="details-body">
+        ${full.description?`<p class="details-desc">${escapeHTML(full.description)}</p>`:''}
+        ${genresHTML?`<div class="details-genres">${genresHTML}</div>`:''}
+        ${castHTML?`<div class="section-block"><div class="section-header"><h2 class="section-title">Cast</h2></div><div class="details-genres">${castHTML}</div></div>`:''}
+        ${sims.length?`<div class="section-block"><div class="section-header"><h2 class="section-title">More Like This</h2></div><div class="anime-grid" id="detailsRecsGrid"></div></div>`:''}
+      </div>`;
+    const recsContainer = document.getElementById('detailsRecsGrid');
+    if (recsContainer && sims.length) sims.forEach(r => recsContainer.appendChild(createAnimeCard(r)));
+    window.__detailsWatch = () => selectMovie(full);
+    window.__detailsItem = full;
+    window.toggleWatchlistDetails = () => {
+      toggleWatchlist(full);
+      const btn = document.getElementById('detailsWLBtn');
+      if (btn) btn.innerHTML = isInWatchlist(full.id) ? '❤️ In Watchlist' : '♡ Add to Watchlist';
+    };
+  };
+
+  // Player page
+  async function selectMovie(movieData) {
+    if (!movieData) return;
+    const full = await ensureMovieMeta(movieData);
+    state.selectedAnime = full;
+    state.anistream = { slug:null, epData:[], isLoading:false, cacheKey:null, targetSeason:1, allSeasons:[] };
+    const hist = getHistoryEntry(full.id);
+    const provs = movieProvidersFor(full);
+    let prov = provs[0];
+    if (hist && hist.lastProvider) { const lp = provs.find(p => p.id === hist.lastProvider); if (lp) prov = lp; }
+    state.selectedProvider = prov;
+    state.selectedEpisode = 1; state.currentTime = 0; state.duration = full.runtimeSec || 0;
+    routeSet(watchHash(full, 1)); setTitle(full.title);
+    updateHistory(full, 1); updateWatchUI();
+    state.animeRelations = []; renderRelations();
+    renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
+    openWatchPage(); $('#watchPageTitle').textContent = full.title;
+    showToast(full.title);
+    const prog = getEpProgress(full.id, 1);
+    if (prog && prog.time > 10 && prog.duration > 0 && (prog.time / prog.duration) < 0.92) showResumeModal(1, prog.time, prog.duration, () => loadStream(prog.time), () => loadStream(0));
+    else loadStream(0);
+  }
+  window.selectMovie = selectMovie;
+
   window.handleHeroWatch = () => { if (appMode==='manga') { if (state.heroAnime) selectManga(state.heroAnime); } else { if (state.heroAnime) selectAnime(state.heroAnime); } };
   window.handleHeroDetails = () => { if (appMode==='manga') { if (state.heroAnime) { showToast(state.heroAnime.title); selectManga(state.heroAnime); } } else { if (state.heroAnime) openDetails(state.heroAnime); } };
 
@@ -4686,6 +5017,23 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   window.goToBrowsePage = () => navigateTo('browse');
 
   async function loadBrowsePage(page, filters = {}) {
+    if (appMode === 'movie') {
+      if (state.isLoadingBrowse) return;
+      state.isLoadingBrowse = true;
+      browseGrid.innerHTML = '';
+      for (let i = 0; i < 16; i++) { const s = document.createElement('div'); s.className = 'skeleton'; s.style.cssText = 'aspect-ratio:3/4;border-radius:12px;'; browseGrid.appendChild(s); }
+      try {
+        const g = document.getElementById('filterGenre')?.value || '';
+        const sort = document.getElementById('filterSort')?.value || 'POPULARITY_DESC';
+        const { media, hasNext } = await movieBrowse(page, g, sort);
+        state.browsePage = page; state.browseTotalPages = hasNext ? page + 1 : page;
+        if (!media.length) { browseGrid.innerHTML = '<div style="color:var(--text-3);text-align:center;padding:40px;grid-column:1/-1;font-family:var(--font);">No movies found.</div>'; browsePagination.innerHTML = ''; }
+        else { populateGrid(browseGrid, media); renderBrowsePagination(); }
+      } catch(e) {
+        browseGrid.innerHTML = '<div style="color:var(--text-3);text-align:center;padding:40px;grid-column:1/-1;">Failed to load. Please try again.</div>';
+      } finally { state.isLoadingBrowse = false; }
+      return;
+    }
     if (appMode === 'manga') {
       const mm = state.mangaMode, seen = new Set();
       let list = [...(mm.trendingData||[]), ...(mm.popularData||[]), ...(mm.topRatedData||[])].filter(m => !seen.has(m.id) && seen.add(m.id));
@@ -4742,6 +5090,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (a.format) tags.push(`<span class="sidebar-tag">${escapeHTML(a.format)}</span>`);
     if (a.averageScore) tags.push(`<span class="sidebar-tag star">★ ${(a.averageScore/10).toFixed(1)}</span>`);
     if (a.episodes) tags.push(`<span class="sidebar-tag">${a.episodes} eps</span>`);
+    if (a.isMovie && a.runtimeSec) tags.push(`<span class="sidebar-tag">${escapeHTML(fmtRuntime(Math.round(a.runtimeSec/60)))}</span>`);
     if (a.season) tags.push(`<span class="sidebar-tag">${escapeHTML(a.season)}</span>`);
     if (a.status === 'RELEASING') tags.push(`<span class="sidebar-tag airing">Airing</span>`);
     $('#sidebarTags').innerHTML = tags.join('') || '<span class="sidebar-tag">—</span>';
@@ -4762,11 +5111,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     provDot.style.backgroundColor = state.selectedProvider.color;
     provLabel.textContent = state.selectedProvider.name;
     try{ const _pw=document.getElementById('playerWrapper'); _pw.dataset.prov=state.selectedProvider.id; _pw.parentElement.style.setProperty('--prov',state.selectedProvider.color); }catch(_){}
-    provMenu.innerHTML = PROVIDERS.map(p => `<div class="provider-option${p.id===state.selectedProvider.id?' selected':''}" data-provider="${p.id}"><span class="prov-dot" style="background:${p.color};"></span><span>${escapeHTML(p.icon)} ${escapeHTML(p.name)}</span><span class="prov-desc">${escapeHTML(p.description)}</span></div>`).join('');
+    provMenu.innerHTML = provList().map(p => `<div class="provider-option${p.id===state.selectedProvider.id?' selected':''}" data-provider="${p.id}"><span class="prov-dot" style="background:${p.color};"></span><span>${escapeHTML(p.icon)} ${escapeHTML(p.name)}</span><span class="prov-desc">${escapeHTML(p.description)}</span></div>`).join('');
     provMenu.querySelectorAll('.provider-option').forEach(opt => {
       opt.addEventListener('click', e => {
         e.stopPropagation();
-        const prov = PROVIDERS.find(p => p.id === opt.dataset.provider);
+        const prov = provList().find(p => p.id === opt.dataset.provider);
         if (prov) {
           const changed = prov.id !== state.selectedProvider.id;
           state.selectedProvider = prov;
@@ -4813,7 +5162,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     searchDropdown.classList.add('active');
     try {
       let rmap = {};
-      if (appMode === 'anime') {
+      if (appMode === 'movie') {
+        const results = await searchMovies(q);
+        if (searchInput.value.trim() !== q) return;
+        results.forEach(f => { rmap[String(f.id)] = f; });
+        searchDropdown.innerHTML = results.length
+          ? results.map(f => {
+              const rating = f.averageScore ? `★${(f.averageScore/10).toFixed(1)}` : '';
+              const meta = ['Movie', f.startYear || '', rating].filter(Boolean).join(' · ');
+              return `<div class="search-result-item" data-id="${escapeHTML(String(f.id))}"><img class="search-result-img" src="${escapeHTML(f.coverImage)}" referrerpolicy="no-referrer" onerror="this.style.display='none'"/><div class="search-result-info"><div class="search-result-title">${escapeHTML(f.title)}</div><div class="search-result-meta">${escapeHTML(meta)}</div></div></div>`;
+            }).join('')
+          : '<div style="padding:14px;text-align:center;color:var(--text-3);">No movies found</div>';
+        searchDropdown.querySelectorAll('.search-result-item').forEach(item => { item.addEventListener('click', () => { const d = rmap[item.dataset.id]; if (d) { openMovieDetails(d); searchDropdown.classList.remove('active'); searchInput.value = d.title || ''; } }); });
+      } else if (appMode === 'anime') {
         const results = await searchAnime(q);
         const fmted = results.map(m => { const f = m._source ? m : fmtAnime(m); if (f) rmap[String(f.id)] = f; return f; }).filter(Boolean);
         searchDropdown.innerHTML = fmted.length
@@ -4878,8 +5239,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); return; }
       if (e.key === 'd' || e.key === 'D') { if (state.selectedProvider.showAudioToggle) { setAudio(state.selectedAudio === 'sub' ? 'dub' : 'sub'); showToast(`Audio: ${state.selectedAudio.toUpperCase()}`); } return; }
     if (e.key === 'p' || e.key === 'P') {
-      const curr = PROVIDERS.findIndex(p => p.id === state.selectedProvider.id);
-      const nxt = PROVIDERS[(curr+1) % PROVIDERS.length];
+      const _pl = provList(); const curr = _pl.findIndex(p => p.id === state.selectedProvider.id);
+      const nxt = _pl[(curr+1) % _pl.length];
       state.selectedProvider = nxt; renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
       const prog = getEpProgress(state.selectedAnime?.id, state.selectedEpisode);
       loadStream(prog && prog.time > 10 ? prog.time : 0);
@@ -4952,6 +5313,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     '404': { code: '404', icon: '🔍', title: 'Page not found', msg: "We couldn't find what you were looking for. It may have been moved, renamed, or never existed.", p: 'Back to Home', s: 'Search anime', search: true },
     '404anime': { code: '404', icon: '🎞️', title: 'Anime not found', msg: "That anime doesn't exist, or we couldn't load it right now. Double-check the link or try searching for it.", p: 'Back to Home', s: 'Browse anime', search: true },
     '404ep': { code: '404', icon: '📺', title: 'Episode not found', msg: "This anime doesn't have that episode number. Pick another episode from the anime's page.", p: 'Back to Home', s: 'Search anime', search: true },
+    '404movie': { code: '404', icon: '🎬', title: 'Movie not found', msg: "We couldn't load that movie from its link. Search for it by name and it will open normally.", p: 'Back to Home', s: 'Search movies', search: true },
     '404manga': { code: '404', icon: '📖', title: 'Manga not found', msg: "We couldn't reopen that manga from its link. Search for it by name and it will open normally.", p: 'Back to Home', s: 'Search manga', search: true },
     'offline': { code: 'OFFLINE', icon: '📡', title: "You're offline", msg: 'Check your internet connection. Your history and watchlist are saved and will sync when you reconnect.', p: 'Try again', s: 'Dismiss' },
     'error': { code: '500', icon: '⚠️', title: 'Something went wrong', msg: 'An unexpected error occurred. Reloading usually fixes it.', p: 'Reload', s: 'Go Home' }
@@ -4962,8 +5324,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   var _errType = null, _badPath = false, _routing = false, _replaceNext = false, _siteBase = '/';
   function setTitle(t) { document.title = t ? t + ' | ThyAnime' : BASE_TITLE; }
   const slugify = t => String(t || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
-  function detailsHash(a) { const s = slugify(a.title); return '#/anime/' + encodeURIComponent(a.id) + (s ? '/' + s : ''); }
-  function watchHash(a, ep) { const s = slugify(a.title); return '#/watch/' + encodeURIComponent(a.id) + '/' + (ep || 1) + (s ? '/' + s : ''); }
+  function detailsHash(a) { const s = slugify(a.title); return (a.isMovie ? '#/movie/' : '#/anime/') + encodeURIComponent(a.id) + (s ? '/' + s : ''); }
+  function watchHash(a, ep) { const s = slugify(a.title); if (a.isMovie) return '#/watchmovie/' + encodeURIComponent(a.id) + (s ? '/' + s : ''); return '#/watch/' + encodeURIComponent(a.id) + '/' + (ep || 1) + (s ? '/' + s : ''); }
   function readHash(m, ch) { const s = slugify(m.title); return '#/read/' + encodeURIComponent(m.id) + '/' + (ch || 1) + (s ? '/' + s : ''); }
   function normHash(h) { h = h || ''; return (h === '' || h === '#' || h === '#/' || h === '#/home') ? '#/' : h; }
   // push (or replace) a history entry so the browser Back button works between pages
@@ -4980,7 +5342,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     const a = state.selectedAnime;
     if (!a || currentPage !== 'watch') return;
     routeSet(watchHash(a, state.selectedEpisode), true);
-    setTitle(a.title + ' · Episode ' + state.selectedEpisode);
+    setTitle(a.isMovie ? a.title : a.title + ' · Episode ' + state.selectedEpisode);
   }
   window.goBack = () => {
     if (history.state && history.state.i > 0) history.back();
@@ -5110,6 +5472,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
           selectAnime(a, ep);
         } else { await window.openDetails(a); }
       }
+      else if (page === 'movie' || page === 'watchmovie') {
+        if (appMode !== 'movie') await window.setMode('movie');
+        const mv = await loadMovieById(parts[1]);
+        if (!mv) { fail('404movie', 'No movie with id “' + parts[1] + '”'); return; }
+        if (page === 'watchmovie') selectMovie(mv); else await openMovieDetails(mv);
+      }
       else if (page === 'read') {
         const m = await loadMangaById(parts[1], parts[3]);
         if (!m) { fail('404manga', 'Manga “' + (parts[3] || parts[1]) + '” could not be reopened'); return; }
@@ -5128,7 +5496,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // GitHub Pages serves this same file as 404.html for any unknown path (with an HTTP 404 status).
   // We ask the server whether the current URL really exists, and work out the site's base path
   // (so it also works on https://user.github.io/<repo>/ as well as a custom domain).
-  const _KNOWN_FIRST = new Set([..._ROUTES, 'anime', 'watch', 'read']);
+  const _KNOWN_FIRST = new Set([..._ROUTES, 'anime', 'watch', 'read', 'movie', 'watchmovie']);
   async function _pathExists(p) {
     try { const r = await fetch(p, { method: 'HEAD', cache: 'no-store' }); return r.status !== 404; } catch (_) { return true; }
   }
@@ -5222,10 +5590,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   setDataSource(DataSource.ANILIST);
   renderProviderDropdown(); updateAudioToggle();
   episodeSection.style.display = 'none'; s5EpSection.style.display = 'none'; audioToggle.style.display = 'none';
-  updateSearchPlaceholder();
-  renderAnimeGenreBar();
-  setAuthNotice();
-  loadHomePage().catch(e => showErrorPage('error', (e && e.message) || 'Failed to start'));
+  if (DEFAULT_MODE === 'movie') {
+    appMode = 'movie';
+    document.querySelectorAll('.mode-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'movie'));
+    updateSearchPlaceholder();
+    renderMovieGenreBar();
+    setAuthNotice();
+    loadMovieHome().catch(e => showErrorPage('error', (e && e.message) || 'Failed to start'));
+  } else {
+    updateSearchPlaceholder();
+    renderAnimeGenreBar();
+    setAuthNotice();
+    loadHomePage().catch(e => showErrorPage('error', (e && e.message) || 'Failed to start'));
+  }
 
   setTimeout(() => {
     const loader = document.getElementById('logoLoader');
