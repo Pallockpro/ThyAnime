@@ -2050,65 +2050,110 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   const DataSource = { ANILIST:'anilist', JIKAN:'jikan', KITSU:'kitsu' };
   let _activeSource = DataSource.ANILIST;
   let _alFailCount = 0;
-  const AL_FAIL_THRESHOLD = 2;
+  const AL_FAIL_THRESHOLD = 1;          // first full failure (all routes) switches to Jikan
   let _alRetryTimer = null;
+  const AL_DOWN_KEY = 'thy_al_down';
+  // true whenever AniList is unavailable and Jikan (MyAnimeList) is serving data
+  const useJikan = () => _activeSource !== DataSource.ANILIST;
 
+  function markAnilistDown(reason) {
+    if (_activeSource !== DataSource.ANILIST) return;
+    _activeSource = DataSource.JIKAN;
+    try { sessionStorage.setItem(AL_DOWN_KEY, String(Date.now())); } catch(_) {}
+    console.warn('[ThyAnime] AniList unavailable (' + (reason || 'unknown') + ') — using Jikan backup');
+    showToast('AniList is unavailable — using Jikan backup');
+    scheduleAnilistRetry();
+  }
+  function markAnilistUp() {
+    _alFailCount = 0; _activeSource = DataSource.ANILIST;
+    try { sessionStorage.removeItem(AL_DOWN_KEY); } catch(_) {}
+    if (_alRetryTimer) { clearInterval(_alRetryTimer); _alRetryTimer = null; }
+  }
   function scheduleAnilistRetry() {
     if (_alRetryTimer) return;
     _alRetryTimer = setInterval(async () => {
-      if (_activeSource === DataSource.ANILIST) { clearInterval(_alRetryTimer); _alRetryTimer=null; return; }
+      if (_activeSource === DataSource.ANILIST) { clearInterval(_alRetryTimer); _alRetryTimer = null; return; }
       const ok = await testAnilist();
-      if (ok) { _alFailCount=0; _activeSource=DataSource.ANILIST; clearInterval(_alRetryTimer); _alRetryTimer=null; showToast('AniList is back online!'); if (appMode==='anime') loadHomePage(); }
-    }, 3*60*1000);
+      if (ok) { markAnilistUp(); showToast('AniList is back online!'); if (appMode === 'anime') loadHomePage(); }
+    }, 90 * 1000);
   }
   window.retryAnilist = async () => {
     if (_activeSource === DataSource.ANILIST) { showToast('AniList is the active source'); return; }
     showToast('Testing AniList connection...');
     const ok = await testAnilist();
-    if (ok) { _alFailCount=0; _activeSource=DataSource.ANILIST; if (_alRetryTimer){clearInterval(_alRetryTimer);_alRetryTimer=null;} showToast('AniList is back!'); if (appMode==='anime') await loadHomePage(); }
-    else showToast('AniList still down.');
+    if (ok) { markAnilistUp(); showToast('AniList is back!'); if (appMode === 'anime') await loadHomePage(); }
+    else showToast('AniList still down — staying on Jikan.');
   };
   async function testAnilist() { try { const d = await alQueryRaw(`query{Page(perPage:1){media(type:ANIME){id}}}`, {}, 6000); return !!(d?.Page?.media?.length); } catch(_){ return false; } }
 
   const AL_URL = 'https://graphql.anilist.co';
   const PROXIES = [u=>u, u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, u=>`https://corsproxy.io/?${encodeURIComponent(u)}`];
   let _pi = 0;
-  async function alQueryRaw(query, variables={}, timeoutMs=10000) {
+  class AlBlocked extends Error {}
+  async function alQueryRaw(query, variables={}, timeoutMs=7000) {
     const body = JSON.stringify({query, variables});
     const hdrs = {'Content-Type':'application/json','Accept':'application/json'};
     const order = [_pi, ...[...PROXIES.keys()].filter(i=>i!==_pi)];
+    let lastErr = 'unreachable';
     for (const idx of order) {
       try {
         const r = await fetch(PROXIES[idx](AL_URL), { method:'POST', headers:hdrs, body, signal: AbortSignal.timeout(timeoutMs) });
-        if (!r.ok) throw 0;
+        if (r.status === 403) throw new AlBlocked('HTTP 403');          // blocked: don't bother with other routes
+        if (r.status === 400 || r.status === 404) {                     // genuine "not found" / bad query: AniList is up
+          let j = null; try { j = await r.json(); } catch(_) {}
+          if (j && j.errors) { _pi = idx; return j.data || {}; }
+          throw new Error('HTTP ' + r.status);
+        }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
         const j = await r.json();
-        if (j.errors) throw 0;
         _pi = idx;
         return j.data || {};
-      } catch(_) {}
+      } catch(e) {
+        if (e instanceof AlBlocked) throw e;
+        lastErr = (e && e.message) || String(e);
+      }
     }
-    throw new Error('AniList unreachable');
+    throw new Error('AniList unreachable: ' + lastErr);
   }
+  // Never throws. If AniList fails (403, 429, 5xx, timeout, network) it flips the whole site to Jikan.
   async function alQuery(query, variables={}) {
+    if (useJikan()) return {};
     try {
       const data = await alQueryRaw(query, variables);
       _alFailCount = 0;
       return data;
     } catch(err) {
       _alFailCount++;
+      if (_alFailCount >= AL_FAIL_THRESHOLD) markAnilistDown(err && err.message);
       return {};
     }
   }
 
-  // Jikan
+  // Jikan (MyAnimeList) — free backup. Rate limit is ~3 req/s, so requests are queued.
   const JIKAN_BASE = 'https://api.jikan.moe/v4';
   const JIKAN_PROXIES = [u=>u, u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, u=>`https://corsproxy.io/?${encodeURIComponent(u)}`];
+  let _jkChain = Promise.resolve(), _jkLast = 0;
+  function jikanSlot() {
+    const p = _jkChain.then(async () => { const w = 380 - (Date.now() - _jkLast); if (w > 0) await new Promise(r => setTimeout(r, w)); _jkLast = Date.now(); });
+    _jkChain = p.catch(() => {});
+    return p;
+  }
   async function jikanFetch(path, params={}) {
     const url = new URL(JIKAN_BASE + path);
     Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+    if ((path === '/anime' || path.startsWith('/top/anime') || path.startsWith('/seasons') || path.startsWith('/schedules')) && !url.searchParams.has('sfw')) url.searchParams.set('sfw','true');
     const raw = url.toString();
     for (const proxy of JIKAN_PROXIES) {
-      try { const r = await fetch(proxy(raw), { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(12000) }); if (!r.ok) throw 0; return await r.json(); } catch(_) {}
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          await jikanSlot();
+          const r = await fetch(proxy(raw), { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(12000) });
+          if (r.status === 429) { await new Promise(res => setTimeout(res, 1300)); continue; }
+          if (r.status === 404) return { data: null };
+          if (!r.ok) break;
+          return await r.json();
+        } catch(_) { break; }
+      }
     }
     throw new Error('Jikan API unreachable');
   }
@@ -2120,18 +2165,86 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     const score = item.score ? Math.round(item.score * 10) : null;
     const formatMap = {tv:'TV',movie:'MOVIE',ova:'OVA',ona:'ONA',special:'SPECIAL',music:'MUSIC'};
     const format = formatMap[(item.type||'').toLowerCase()] || item.type || '';
-    const season = item.season && item.year ? `${item.season.toUpperCase()} ${item.year}` : (item.year||'');
-    return { id:item.mal_id, title:item.title_english||item.title||'Unknown', coverImage:img, bannerImage:null, episodes:item.episodes||0, description:(item.synopsis||'').replace(/<[^>]*>/g,''), genres, averageScore:score, format, season:String(season), status:item.status||null, nextAiringEpisode:null, studios:[], startYear:item.year||null, isManga:false, _source:'jikan', _malId:item.mal_id };
+    const statusMap = {'Currently Airing':'RELEASING','Finished Airing':'FINISHED','Not yet aired':'NOT_YET_RELEASED'};
+    const yr = item.year || item.aired?.prop?.from?.year || null;
+    const season = item.season && yr ? `${item.season.toUpperCase()} ${yr}` : (yr ? String(yr) : '');
+    return { id:item.mal_id, title:item.title_english||item.title||'Unknown', altTitle:item.title_japanese||item.title||'', coverImage:img, bannerImage:'', episodes:item.episodes||0, duration:parseInt(item.duration,10)||null, description:(item.synopsis||'').replace(/<[^>]*>/g,''), genres, averageScore:score, format, season:String(season), status:statusMap[item.status]||item.status||null, nextAiringEpisode:null, studios:(item.studios||[]).map(s=>s.name), startYear:yr, isManga:false, _source:'jikan', _malId:item.mal_id };
   }
-  async function jikanTrending() { const d = await jikanFetch('/top/anime',{filter:'airing',limit:20}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
-  async function jikanPopular()  { const d = await jikanFetch('/top/anime',{filter:'bypopularity',limit:20}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
-  async function jikanTopRated() { const d = await jikanFetch('/top/anime',{limit:20}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
-  async function jikanSearch(q)  { const d = await jikanFetch('/anime',{q,limit:10,order_by:'popularity',sort:'asc'}); return (d.data||[]).map(fmtJikan).filter(Boolean); }
+  const _dedupe = arr => { const s = new Set(); return arr.filter(a => a && !s.has(a.id) && s.add(a.id)); };
+  async function jikanTrending() { const d = await jikanFetch('/top/anime',{filter:'airing',limit:20}); return _dedupe((d.data||[]).map(fmtJikan)); }
+  async function jikanPopular()  { const d = await jikanFetch('/top/anime',{filter:'bypopularity',limit:20}); return _dedupe((d.data||[]).map(fmtJikan)); }
+  async function jikanTopRated() { const d = await jikanFetch('/top/anime',{limit:20}); return _dedupe((d.data||[]).map(fmtJikan)); }
+  async function jikanSearch(q)  { const d = await jikanFetch('/anime',{q,limit:10,order_by:'popularity',sort:'asc'}); return _dedupe((d.data||[]).map(fmtJikan)); }
   async function jikanById(id)   { const d = await jikanFetch(`/anime/${id}`); return d.data ? fmtJikan(d.data) : null; }
   async function jikanBrowse(page=1, filters={}) {
     const params = {limit:20, page, ...filters};
     const d = await jikanFetch('/anime', params);
-    return {media:(d.data||[]).map(fmtJikan).filter(Boolean),pageInfo:{hasNextPage:d.pagination?.has_next_page??false,total:d.pagination?.items?.total||0}};
+    return {media:_dedupe((d.data||[]).map(fmtJikan)),pageInfo:{hasNextPage:d.pagination?.has_next_page??false,total:d.pagination?.items?.total||0}};
+  }
+  async function jikanSeasonNow() { const d = await jikanFetch('/seasons/now',{limit:25}); return _dedupe((d.data||[]).map(fmtJikan)); }
+  async function jikanUpcoming() { const d = await jikanFetch('/seasons/upcoming',{limit:20}); return _dedupe((d.data||[]).map(fmtJikan)); }
+  async function jikanRelations(id) {
+    const d = await jikanFetch(`/anime/${id}/relations`);
+    const ok = ['Sequel','Prequel','Side story','Alternative version','Spin-off','Alternative setting'];
+    const out = [];
+    (d.data||[]).forEach(g => {
+      if (!ok.includes(g.relation)) return;
+      (g.entry||[]).forEach(e => { if (e.type === 'anime') out.push({ id:e.mal_id, title:e.name, format:'', season:'', coverImage:'', relationType:g.relation.toUpperCase().replace(/[ -]/g,'_') }); });
+    });
+    return out;
+  }
+  async function jikanRecommendations(id) {
+    const d = await jikanFetch(`/anime/${id}/recommendations`);
+    return _dedupe((d.data||[]).slice(0,12).map(r => {
+      const e = r.entry; if (!e) return null;
+      return { id:e.mal_id, title:e.title||'Unknown', altTitle:'', coverImage:e.images?.webp?.large_image_url||e.images?.jpg?.large_image_url||'', bannerImage:'', episodes:0, description:'', genres:[], averageScore:null, format:'', season:'', status:null, studios:[], startYear:null, nextAiringEpisode:null, isManga:false, _source:'jikan', _malId:e.mal_id };
+    }));
+  }
+  // Airing schedule for the next 24h from Jikan's weekly broadcast data (times are JST).
+  async function jikanSchedule() {
+    const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    const jst = new Date(Date.now() + 9*3600*1000);
+    const di = jst.getUTCDay();
+    const now = Math.floor(Date.now()/1000), end = now + 86400;
+    const out = [];
+    for (const off of [0,1]) {
+      const d = await jikanFetch('/schedules', { filter: days[(di+off)%7], limit: 25 });
+      const base = Date.UTC(jst.getUTCFullYear(), jst.getUTCMonth(), jst.getUTCDate() + off);
+      (d.data||[]).forEach(it => {
+        const t = it.broadcast?.time;
+        if (!t || !/^\d{1,2}:\d{2}$/.test(t) || (it.broadcast.timezone && it.broadcast.timezone !== 'Asia/Tokyo')) return;
+        const [h, m] = t.split(':').map(Number);
+        const at = Math.floor((base + (h-9)*3600000 + m*60000) / 1000);
+        if (at <= now || at > end) return;
+        const media = fmtJikan(it); if (!media) return;
+        out.push({ id:'jk'+it.mal_id, airingAt:at, timeUntilAiring:at-now, episode:null, media });
+      });
+    }
+    const seen = new Set();
+    return out.sort((a,b)=>a.airingAt-b.airingAt).filter(s => !seen.has(s.id) && seen.add(s.id));
+  }
+
+  // ID mapping — the stream servers use AniList IDs, Jikan uses MAL IDs.
+  const _idMap = {};
+  async function _mapJson(url) {
+    for (const proxy of PROXIES) {
+      try { const r = await fetch(proxy(url), { headers:{'Accept':'application/json'}, signal:AbortSignal.timeout(7000) }); if (!r.ok) throw 0; return await r.json(); } catch(_) {}
+    }
+    return null;
+  }
+  async function malToAnilist(malId) {
+    const k = 'm2a' + malId; if (_idMap[k]) return _idMap[k];
+    let id = Number((await _mapJson(`https://api.ani.zip/mappings?mal_id=${malId}`))?.mappings?.anilist_id) || null;
+    if (!id) id = Number((await _mapJson(`https://arm.haglund.dev/api/v2/ids?source=myanimelist&id=${malId}`))?.anilist) || null;
+    if (id) _idMap[k] = id;
+    return id;
+  }
+  async function anilistToMal(alId) {
+    const k = 'a2m' + alId; if (_idMap[k]) return _idMap[k];
+    let id = Number((await _mapJson(`https://api.ani.zip/mappings?anilist_id=${alId}`))?.mappings?.mal_id) || null;
+    if (!id) id = Number((await _mapJson(`https://arm.haglund.dev/api/v2/ids?source=anilist&id=${alId}`))?.myanimelist) || null;
+    if (id) _idMap[k] = id;
+    return id;
   }
 
   // Kitsu
@@ -2195,76 +2308,103 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       isManga:false
     };
   }
+  // Cache keyed by the source that actually answered (so Jikan data never lands under the AniList key), skips empty results.
+  async function cachedFetchSrc(base, fn) {
+    const c = cacheGet(`${base}_${_activeSource}`); if (c) return c;
+    const r = await fn();
+    const empty = Array.isArray(r) ? !r.length : !!(r && Array.isArray(r.media) && !r.media.length);
+    if (r && !empty) cacheSet(`${base}_${_activeSource}`, r);
+    return r;
+  }
+  function currentSeason() { const d = new Date(), m = d.getMonth(); return { season: m < 3 ? 'WINTER' : m < 6 ? 'SPRING' : m < 9 ? 'SUMMER' : 'FALL', year: d.getFullYear() }; }
+  // Pattern for every list: AniList first; if it fails (alQuery flips the site to Jikan) answer from Jikan instead.
   async function fetchTrending() {
-    return cachedFetch(`trending_${_activeSource}`, async () => {
-      if (_activeSource === DataSource.JIKAN) return jikanTrending();
+    return cachedFetchSrc('trending', async () => {
       if (_activeSource === DataSource.KITSU) return kitsuTrending();
-      const d = await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);
-      return (d.Page?.media||[]).filter(Boolean);
+      if (!useJikan()) {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:TRENDING_DESC,type:ANIME){${MF}}}}`);
+        if (!useJikan()) return (d.Page?.media||[]).filter(Boolean);
+      }
+      return jikanTrending();
     });
   }
   async function fetchPopular() {
-    return cachedFetch(`popular_${_activeSource}`, async () => {
-      if (_activeSource === DataSource.JIKAN) return jikanPopular();
+    return cachedFetchSrc('popular', async () => {
       if (_activeSource === DataSource.KITSU) return kitsuPopular();
-      const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}}}`);
-      return (d.Page?.media||[]).filter(Boolean);
+      if (!useJikan()) {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME){${MF}}}}`);
+        if (!useJikan()) return (d.Page?.media||[]).filter(Boolean);
+      }
+      return jikanPopular();
     });
   }
   async function fetchTopRated() {
-    return cachedFetch(`toprated_${_activeSource}`, async () => {
-      if (_activeSource === DataSource.JIKAN) return jikanTopRated();
+    return cachedFetchSrc('toprated', async () => {
       if (_activeSource === DataSource.KITSU) return kitsuTopRated();
-      const d = await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`);
-      return (d.Page?.media||[]).filter(Boolean);
+      if (!useJikan()) {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:SCORE_DESC,type:ANIME){${MF}}}}`);
+        if (!useJikan()) return (d.Page?.media||[]).filter(Boolean);
+      }
+      return jikanTopRated();
     });
   }
   async function fetchUpcoming() {
-    return cachedFetch(`upcoming_${_activeSource}`, async () => {
-      if (_activeSource !== DataSource.ANILIST) return [];
-      const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME,status:NOT_YET_RELEASED){${MF}}}}`);
-      return (d.Page?.media||[]).filter(Boolean);
+    return cachedFetchSrc('upcoming', async () => {
+      if (!useJikan()) {
+        const d = await alQuery(`query{Page(perPage:20){media(sort:POPULARITY_DESC,type:ANIME,status:NOT_YET_RELEASED){${MF}}}}`);
+        if (!useJikan()) return (d.Page?.media||[]).filter(Boolean);
+      }
+      return jikanUpcoming();
     });
   }
   async function fetchAiringSchedule() {
-    const now = Math.floor(Date.now() / 1000);
-    const tomorrow = now + 86400;
-    try {
+    if (!useJikan()) {
+      const now = Math.floor(Date.now() / 1000);
+      const tomorrow = now + 86400;
       const d = await alQuery(`query($from:Int,$to:Int){Page(perPage:30){airingSchedules(airingAt_greater:$from,airingAt_lesser:$to,sort:TIME){id airingAt timeUntilAiring episode media{${MF}}}}}`, {from: now, to: tomorrow});
-      return (d.Page?.airingSchedules || []).map(s => ({
-        id: s.id,
-        airingAt: s.airingAt,
-        timeUntilAiring: s.timeUntilAiring,
-        episode: s.episode,
-        media: s.media ? fmtAnime(s.media) : null,
-      })).filter(s => s.media);
-    } catch(_) { return []; }
+      if (!useJikan()) {
+        return (d.Page?.airingSchedules || []).map(s => ({
+          id: s.id,
+          airingAt: s.airingAt,
+          timeUntilAiring: s.timeUntilAiring,
+          episode: s.episode,
+          media: s.media ? fmtAnime(s.media) : null,
+        })).filter(s => s.media);
+      }
+    }
+    try { return await jikanSchedule(); } catch(_) { return []; }
   }
   async function fetchSeasonal() {
-    return cachedFetch(`seasonal_${_activeSource}`, async () => {
-      if (_activeSource !== DataSource.ANILIST) return [];
-      const d = await alQuery(`query{Page(perPage:30){media(sort:POPULARITY_DESC,type:ANIME,season:WINTER,seasonYear:2026){${MF}}}}`);
-      return (d.Page?.media||[]).filter(Boolean);
+    return cachedFetchSrc('seasonal', async () => {
+      if (!useJikan()) {
+        const cs = currentSeason();
+        const d = await alQuery(`query{Page(perPage:30){media(sort:POPULARITY_DESC,type:ANIME,season:${cs.season},seasonYear:${cs.year}){${MF}}}}`);
+        if (!useJikan()) return (d.Page?.media||[]).filter(Boolean);
+      }
+      return jikanSeasonNow();
     });
   }
   async function searchAnime(q) {
     if (!q||q.trim().length<2) return [];
-    if (_activeSource === DataSource.JIKAN) return jikanSearch(q);
     if (_activeSource === DataSource.KITSU) return kitsuSearch(q);
-    const d = await alQuery(`query($s:String){Page(perPage:10){media(search:$s,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`,{s:q.trim()});
-    if (d?.Page?.media?.length) return (d.Page.media).filter(Boolean);
+    if (!useJikan()) {
+      const d = await alQuery(`query($s:String){Page(perPage:10){media(search:$s,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`,{s:q.trim()});
+      if (!useJikan() && d?.Page?.media?.length) return (d.Page.media).filter(Boolean);
+    }
     return jikanSearch(q).catch(()=>[]);
   }
   async function fetchBrowsePage(page=1, filters={}) {
-    const key = `browse_${_activeSource}_p${page}_${JSON.stringify(filters)}`;
-    return cachedFetch(key, async () => {
-      if (_activeSource === DataSource.JIKAN) return jikanBrowse(page, filters.jikanParams||{});
+    return cachedFetchSrc(`browse_p${page}_${JSON.stringify(filters)}`, async () => {
       if (_activeSource === DataSource.KITSU) return kitsuBrowse(page);
-      const vars = {p:page, ...filters};
-      const d = await alQuery(`query($p:Int,$sort:[MediaSort],$genre:String,$status:MediaStatus,$seasonYear:Int){Page(page:$p,perPage:20){media(sort:$sort,type:ANIME,genre:$genre,status:$status,seasonYear:$seasonYear){${MF}}pageInfo{hasNextPage total}}}`, vars);
-      return {media:(d.Page?.media||[]).filter(Boolean),pageInfo:d.Page?.pageInfo||{hasNextPage:false,total:0}};
+      if (!useJikan()) {
+        const vars = {p:page, ...filters};
+        const d = await alQuery(`query($p:Int,$sort:[MediaSort],$genre:String,$status:MediaStatus,$seasonYear:Int){Page(page:$p,perPage:20){media(sort:$sort,type:ANIME,genre:$genre,status:$status,seasonYear:$seasonYear){${MF}}pageInfo{hasNextPage total}}}`, vars);
+        if (!useJikan()) return {media:(d.Page?.media||[]).filter(Boolean),pageInfo:d.Page?.pageInfo||{hasNextPage:false,total:0}};
+      }
+      return jikanBrowse(page, filters.jikanParams || {order_by:'popularity',sort:'asc'});
     });
   }
+  // `source` says which ID space `id` lives in ('jikan' = MAL id, 'anilist' = AniList id); default = whatever is active.
   async function fetchById(id, source) {
     const src = source || _activeSource;
     if (src === DataSource.JIKAN) return jikanById(id);
@@ -2272,8 +2412,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     const d = await alQuery(`query($id:Int){Media(id:$id){${MF}}}`,{id});
     return d.Media ? fmtAnime(d.Media) : null;
   }
-  async function fetchRelations(id) {
-    if (_activeSource !== DataSource.ANILIST) return [];
+  async function fetchRelations(id, src) {
+    if ((src || _activeSource) === DataSource.JIKAN) return jikanRelations(id);
+    if (useJikan()) return [];
     const RF = `relations{edges{node{id title{romaji english}format season seasonYear coverImage{large}}relationType}}`;
     const d = await alQuery(`query($id:Int){Media(id:$id){${RF}}}`,{id});
     if (!d.Media) return [];
@@ -2288,8 +2429,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         relationType:e.relationType
       }));
   }
-  async function fetchRecommendations(id) {
-    if (_activeSource !== DataSource.ANILIST) return [];
+  async function fetchRecommendations(id, src) {
+    if ((src || _activeSource) === DataSource.JIKAN) return jikanRecommendations(id);
+    if (useJikan()) return [];
     const RF = `recommendations(sort:RATING_DESC,perPage:12){nodes{mediaRecommendation{${MF}}}}`;
     const d = await alQuery(`query($id:Int){Media(id:$id){${RF}}}`,{id});
     if (!d.Media) return [];
@@ -2597,7 +2739,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (e) e.stopPropagation(); if (!it || it.id == null) return;
     const k = _hk(!!it.isManga, it.id);
     if (state.favorites[k]) { delete state.favorites[k]; _tomb['f' + k] = Date.now(); tombSave(); showToast('Removed from favorites', '💔'); }
-    else { state.favorites[k] = { id: it.id, title: it.title || '', coverImage: it.coverImage || '', format: it.format || null, averageScore: it.averageScore || null, isManga: !!it.isManga, isMovie: !!it.isMovie, ts: Date.now() }; showToast('Added to favorites', '⭐'); }
+    else { state.favorites[k] = { id: it.id, title: it.title || '', coverImage: it.coverImage || '', format: it.format || null, averageScore: it.averageScore || null, isManga: !!it.isManga, isMovie: !!it.isMovie, _source: it._source||null, _malId: it._malId||null, _alId: it._alId||null, ts: Date.now() }; showToast('Added to favorites', '⭐'); }
     saveFavorites(); refreshFavUI();
     if (currentPage === 'favorites') renderFavoritesPage();
   };
@@ -2914,6 +3056,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       isMovie: !!h.isMovie,
       _imdb: h._imdb || null,
       _tmdb: h._tmdb || null,
+      _source: h._source || null,
+      _malId: h._malId || null,
+      _alId: h._alId || null,
       runtimeSec: h.runtimeSec || 0,
       startYear: h.startYear || null,
       episode: h.episode || 1,
@@ -3720,7 +3865,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
       delete state.watchlist[id];
       showToast(`Removed from watchlist`, '💔');
     } else {
-      state.watchlist[id] = { id: anime.id, title: anime.title, coverImage: anime.coverImage, format: anime.format, averageScore: anime.averageScore, isManga: !!anime.isManga, isMovie: !!anime.isMovie, ts: Date.now() };
+      state.watchlist[id] = { id: anime.id, title: anime.title, coverImage: anime.coverImage, format: anime.format, averageScore: anime.averageScore, isManga: !!anime.isManga, isMovie: !!anime.isMovie, _source: anime._source||null, _malId: anime._malId||null, _alId: anime._alId||null, ts: Date.now() };
       showToast(`Added to watchlist`, '❤️');
     }
     saveWatchlist();
@@ -3982,6 +4127,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   async function selectAnime(animeData, forceEpisode=null) {
     if (!animeData) return;
     if (animeData.isMovie) return selectMovie(animeData);
+    // Data that came from Jikan has a MAL id; the stream servers need the AniList id.
+    if (animeData._source === 'jikan' && !animeData._alId) {
+      const malId = animeData._malId || animeData.id;
+      const alId = await malToAnilist(malId);
+      if (alId) animeData = { ...animeData, id: alId, _alId: alId, _malId: malId };
+      else showToast('Could not match this title to a stream ID — some servers may not work');
+    }
     state.selectedAnime=animeData;
     state.anistream={slug:null,epData:[],isLoading:false,cacheKey:null,targetSeason:1,allSeasons:[]};
     // Preserve the currently active provider; only fall back to history or default if none is set
@@ -3999,7 +4151,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     renderProviderDropdown(); updateAudioToggle(); syncEpisodeUI();
     openWatchPage(); $('#watchPageTitle').textContent=animeData.title;
     showToast(animeData.title);
-    loadAnimeRelations(animeData.id);
+    loadAnimeRelations(animeData);
     const prog=getEpProgress(animeData.id,startEp);
     if (prog&&prog.time>10&&prog.duration>0&&(prog.time/prog.duration)<0.92) showResumeModal(startEp,prog.time,prog.duration,()=>loadStream(prog.time),()=>loadStream(0));
     else loadStream(0);
@@ -4022,12 +4174,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     updateMobileBottomNav('home');
     window.scrollTo({top:0, behavior:'smooth'});
     let full = anime;
-    if (_activeSource === DataSource.ANILIST && !anime._loaded) {
-      try { const f = await fetchById(anime.id); if (f) full = {...f, _loaded:true}; } catch(_) {}
+    if (!anime._loaded) {
+      try {
+        let f = null;
+        if (anime._source === 'jikan') f = await fetchById(anime._malId || anime.id, 'jikan');
+        else if (!useJikan()) f = await fetchById(anime.id, 'anilist');
+        if (f) full = {...f, _loaded:true, ...(anime._alId ? {id:anime._alId, _alId:anime._alId} : {})};
+      } catch(_) {}
     }
+    const _jk = useJikan() || full._source === 'jikan';
+    const _relId = _jk ? (full._malId || (full._source === 'jikan' ? full.id : null)) : full.id;
     const [relations, recs] = await Promise.all([
-      fetchRelations(full.id).catch(()=>[]),
-      fetchRecommendations(full.id).catch(()=>[])
+      _relId ? fetchRelations(_relId, _jk ? 'jikan' : 'anilist').catch(()=>[]) : [],
+      _relId ? fetchRecommendations(_relId, _jk ? 'jikan' : 'anilist').catch(()=>[]) : []
     ]);
     if (currentPage !== 'details') return;   // user navigated away while loading
     routeSet(detailsHash(full), true); setTitle(full.title);
@@ -4492,7 +4651,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   async function renderAiringSchedule() {
     const widget = document.getElementById('airingScheduleWidget');
     const list = document.getElementById('airingScheduleList');
-    if (_activeSource !== DataSource.ANILIST) { widget.style.display = 'none'; return; }
     try {
       const schedule = await fetchAiringSchedule();
       if (!schedule.length) { widget.style.display = 'none'; return; }
@@ -4504,7 +4662,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
         const isNow = s.timeUntilAiring <= 0;
         return `<div class="airing-schedule-item" data-id="${m.id}">
           <span class="airing-schedule-time">${timeStr}</span>
-          <div class="airing-schedule-info"><div class="airing-schedule-name">${escapeHTML(m.title)}</div><div class="airing-schedule-ep">Episode ${s.episode}</div></div>
+          <div class="airing-schedule-info"><div class="airing-schedule-name">${escapeHTML(m.title)}</div><div class="airing-schedule-ep">${s.episode ? 'Episode ' + s.episode : 'New episode'}</div></div>
           <span class="airing-countdown${isNow?' now':''}">${countdown}</span>
         </div>`;
       }).join('');
@@ -4521,7 +4679,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   async function renderUpcoming() {
     const widget = document.getElementById('upcomingWidget');
     const list = document.getElementById('upcomingList');
-    if (_activeSource !== DataSource.ANILIST) { widget.style.display = 'none'; return; }
     try {
       const data = await fetchUpcoming();
       const normalized = data.map(m => m._source ? m : fmtAnime(m)).filter(Boolean);
@@ -4564,7 +4721,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     populateGrid(topRatedGrid, []);
     try {
       let results = [];
-      if (_activeSource === DataSource.ANILIST) {
+      if (!useJikan()) {
         const d = await alQuery(`query($g:String){Page(perPage:20){media(genre:$g,type:ANIME,sort:POPULARITY_DESC){${MF}}}}`, {g: genre});
         results = (d.Page?.media || []).map(m => fmtAnime(m)).filter(Boolean);
       }
@@ -4603,7 +4760,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     const epText = item.isMovie ? (item.startYear ? String(item.startYear) : '') : isManga ? (item.chapters && item.chapters !== '?' ? `${item.chapters} ep` : '') : (item.episodes ? `${item.episodes} eps` : '');
     const isAiring = !isManga && item.status && (item.status === 'RELEASING' || item.status === 'Ongoing');
     const inWL = isInWatchlist(item.id);
-    const wlPayload = JSON.stringify({id:item.id,title:item.title,coverImage:item.coverImage,format:item.format,averageScore:item.averageScore,isManga:!!item.isManga,isMovie:!!item.isMovie}).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
+    const wlPayload = JSON.stringify({id:item.id,title:item.title,coverImage:item.coverImage,format:item.format,averageScore:item.averageScore,isManga:!!item.isManga,isMovie:!!item.isMovie,_source:item._source||null,_malId:item._malId||null,_alId:item._alId||null}).replace(/'/g,"&#39;").replace(/"/g,'&quot;');
     const div = document.createElement('div');
     div.className = 'anime-card' + (isManga ? ' manga-card' : '') + (item.isMovie ? ' movie-card' : '');
     div.innerHTML = `<div class="anime-card-img-wrap">
@@ -5100,7 +5257,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     if (a.coverImage) { $('#sidebarCover').src = a.coverImage; $('#sidebarCover').style.display = 'block'; $('#sidebarCoverPlaceholder').style.display = 'none'; }
     else { $('#sidebarCover').style.display = 'none'; $('#sidebarCoverPlaceholder').style.display = 'flex'; }
   }
-  async function loadAnimeRelations(id) { try { state.animeRelations = await fetchRelations(id); } catch(e) { state.animeRelations = []; } renderRelations(); }
+  async function loadAnimeRelations(a) {
+    try {
+      const jk = useJikan() || a._source === 'jikan';
+      const id = jk ? (a._malId || (a._source === 'jikan' ? a.id : null)) : a.id;
+      state.animeRelations = id ? await fetchRelations(id, jk ? 'jikan' : 'anilist') : [];
+    } catch(e) { state.animeRelations = []; }
+    renderRelations();
+  }
   function renderRelations() {
     if (!state.animeRelations.length) { sidebarRelations.innerHTML = ''; return; }
     sidebarRelations.innerHTML = `<span class="rel-label">Related Seasons</span>` + state.animeRelations.map(r => `<div class="related-season-item" onclick="window.selectRelatedAnime(${r.id})"><span>${escapeHTML(r.title)}</span><span class="rel-meta">${escapeHTML(r.format||'')}</span></div>`).join('');
@@ -5429,7 +5593,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
   // fetch an anime by id; returns null when it can't be found
   async function loadAnimeById(id) {
     if (!/^\d+$/.test(String(id))) return null;
-    try { const f = await fetchById(Number(id)); return f ? { ...f, _loaded: true } : null; } catch (_) { return null; }
+    try {
+      let f = null;
+      if (!useJikan()) f = await fetchById(Number(id), 'anilist');
+      if (!f && useJikan()) {            // AniList unavailable: link ids are AniList ids, so map to MAL and use Jikan
+        const malId = await anilistToMal(Number(id));
+        const j = malId ? await jikanById(malId) : null;
+        if (j) f = { ...j, id: Number(id), _alId: Number(id), _malId: malId };
+      }
+      return f ? { ...f, _loaded: true } : null;
+    } catch (_) { return null; }
   }
   function findMangaLocal(id) {
     const mm = state.mangaMode, sid = String(id);
@@ -5588,6 +5761,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
     _activeSource = src;
   }
   setDataSource(DataSource.ANILIST);
+  try { const t = +sessionStorage.getItem(AL_DOWN_KEY) || 0; if (t && Date.now() - t < 120000) { _activeSource = DataSource.JIKAN; scheduleAnilistRetry(); } } catch(_) {}
   renderProviderDropdown(); updateAudioToggle();
   episodeSection.style.display = 'none'; s5EpSection.style.display = 'none'; audioToggle.style.display = 'none';
   if (DEFAULT_MODE === 'movie') {
