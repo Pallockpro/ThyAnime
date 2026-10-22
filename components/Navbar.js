@@ -115,7 +115,7 @@ export default function Navbar() {
               {focus && q.trim().length >= 2 && (sugg.length > 0 || !busy) ? (
                 <motion.div initial={{ opacity: 0, y: -8, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.18 }}
-                  className="glass absolute left-0 right-0 mt-2 overflow-hidden rounded-2xl bg-plum/95 shadow-2xl md:left-auto md:w-96">
+                  className="menu-panel absolute left-0 right-0 mt-2 overflow-hidden rounded-2xl shadow-2xl md:left-auto md:w-96">
                   {sugg.length === 0 ? <p className="p-4 text-sm text-zinc-400">No results.</p> : sugg.map((a, k) => (
                     <motion.div key={(a.id || a.malId) + '-' + k} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: k * 0.04 }}>
                       <Link href={animeHref(a)} className="flex items-center gap-3 px-3 py-2 transition hover:bg-white/10">

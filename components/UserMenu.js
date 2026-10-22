@@ -41,7 +41,7 @@ export default function UserMenu() {
       <AnimatePresence>
         {(open && user) || authError ? (
           <motion.div initial={{ opacity: 0, y: -8, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.16 }}
-            className="glass absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-2xl bg-plum/95 shadow-2xl">
+            className="menu-panel absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-2xl shadow-2xl">
             {authError ? <p className="p-3 text-xs text-amber-300/90">{authError}</p> : null}
             {open && user ? (
               <>
