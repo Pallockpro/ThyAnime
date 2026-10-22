@@ -50,3 +50,10 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 - **Maintenance mode** — toggle `config/maintenance/enabled` in the Firebase console. Admin emails can bypass it.
 
 One-time Firebase setup steps are in **`firebase/README.md`** (enable Google provider, authorized domains, rules, maintenance node).
+
+## YumeList provider (backup data source)
+`lib/yumelist.js` talks to your self-hosted YumeList API (default `https://doubling-supreme-resurrect.ngrok-free.dev`; change with the
+`YUMELIST_API` repo Variable, or set it to `off` to disable). It supplies home rails, search, details (+ relations / recommendations) and
+episode lists, is throttled to ~55 requests/min (limit is 80), retries on 429/503, and is skipped for a minute if unreachable.
+**Your YumeList server must allow this site's origin in CORS** (`https://thyanime.me`, `https://pallockpro.github.io`) and the request header
+`ngrok-skip-browser-warning`, because browsers call it directly. It is read-only.
