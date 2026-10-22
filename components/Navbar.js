@@ -1,7 +1,7 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { api, animeHref } from '../lib/api'
@@ -13,6 +13,36 @@ const LINKS = [
   ['Trending', '/search/?sort=TRENDING_DESC'],
   ['Movies', '/search/?format=MOVIE'],
 ]
+
+// Which nav pill is highlighted. Trending/Movies/Browse all live on /search/, so the query string decides.
+function activeLink(pathname, sp) {
+  if (pathname === '/') return 'Home'
+  if (!pathname.startsWith('/search')) return ''
+  const format = (sp && sp.get('format')) || ''
+  const sort = (sp && sp.get('sort')) || ''
+  if (format === 'MOVIE') return 'Movies'
+  if (sort === 'TRENDING_DESC') return 'Trending'
+  return 'Browse'
+}
+
+function NavLinks({ pathname, sp }) {
+  const current = activeLink(pathname, sp)
+  return (
+    <nav className="hidden items-center gap-1 md:flex">
+      {LINKS.map(([name, href]) => (
+        <Link key={name} href={href} className="relative rounded-full px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:text-white">
+          {current === name ? <motion.span layoutId="navpill" className="absolute inset-0 rounded-full bg-white/10" transition={{ type: 'spring', stiffness: 400, damping: 32 }} /> : null}
+          <span className="relative">{name}</span>
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+function NavLinksWithParams({ pathname }) {
+  const sp = useSearchParams()
+  return <NavLinks pathname={pathname} sp={sp} />
+}
 
 export default function Navbar() {
   const router = useRouter()
@@ -67,17 +97,9 @@ export default function Navbar() {
           <motion.span whileHover={{ rotate: -12, scale: 1.2 }} className="inline-block">👑</motion.span>
           <span className="text-grad">ThyAnime</span>
         </Link>
-        <nav className="hidden items-center gap-1 md:flex">
-          {LINKS.map(([name, href]) => {
-            const active = href === '/' ? pathname === '/' : href === '/search/' && pathname.startsWith('/search')
-            return (
-              <Link key={name} href={href} className="relative rounded-full px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:text-white">
-                {active ? <motion.span layoutId="navpill" className="absolute inset-0 rounded-full bg-white/10" transition={{ type: 'spring', stiffness: 400, damping: 32 }} /> : null}
-                <span className="relative">{name}</span>
-              </Link>
-            )
-          })}
-        </nav>
+        <Suspense fallback={<NavLinks pathname={pathname} />}>
+          <NavLinksWithParams pathname={pathname} />
+        </Suspense>
 
         <div className="ml-auto flex items-center gap-2">
           <div ref={box} className={open ? 'fixed inset-x-3 top-3 z-50 md:static md:inset-auto' : 'hidden md:block'}>
