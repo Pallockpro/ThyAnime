@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Play, Star, Clock, Youtube } from 'lucide-react'
 import Row from '../../components/Row'
-import { api, getHistory, getLang, setLang, watchHref, STATUS_LABEL, expectedProvider, SOURCE_LABEL } from '../../lib/api'
+import { api, getHistory, getLang, setLang, watchHref, isSingleEpisode, STATUS_LABEL, expectedProvider, SOURCE_LABEL } from '../../lib/api'
 
 const CHUNK = 100
 
@@ -66,6 +66,7 @@ function AnimeInner() {
 
   const startEp = last && last.ep ? last.ep : 1
   const canWatch = !!(a.id || a.malId)
+  const single = isSingleEpisode(a, eps && eps.episodes) // movie / one-episode title → no episode list
   const pickLang = (l) => { setL(l); setLang(l) }
   const trailer = a.trailer && a.trailer.site === 'youtube' && a.trailer.id ? 'https://www.youtube.com/watch?v=' + a.trailer.id : null
 
@@ -108,7 +109,7 @@ function AnimeInner() {
               {canWatch ? (
                 <Link href={watchHref(a.id, startEp, lang, a.malId)}
                   className="flex items-center gap-2 rounded-full bg-blossom-500 px-7 py-3 font-semibold text-white shadow-[0_0_30px_rgba(255,111,168,.4)] transition hover:scale-105 hover:bg-blossom-600">
-                  <Play size={18} className="fill-white" /> {last ? 'Continue EP ' + startEp : 'Watch EP 1'}
+                  <Play size={18} className="fill-white" /> {single ? (last ? 'Continue watching' : a.format === 'MOVIE' ? 'Watch Movie' : 'Watch Now') : last ? 'Continue EP ' + startEp : 'Watch EP 1'}
                 </Link>
               ) : <span className="text-sm text-zinc-500">Streaming isn’t available for this title (no AniList or MAL id found).</span>}
               <div className="glass relative flex rounded-full p-1">
@@ -125,7 +126,7 @@ function AnimeInner() {
           </motion.div>
         </div>
 
-        {canWatch ? (
+        {canWatch && !single ? (
           <section className="mt-14">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="flex items-center gap-3 text-xl font-semibold sm:text-2xl"><span className="h-6 w-1 rounded-full bg-gradient-to-b from-blossom-400 to-violet-500" />Episodes {list.length ? <span className="text-sm font-normal text-zinc-500">({list.length})</span> : null}</h2>

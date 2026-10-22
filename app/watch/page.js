@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowLeft, Server } from 'lucide-react'
-import { api, animeHref, pushHistory, setLang, watchHref } from '../../lib/api'
+import { api, animeHref, isSingleEpisode, pushHistory, setLang, singleLabel, watchHref } from '../../lib/api'
 import { SERVERS, buildEmbed, probe, getSessionServer, setSessionServer } from '../../lib/servers'
 import { useAuth } from '../../components/AuthProvider'
 
@@ -55,7 +55,7 @@ function WatchInner() {
     if (a) {
       pushHistory({ id: id || a.id || undefined, mal: mal || undefined, ep, lang, title: a.title, cover: a.cover })
       const e = eps.find((x) => x.number === ep)
-      document.title = a.title + ' · EP ' + ep + (e && e.title && e.title !== 'Episode ' + ep ? ' — ' + e.title : '') + ' — ThyAnime'
+      document.title = isSingleEpisode(a, eps) ? a.title + ' — ThyAnime' : a.title + ' · EP ' + ep + (e && e.title && e.title !== 'Episode ' + ep ? ' — ' + e.title : '') + ' — ThyAnime'
     }
   }, [a, eps, ep, lang, id, mal])
   useEffect(() => { if (cur.current) cur.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) }, [eps, ep])
@@ -63,6 +63,7 @@ function WatchInner() {
   if (!id && !malParam) return <div className="pt-32 text-center text-zinc-400">No anime selected. <Link href="/" className="text-blossom-400">Go home</Link></div>
 
   const total = eps.length || (a && a.episodes) || 0
+  const single = isSingleEpisode(a, eps) // movie / one-episode title → no episode list, no Prev/Next
   const e = eps.find((x) => x.number === ep)
   const aniId = id || (a && a.id) || 0
   const go = (n, l) => router.push(watchHref(aniId, n, l || lang, mal))
@@ -70,11 +71,11 @@ function WatchInner() {
   const pill = 'glass flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-30'
 
   return (
-    <div className="mx-auto max-w-[1700px] px-3 pb-6 pt-20 sm:px-6">
+    <div className={'mx-auto px-3 pb-6 pt-20 sm:px-6 ' + (single ? 'max-w-6xl' : 'max-w-[1700px]')}>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <Link href={a ? animeHref(a) : '/'} className="glass flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-white/15"><ArrowLeft size={15} /> {a ? a.title : 'Back'}</Link>
       </div>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className={'grid gap-5 ' + (single ? '' : 'lg:grid-cols-[minmax(0,1fr)_380px]')}>
         <div>
           <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
             className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-[0_0_60px_rgba(255,111,168,.15)] ring-1 ring-white/10">
@@ -111,7 +112,7 @@ function WatchInner() {
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
               <h1 className="truncate text-lg font-semibold sm:text-xl">{a ? a.title : 'Loading…'}</h1>
-              <p className="truncate text-sm text-zinc-400">Episode {ep}{e && e.title && e.title !== 'Episode ' + ep ? ' — ' + e.title : ''}</p>
+              <p className="truncate text-sm text-zinc-400">{single ? singleLabel(a) : <>Episode {ep}{e && e.title && e.title !== 'Episode ' + ep ? ' — ' + e.title : ''}</>}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <div className="glass relative flex rounded-full p-1">
@@ -122,14 +123,18 @@ function WatchInner() {
                   </button>
                 ))}
               </div>
-              <button className={pill} disabled={ep <= 1} onClick={() => go(ep - 1)}><ChevronLeft size={16} /> Prev</button>
-              <button className={pill} disabled={total ? ep >= total : false} onClick={() => go(ep + 1)}>Next <ChevronRight size={16} /></button>
+              {single ? null : (
+                <>
+                  <button className={pill} disabled={ep <= 1} onClick={() => go(ep - 1)}><ChevronLeft size={16} /> Prev</button>
+                  <button className={pill} disabled={total ? ep >= total : false} onClick={() => go(ep + 1)}>Next <ChevronRight size={16} /></button>
+                </>
+              )}
             </div>
           </div>
-          {e && e.description ? <p className="glass mt-4 rounded-xl p-4 text-sm leading-relaxed text-zinc-300">{e.description}</p> : null}
+          {!single && e && e.description ? <p className="glass mt-4 rounded-xl p-4 text-sm leading-relaxed text-zinc-300">{e.description}</p> : null}
         </div>
 
-        <aside className="glass flex max-h-[78vh] flex-col overflow-hidden rounded-2xl">
+        {single ? null : <aside className="glass flex max-h-[78vh] flex-col overflow-hidden rounded-2xl">
           <div className="border-b border-white/10 px-4 py-3 text-sm font-semibold">Episodes {total ? <span className="font-normal text-zinc-500">· {total}</span> : null}</div>
           <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto p-2">
             {eps.length === 0 ? (epsDone
@@ -148,7 +153,7 @@ function WatchInner() {
               )
             })}
           </div>
-        </aside>
+        </aside>}
       </div>
     </div>
   )
