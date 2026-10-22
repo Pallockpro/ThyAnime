@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #0b0710;
+}
+::selection { background: rgba(255, 111, 168, .35); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0b0710; }
+::-webkit-scrollbar-thumb { background: #2a1d3b; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #ff6fa8; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+.aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.aurora::before, .aurora::after {
+  content: ''; position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(110px); opacity: .22;
+}
+.aurora::before { background: #ff6fa8; top: -25vmax; left: -15vmax; animation: float 14s ease-in-out infinite; }
+.aurora::after { background: #7c3aed; bottom: -30vmax; right: -20vmax; animation: float 18s ease-in-out infinite reverse; }
+
+.glass { background: rgba(255,255,255,.045); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.08); }
+.text-grad { background: linear-gradient(90deg, #ffb3cf, #ff6fa8 45%, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.shimmer { position: relative; overflow: hidden; background: rgba(255,255,255,.05); }
+.shimmer::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); animation: shimmer 1.6s infinite; }
+.petal {
+  position: absolute; top: 0; background: linear-gradient(135deg, #ffd1e3, #ff8fb8);
+  border-radius: 150% 0 150% 0; opacity: 0; animation: petal linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .petal, .aurora::before, .aurora::after { animation: none !important; }
+  .petal { display: none; }
+}

@@ -1,0 +1,51 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Configure build
+        run: |
+          # USER.github.io repos and custom domains live at "/", project sites at "/REPO"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          if [[ "$REPO" == *.github.io || -f CNAME || -f public/CNAME ]]; then BP=""; else BP="/$REPO"; fi
+          echo "NEXT_PUBLIC_BASE_PATH=$BP" >> "$GITHUB_ENV"
+          # Optional repo Variables (Settings → Secrets and variables → Actions → Variables). All have defaults.
+          echo "NEXT_PUBLIC_THY_SERVER=${{ vars.THY_SERVER || 'https://api.thyanime.me' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_FILMU_ANI=${{ vars.FILMU_ANI || 'https://embed.filmu.in/anime/{id}/{ep}/{lang}' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_FILMU_MAL=${{ vars.FILMU_MAL || '' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_YUMELIST_API=${{ vars.YUMELIST_API || '' }}" >> "$GITHUB_ENV"
+          # Maintenance FORCE-ON switch (normal toggle lives in Firebase) + admin emails who can bypass maintenance
+          echo "NEXT_PUBLIC_MAINTENANCE=${{ vars.MAINTENANCE || '' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_ADMIN_EMAILS=${{ vars.ADMIN_EMAILS || '' }}" >> "$GITHUB_ENV"
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - name: Keep custom domain
+        run: |
+          if [ -f CNAME ]; then cp CNAME out/CNAME; elif [ -f public/CNAME ]; then cp public/CNAME out/CNAME; fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
