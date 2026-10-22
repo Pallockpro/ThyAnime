@@ -29,6 +29,18 @@ If you skip this, sign-in shows "This domain isn't authorised".
 
 Flip `enabled` in the console and every open tab switches within a couple of seconds. No redeploy.
 
+## 4. Site banner (announcement bar)
+Under `config`, add a `banner` node with two children (`banner.json` in this folder shows the same thing):
+
+| key | value | meaning |
+| --- | --- | --- |
+| `Text` | `Testing` | the message shown across the top of the site |
+| `Visible` | `false` | **`true` = banner shown, `false` = hidden** |
+
+Flip `Visible` or edit `Text` and every open tab updates within a couple of seconds. No redeploy.
+The banner also hides if `Text` is empty. Visitors can close it (it stays closed for that browser session, and comes back if you change the `Text`).
+The maintenance node keeps working as before (`config/maintenance`).
+
 ## Admin bypass
 Set the GitHub repo Variable **ADMIN_EMAILS** (Settings → Secrets and variables → Actions → Variables) to your Google email(s),
 comma separated. While maintenance is ON you can open the site, click the small **Admin sign in** link on the maintenance page,

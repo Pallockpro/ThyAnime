@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth'
 import { onValue, ref, set, update } from 'firebase/database'
 import { getDb, getFirebaseAuth, initAnalytics, newGoogleProvider } from '../lib/firebase'
-import { ADMIN_EMAILS, DEFAULT_MAINTENANCE, MAINTENANCE_PATH, normalizeMaintenance } from '../lib/config'
+import { ADMIN_EMAILS, BANNER_PATH, DEFAULT_MAINTENANCE, MAINTENANCE_PATH, normalizeBanner, normalizeMaintenance } from '../lib/config'
 import { SERVERS, getServer, setServer } from '../lib/servers'
 import { startPresence } from '../lib/presence'
 import { SOURCE_KEYS, getSource, setSource, getLang, setLang, getHistory, replaceHistory, clearLocalHistory, setHistoryHook, histKey } from '../lib/api'
@@ -12,6 +12,7 @@ const Ctx = createContext(null)
 export const useAuth = () => useContext(Ctx)
 
 const MAINT_CACHE = 'thy_maint_v1'
+const BANNER_CACHE = 'thy_banner_v1'
 const DEFAULT_SETTINGS = { server: '', lang: 'sub', source: 'auto' } // server '' / source 'auto' = automatic
 
 const sanitize = (s) => ({
@@ -29,6 +30,7 @@ export default function AuthProvider({ children }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const [maintenance, setMaintenance] = useState(normalizeMaintenance(DEFAULT_MAINTENANCE))
   const [maintenanceReady, setMaintenanceReady] = useState(false)
+  const [banner, setBanner] = useState({ visible: false, text: '' })
   const userRef = useRef(null)
   const wasSignedIn = useRef(false)
   const remoteKeys = useRef([])
@@ -43,6 +45,10 @@ export default function AuthProvider({ children }) {
       if (raw) { setMaintenance(normalizeMaintenance(JSON.parse(raw))); cachedHit = true }
     } catch (e) {}
     if (cachedHit) setMaintenanceReady(true)
+    try {
+      const rawB = sessionStorage.getItem(BANNER_CACHE)
+      if (rawB) setBanner(normalizeBanner(JSON.parse(rawB))) // avoids the banner popping in and shoving the page down on every navigation
+    } catch (e) {}
     initAnalytics()
     const t = setTimeout(() => setMaintenanceReady(true), 1500)
     return () => clearTimeout(t)
@@ -68,6 +74,22 @@ export default function AuthProvider({ children }) {
         try { sessionStorage.setItem(MAINT_CACHE, JSON.stringify(v === null ? false : v)) } catch (e) {}
       },
       () => setMaintenanceReady(true), // rules/network error → keep going with the defaults
+    )
+    return () => off()
+  }, [])
+
+  // ── live site banner from Realtime Database (config/banner: Text + Visible) ──
+  useEffect(() => {
+    const db = getDb()
+    if (!db) return
+    const off = onValue(
+      ref(db, BANNER_PATH),
+      (snap) => {
+        const v = snap.val()
+        setBanner(normalizeBanner(v))
+        try { sessionStorage.setItem(BANNER_CACHE, JSON.stringify(v === null ? {} : v)) } catch (e) {}
+      },
+      () => {}, // rules/network error → no banner
     )
     return () => off()
   }, [])
@@ -191,8 +213,8 @@ export default function AuthProvider({ children }) {
   const isAdmin = !!(user && user.email && user.emailVerified !== false && ADMIN_EMAILS.includes(user.email.toLowerCase()))
 
   const value = useMemo(
-    () => ({ user, authReady, authError, clearAuthError: () => setAuthError(''), signIn, signOut, isAdmin, settings, updateSettings, clearWatchHistory, maintenance, maintenanceReady }),
-    [user, authReady, authError, signIn, signOut, isAdmin, settings, updateSettings, clearWatchHistory, maintenance, maintenanceReady],
+    () => ({ user, authReady, authError, clearAuthError: () => setAuthError(''), signIn, signOut, isAdmin, settings, updateSettings, clearWatchHistory, maintenance, maintenanceReady, banner }),
+    [user, authReady, authError, signIn, signOut, isAdmin, settings, updateSettings, clearWatchHistory, maintenance, maintenanceReady, banner],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

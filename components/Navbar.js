@@ -100,7 +100,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className={'fixed inset-x-0 top-0 z-50 transition-all duration-300 ' + (scrolled ? 'bg-ink/80 shadow-lg shadow-black/30 backdrop-blur-xl' : 'bg-gradient-to-b from-black/70 to-transparent')}>
+    <header style={{ top: 'var(--banner-h, 0px)' }} className={'fixed inset-x-0 z-50 transition-all duration-300 ' + (scrolled ? 'bg-ink/80 shadow-lg shadow-black/30 backdrop-blur-xl' : 'bg-gradient-to-b from-black/70 to-transparent')}>
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-6 px-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2 text-xl font-extrabold tracking-tight">
           <motion.span whileHover={{ rotate: -12, scale: 1.2 }} className="inline-block">👑</motion.span>
@@ -111,7 +111,7 @@ export default function Navbar() {
         </Suspense>
 
         <div className="ml-auto flex items-center gap-2">
-          <div ref={box} className={open ? 'fixed inset-x-3 top-3 z-50 md:static md:inset-auto' : 'hidden md:block'}>
+          <div ref={box} className={open ? 'fixed inset-x-3 top-[calc(var(--banner-h,0px)+0.75rem)] z-50 md:static md:inset-auto' : 'hidden md:block'}>
             <form onSubmit={submit} className={'glass flex items-center gap-2 rounded-full px-4 py-2 transition-all duration-300 ' + (focus ? 'w-full ring-1 ring-blossom-500/70 md:w-80' : 'w-full md:w-56')}>
               <Search size={16} className="shrink-0 text-zinc-400" />
               <input value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => setFocus(true)}
