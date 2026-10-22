@@ -37,3 +37,11 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 - Rate limits: AniList ~90 req/min, Jikan 3 req/s & 60/min. Results are cached in memory + sessionStorage and
   Jikan calls are queued, so normal browsing stays well inside them.
 - Episode numbers follow AniList's per-season numbering, which is what MegaPlay's `/stream/ani/` route expects.
+
+## Accounts, settings & maintenance mode
+- **Google sign-in** (Firebase Auth) — optional; the site works signed-out too.
+- **/settings/** — pick your default player server and default sub/dub. Saved on the device, and synced to your
+  account (Realtime Database `users/<uid>/settings`) when signed in.
+- **Maintenance mode** — toggle `config/maintenance/enabled` in the Firebase console. Admin emails can bypass it.
+
+One-time Firebase setup steps are in **`firebase/README.md`** (enable Google provider, authorized domains, rules, maintenance node).

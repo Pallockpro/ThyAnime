@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { api, animeHref } from '../lib/api'
+import UserMenu from './UserMenu'
 
 const LINKS = [
   ['Home', '/'],
@@ -114,6 +115,7 @@ export default function Navbar() {
           {!open ? (
             <button onClick={() => setOpen(true)} aria-label="Search" className="glass rounded-full p-2.5 md:hidden"><Search size={18} /></button>
           ) : null}
+          <UserMenu />
         </div>
       </div>
     </header>

@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <footer className="relative z-10 mt-20 border-t border-white/5 py-10 text-center text-sm text-zinc-500">
@@ -8,6 +10,7 @@ export default function Footer() {
         <a className="hover:text-blossom-400 transition-colors" href="https://anilist.co" target="_blank" rel="noreferrer">AniList</a>
         <a className="hover:text-blossom-400 transition-colors" href="https://kitsu.app" target="_blank" rel="noreferrer">Kitsu</a>
         <a className="hover:text-blossom-400 transition-colors" href="https://jikan.moe" target="_blank" rel="noreferrer">Jikan</a>
+        <Link className="hover:text-blossom-400 transition-colors" href="/settings/">Settings</Link>
       </p>
     </footer>
   )

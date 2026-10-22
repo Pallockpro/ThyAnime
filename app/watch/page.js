@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowLeft, Server } from 'lucide-react'
 import { api, animeHref, pushHistory, setLang, watchHref } from '../../lib/api'
-import { SERVERS, buildEmbed, probe, getServer, setServer } from '../../lib/servers'
+import { SERVERS, buildEmbed, probe, getSessionServer, setSessionServer } from '../../lib/servers'
+import { useAuth } from '../../components/AuthProvider'
 
 function WatchInner() {
   const router = useRouter()
@@ -18,7 +19,8 @@ function WatchInner() {
   const [eps, setEps] = useState([])
   const [epsDone, setEpsDone] = useState(false)
   const [loaded, setLoaded] = useState(false)
-  const [pref, setPref] = useState('')
+  const { settings } = useAuth()
+  const [sess, setSess] = useState('') // server picked in the player this session (does not change the saved default)
   const [up, setUp] = useState({}) // liveness of servers that can be probed (your own server)
   const cur = useRef(null)
   const mal = malParam || (a && a.malId) || 0 // MAL id may only become known once metadata loads
@@ -37,14 +39,14 @@ function WatchInner() {
 
   // which servers are reachable? (only matters for your own ThyAnime server; MegaPlay/FilmU are third-party)
   useEffect(() => {
-    setPref(getServer())
+    setSess(getSessionServer())
     SERVERS.filter((s) => s.probe).forEach((s) => probe(s.probe).then((ok) => setUp((u) => ({ ...u, [s.key]: ok }))))
   }, [])
 
   const params = { id, mal, ep, lang }
   const avail = SERVERS.filter((s) => buildEmbed(s, params))
   const usable = avail.filter((s) => up[s.key] !== false)
-  const wanted = sp.get('srv') || pref
+  const wanted = sp.get('srv') || sess || settings.server
   const server = usable.find((s) => s.key === wanted) || usable[0] || avail[0] || null
   const src = server ? buildEmbed(server, params) : null
 
@@ -64,7 +66,7 @@ function WatchInner() {
   const e = eps.find((x) => x.number === ep)
   const aniId = id || (a && a.id) || 0
   const go = (n, l) => router.push(watchHref(aniId, n, l || lang, mal))
-  const pick = (k) => { setServer(k); setPref(k); if (sp.get('srv')) router.replace(watchHref(aniId, ep, lang, mal)) }
+  const pick = (k) => { setSessionServer(k); setSess(k); if (sp.get('srv')) router.replace(watchHref(aniId, ep, lang, mal)) }
   const pill = 'glass flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-30'
 
   return (

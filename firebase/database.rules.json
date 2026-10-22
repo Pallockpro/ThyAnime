@@ -1,0 +1,21 @@
+{
+  "rules": {
+    "config": {
+      ".read": true,
+      ".write": false
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "settings": {
+          ".validate": "newData.hasChildren(['server', 'lang'])",
+          "server": { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "lang": { ".validate": "newData.val() === 'sub' || newData.val() === 'dub'" },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+    "$other": { ".read": false, ".write": false }
+  }
+}

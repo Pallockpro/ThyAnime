@@ -1,7 +1,6 @@
 import './globals.css'
-import Navbar from '../components/Navbar'
-import Petals from '../components/Petals'
-import Footer from '../components/Footer'
+import AuthProvider from '../components/AuthProvider'
+import AppShell from '../components/AppShell'
 
 export const metadata = {
   title: 'ThyAnime — watch anime online',
@@ -15,10 +14,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="min-h-screen bg-ink text-zinc-100 antialiased">
         <div className="aurora" aria-hidden />
-        <Petals />
-        <Navbar />
-        <main className="relative z-10 min-h-[70vh]">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <AppShell>{children}</AppShell>
+        </AuthProvider>
       </body>
     </html>
   )
