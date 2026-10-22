@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Play, Star, Clock, Youtube } from 'lucide-react'
 import Row from '../../components/Row'
-import { api, getHistory, getLang, setLang, watchHref, STATUS_LABEL } from '../../lib/api'
+import { api, getHistory, getLang, setLang, watchHref, STATUS_LABEL, expectedProvider, SOURCE_LABEL } from '../../lib/api'
 
 const CHUNK = 100
 
@@ -121,7 +121,7 @@ function AnimeInner() {
               </div>
               {trailer ? <a href={trailer} target="_blank" rel="noreferrer" className="glass flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition hover:bg-white/15"><Youtube size={16} /> Trailer</a> : null}
             </motion.div>
-            {a.provider && a.provider !== 'anilist' ? <p className="mt-3 text-xs text-amber-300/80">Details from {a.provider} (AniList unavailable).</p> : null}
+            {a.provider && a.provider !== expectedProvider() ? <p className="mt-3 text-xs text-amber-300/80">Details from {SOURCE_LABEL[a.provider] || a.provider} ({SOURCE_LABEL[expectedProvider()]} unavailable).</p> : null}
           </motion.div>
         </div>
 

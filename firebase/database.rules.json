@@ -16,6 +16,9 @@
           "lang": {
             ".validate": "newData.val() === 'sub' || newData.val() === 'dub'"
           },
+          "source": {
+            ".validate": "newData.val() === 'auto' || newData.val() === 'anilist' || newData.val() === 'kitsu' || newData.val() === 'yumelist' || newData.val() === 'jikan'"
+          },
           "$other": {
             ".validate": false
           }

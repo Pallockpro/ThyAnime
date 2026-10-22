@@ -51,6 +51,7 @@ export default function Navbar() {
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(false)      // mobile search bar
   const [sugg, setSugg] = useState([])
+  const [settled, setSettled] = useState('') // the query the current suggestions belong to
   const [busy, setBusy] = useState(false)
   const [focus, setFocus] = useState(false)
   const box = useRef(null)
@@ -61,20 +62,28 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', f)
   }, [])
 
-  useEffect(() => { setFocus(false); setOpen(false); setSugg([]) }, [pathname])
+  // Leaving for another page: close the box AND clear what was typed, so coming back never shows a stale
+  // query with an empty "No results" panel. (Staying on /search keeps the text, it's the current search.)
+  useEffect(() => {
+    setFocus(false); setOpen(false); setSugg([]); setSettled('')
+    if (!pathname.startsWith('/search')) setQ('')
+  }, [pathname])
 
+  // Suggestions for whatever is in the box. Also re-runs when the box is focused again, so a query that is
+  // still there (e.g. after navigating) is searched again instead of showing a stale/empty list.
   useEffect(() => {
     const t = q.trim()
-    if (t.length < 2) { setSugg([]); setBusy(false); return }
+    if (t.length < 2) { setSugg([]); setSettled(''); setBusy(false); return }
+    if (!focus) { setBusy(false); return }
     setBusy(true)
     const ac = new AbortController()
     const id = setTimeout(() => {
       api.search({ q: t, page: 1 }, ac.signal)
-        .then((d) => { setSugg((d.results || []).slice(0, 6)); setBusy(false) })
-        .catch((e) => { if (e.name !== 'AbortError') setBusy(false) })
+        .then((d) => { setSugg((d.results || []).slice(0, 6)); setSettled(t); setBusy(false) })
+        .catch((e) => { if (e.name !== 'AbortError') { setSugg([]); setSettled(''); setBusy(false) } })
     }, 320)
     return () => { clearTimeout(id); ac.abort() }
-  }, [q])
+  }, [q, focus])
 
   useEffect(() => {
     const h = (e) => { if (box.current && !box.current.contains(e.target)) setFocus(false) }
@@ -112,7 +121,7 @@ export default function Navbar() {
               {open ? <button type="button" onClick={() => setOpen(false)} aria-label="Close"><X size={16} /></button> : null}
             </form>
             <AnimatePresence>
-              {focus && q.trim().length >= 2 && (sugg.length > 0 || !busy) ? (
+              {focus && q.trim().length >= 2 && (sugg.length > 0 || settled === q.trim()) ? (
                 <motion.div initial={{ opacity: 0, y: -8, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.18 }}
                   className="menu-panel absolute left-0 right-0 mt-2 overflow-hidden rounded-2xl shadow-2xl md:left-auto md:w-96">

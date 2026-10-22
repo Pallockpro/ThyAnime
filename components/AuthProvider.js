@@ -6,20 +6,21 @@ import { getDb, getFirebaseAuth, initAnalytics, newGoogleProvider } from '../lib
 import { ADMIN_EMAILS, DEFAULT_MAINTENANCE, MAINTENANCE_PATH, normalizeMaintenance } from '../lib/config'
 import { SERVERS, getServer, setServer } from '../lib/servers'
 import { startPresence } from '../lib/presence'
-import { getLang, setLang, getHistory, replaceHistory, clearLocalHistory, setHistoryHook, histKey } from '../lib/api'
+import { SOURCE_KEYS, getSource, setSource, getLang, setLang, getHistory, replaceHistory, clearLocalHistory, setHistoryHook, histKey } from '../lib/api'
 
 const Ctx = createContext(null)
 export const useAuth = () => useContext(Ctx)
 
 const MAINT_CACHE = 'thy_maint_v1'
-const DEFAULT_SETTINGS = { server: '', lang: 'sub' } // server '' = automatic (first working server)
+const DEFAULT_SETTINGS = { server: '', lang: 'sub', source: 'auto' } // server '' / source 'auto' = automatic
 
 const sanitize = (s) => ({
   server: s && SERVERS.some((x) => x.key === s.server) ? s.server : '',
   lang: s && s.lang === 'dub' ? 'dub' : 'sub',
+  source: s && SOURCE_KEYS.includes(s.source) ? s.source : 'auto',
 })
-const readLocal = () => sanitize({ server: getServer(), lang: getLang() })
-const writeLocal = (s) => { setServer(s.server || ''); setLang(s.lang) }
+const readLocal = () => sanitize({ server: getServer(), lang: getLang(), source: getSource() })
+const writeLocal = (s) => { setServer(s.server || ''); setLang(s.lang); setSource(s.source) }
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -93,7 +94,7 @@ export default function AuthProvider({ children }) {
     const off = onValue(r, (snap) => {
       const remote = snap.val()
       if (remote) {
-        const s = sanitize(remote)
+        const s = sanitize({ ...readLocal(), ...remote }) // older accounts have no `source` yet → keep this browser's choice
         writeLocal(s)
         setSettings(s)
       } else if (first) {

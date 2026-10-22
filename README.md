@@ -46,6 +46,7 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
   (`users/<uid>/history`), merged on first sign-in, and cleared from the browser on sign-out.
 - **Live visitors counter** (Settings page) — real-time count of distinct browsers on the site right now, via Firebase presence
   (`presence/<visitor>/<tab>` + `onDisconnect`). Several tabs in one browser count once. Needs the updated database rules.
+- **Data source** (Settings) — Automatic (AniList → Kitsu → YumeList → Jikan) or pick one first; the rest stay as fallbacks. Synced to the account.
 - **Maintenance mode** — toggle `config/maintenance/enabled` in the Firebase console. Admin emails can bypass it.
 
 One-time Firebase setup steps are in **`firebase/README.md`** (enable Google provider, authorized domains, rules, maintenance node).

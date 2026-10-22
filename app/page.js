@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Hero from '../components/Hero'
 import Row from '../components/Row'
 import { HeroSkeleton, RowSkeleton } from '../components/Skeletons'
-import { api, getHistory, watchHref } from '../lib/api'
+import { api, getHistory, watchHref, expectedProvider, SOURCE_LABEL } from '../lib/api'
 
 const RAILS = [
   ['trending', 'Trending now'],
@@ -54,9 +54,9 @@ export default function Home() {
       ) : (
         <>
           <Hero items={hero} />
-          {data.provider && data.provider !== 'anilist' ? (
+          {data.provider && data.provider !== expectedProvider() ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 pt-4 text-xs text-amber-300/80 sm:px-8">
-              AniList is unavailable right now — showing data from {data.provider}.
+              {SOURCE_LABEL[expectedProvider()]} is unavailable right now — showing data from {SOURCE_LABEL[data.provider] || data.provider}.
             </motion.p>
           ) : null}
           <div className="-mt-10 space-y-10 pt-6">

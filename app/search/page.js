@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import AnimeCard from '../../components/AnimeCard'
 import { GridSkeleton } from '../../components/Skeletons'
-import { api, GENRES } from '../../lib/api'
+import { api, GENRES, expectedProvider, SOURCE_LABEL } from '../../lib/api'
 
 const FORMATS = [['', 'All'], ['TV', 'TV'], ['MOVIE', 'Movie'], ['OVA', 'OVA'], ['ONA', 'ONA'], ['SPECIAL', 'Special']]
 const SORTS = [['', 'Best match'], ['POPULARITY_DESC', 'Popular'], ['TRENDING_DESC', 'Trending'], ['SCORE_DESC', 'Top rated'], ['START_DATE_DESC', 'Newest'], ['FAVOURITES_DESC', 'Most loved']]
@@ -81,8 +81,8 @@ function SearchInner() {
         </select>
       </div>
 
-      {provider && provider !== 'anilist' ? (
-        <p className="mt-4 text-xs text-amber-300/80">AniList is unavailable right now — showing results from {provider}.{provider === 'jikan' ? ' (genre filter may be ignored)' : ''}</p>
+      {provider && provider !== expectedProvider() ? (
+        <p className="mt-4 text-xs text-amber-300/80">{SOURCE_LABEL[expectedProvider()]} is unavailable right now — showing results from {SOURCE_LABEL[provider] || provider}.{provider === 'jikan' ? ' (genre filter may be ignored)' : ''}</p>
       ) : null}
 
       <div className="mt-8">

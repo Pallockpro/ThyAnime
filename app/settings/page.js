@@ -1,9 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, LogOut, Server, Languages, User, History, Users } from 'lucide-react'
+import { Check, LogOut, Server, Languages, User, History, Users, Database } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { SERVERS, probe } from '../../lib/servers'
+import { SOURCES } from '../../lib/api'
+import { yume } from '../../lib/yumelist'
 import { getDb } from '../../lib/firebase'
 import { watchOnlineCount } from '../../lib/presence'
 
@@ -110,6 +112,29 @@ export default function SettingsPage() {
             })}
           </div>
           <p className="mt-3 text-xs text-zinc-500">Switching servers from the player only lasts for that viewing session — this setting is your permanent default.</p>
+        </Section>
+
+
+        <Section icon={Database} title="Data source" hint="Where anime info (posters, details, episode lists) comes from. Automatic uses them in order and is recommended.">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {SOURCES.map((o) => {
+              const off = o.needsSetup && !yume.enabled
+              const on = settings.source === o.key
+              return (
+                <button key={o.key} onClick={() => save({ source: o.key })} disabled={off}
+                  className={'flex items-start gap-3 rounded-xl p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ' + (on ? 'bg-blossom-500/20 ring-1 ring-blossom-500/70' : 'glass hover:bg-white/10')}>
+                  <span className={'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ' + (on ? 'border-blossom-400 bg-blossom-500' : 'border-zinc-600')}>
+                    {on ? <Check size={12} strokeWidth={4} /> : null}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold">{o.name}{o.key === 'auto' ? ' · default' : ''}{off ? ' · not set up' : ''}</span>
+                    <span className="block text-xs text-zinc-400">{o.note}</span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <p className="mt-3 text-xs text-zinc-500">If your chosen source is down, the others are tried automatically so the site never goes blank. Applies the next time a page loads.</p>
         </Section>
 
         <Section icon={Languages} title="Default audio" hint="Used when you press Watch from a poster or the Hero banner.">
