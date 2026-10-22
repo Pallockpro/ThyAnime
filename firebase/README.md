@@ -12,6 +12,7 @@ If you skip this, sign-in shows "This domain isn't authorised".
 ## 2. Paste the database rules
 **Build → Realtime Database → Rules** → replace everything with `firebase/database.rules.json` → **Publish**.
 - `config/*` is publicly readable (so visitors can see the maintenance flag) and only writable from the console.
+- `presence/*` powers the **Live visitors** counter in Settings: each open tab writes a tiny entry that the server deletes automatically when the tab closes.
 - `users/<uid>/settings` and `users/<uid>/history` (settings + "Continue watching") are readable/writable only by that signed-in user.
 
 ## 3. Create the maintenance switch

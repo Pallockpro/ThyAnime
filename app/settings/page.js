@@ -1,9 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, LogOut, Server, Languages, User, History } from 'lucide-react'
+import { Check, LogOut, Server, Languages, User, History, Users } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { SERVERS, probe } from '../../lib/servers'
+import { getDb } from '../../lib/firebase'
+import { watchOnlineCount } from '../../lib/presence'
 
 const GoogleG = () => (
   <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
@@ -26,12 +28,18 @@ function Section({ icon: Icon, title, hint, children }) {
 
 export default function SettingsPage() {
   const { user, authReady, signIn, signOut, authError, settings, updateSettings, clearWatchHistory } = useAuth()
+  const [online, setOnline] = useState(null) // null = connecting, -1 = unavailable
   const [confirmClear, setConfirmClear] = useState(false)
   const [cleared, setCleared] = useState(false)
   const [up, setUp] = useState({})
   const [status, setStatus] = useState('') // '' | 'device' | 'synced' | 'failed'
 
   useEffect(() => { document.title = 'Settings — ThyAnime' }, [])
+  useEffect(() => {
+    const db = getDb()
+    if (!db) return
+    return watchOnlineCount(db, setOnline, () => setOnline(-1))
+  }, [])
   useEffect(() => {
     SERVERS.filter((s) => s.probe).forEach((s) => probe(s.probe).then((ok) => setUp((u) => ({ ...u, [s.key]: ok }))))
   }, [])
@@ -127,6 +135,17 @@ export default function SettingsPage() {
           ) : (
             <button onClick={() => setConfirmClear(true)} className="glass rounded-full px-4 py-2 text-sm transition hover:bg-white/15">Clear watch history</button>
           )}
+        </Section>
+
+        <Section icon={Users} title="Live visitors" hint="People on ThyAnime right now, including you. Updates instantly as people come and go.">
+          <div className="flex items-center gap-4">
+            <span className="relative flex h-3 w-3">
+              <span className={'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ' + (online > 0 ? 'bg-emerald-400' : 'bg-zinc-500')} />
+              <span className={'relative inline-flex h-3 w-3 rounded-full ' + (online > 0 ? 'bg-emerald-400' : 'bg-zinc-500')} />
+            </span>
+            <span className="text-4xl font-extrabold tabular-nums">{online === null ? '…' : online < 0 ? '—' : online.toLocaleString()}</span>
+            <span className="text-sm text-zinc-400">{online === null ? 'connecting…' : online < 0 ? 'counter unavailable right now' : online === 1 ? 'person online' : 'people online'}</span>
+          </div>
         </Section>
       </div>
     </div>

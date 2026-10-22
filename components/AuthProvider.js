@@ -5,6 +5,7 @@ import { onValue, ref, set, update } from 'firebase/database'
 import { getDb, getFirebaseAuth, initAnalytics, newGoogleProvider } from '../lib/firebase'
 import { ADMIN_EMAILS, DEFAULT_MAINTENANCE, MAINTENANCE_PATH, normalizeMaintenance } from '../lib/config'
 import { SERVERS, getServer, setServer } from '../lib/servers'
+import { startPresence } from '../lib/presence'
 import { getLang, setLang, getHistory, replaceHistory, clearLocalHistory, setHistoryHook, histKey } from '../lib/api'
 
 const Ctx = createContext(null)
@@ -44,6 +45,13 @@ export default function AuthProvider({ children }) {
     initAnalytics()
     const t = setTimeout(() => setMaintenanceReady(true), 1500)
     return () => clearTimeout(t)
+  }, [])
+
+  // ── presence: tell the server this tab is on the site (powers the live counter in Settings) ──
+  useEffect(() => {
+    const db = getDb()
+    if (!db) return
+    return startPresence(db)
   }, [])
 
   // ── live maintenance flag from Realtime Database (config/maintenance) ──
