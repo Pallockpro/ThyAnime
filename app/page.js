@@ -20,7 +20,12 @@ export default function Home() {
   const [hist, setHist] = useState([])
   const [tick, setTick] = useState(0)
 
-  useEffect(() => { setHist(getHistory()) }, [])
+  useEffect(() => {
+    const f = () => setHist(getHistory())
+    f()
+    window.addEventListener('thy-history', f) // fires when account history arrives after sign-in
+    return () => window.removeEventListener('thy-history', f)
+  }, [])
   useEffect(() => {
     const ac = new AbortController()
     setErr(''); setData(null)

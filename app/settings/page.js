@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, LogOut, Server, Languages, User } from 'lucide-react'
+import { Check, LogOut, Server, Languages, User, History } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { SERVERS, probe } from '../../lib/servers'
 
@@ -25,7 +25,9 @@ function Section({ icon: Icon, title, hint, children }) {
 }
 
 export default function SettingsPage() {
-  const { user, authReady, signIn, signOut, authError, settings, updateSettings } = useAuth()
+  const { user, authReady, signIn, signOut, authError, settings, updateSettings, clearWatchHistory } = useAuth()
+  const [confirmClear, setConfirmClear] = useState(false)
+  const [cleared, setCleared] = useState(false)
   const [up, setUp] = useState({})
   const [status, setStatus] = useState('') // '' | 'device' | 'synced' | 'failed'
 
@@ -111,6 +113,20 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+        </Section>
+
+        <Section icon={History} title="Watch history" hint={user ? 'Your “Continue watching” list is saved to your account and follows you to any device.' : 'Your “Continue watching” list is saved on this device only. Sign in to keep it on your account.'}>
+          {cleared ? (
+            <p className="text-sm text-emerald-300">History cleared.</p>
+          ) : confirmClear ? (
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <span className="text-zinc-300">{user ? 'Delete your history from this device and your account?' : 'Delete your history from this device?'}</span>
+              <button onClick={async () => { await clearWatchHistory(); setConfirmClear(false); setCleared(true); setTimeout(() => setCleared(false), 2500) }} className="rounded-full bg-blossom-500 px-4 py-2 font-semibold transition hover:scale-105">Delete</button>
+              <button onClick={() => setConfirmClear(false)} className="glass rounded-full px-4 py-2 transition hover:bg-white/15">Cancel</button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirmClear(true)} className="glass rounded-full px-4 py-2 text-sm transition hover:bg-white/15">Clear watch history</button>
+          )}
         </Section>
       </div>
     </div>

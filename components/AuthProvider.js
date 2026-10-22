@@ -1,11 +1,11 @@
 'use client'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut as fbSignOut } from 'firebase/auth'
-import { onValue, ref, set } from 'firebase/database'
+import { onValue, ref, set, update } from 'firebase/database'
 import { getDb, getFirebaseAuth, initAnalytics, newGoogleProvider } from '../lib/firebase'
 import { ADMIN_EMAILS, DEFAULT_MAINTENANCE, MAINTENANCE_PATH, normalizeMaintenance } from '../lib/config'
 import { SERVERS, getServer, setServer } from '../lib/servers'
-import { getLang, setLang } from '../lib/api'
+import { getLang, setLang, getHistory, replaceHistory, clearLocalHistory, setHistoryHook, histKey } from '../lib/api'
 
 const Ctx = createContext(null)
 export const useAuth = () => useContext(Ctx)
@@ -28,6 +28,8 @@ export default function AuthProvider({ children }) {
   const [maintenance, setMaintenance] = useState(normalizeMaintenance(DEFAULT_MAINTENANCE))
   const [maintenanceReady, setMaintenanceReady] = useState(false)
   const userRef = useRef(null)
+  const wasSignedIn = useRef(false)
+  const remoteKeys = useRef([])
   userRef.current = user
 
   // ── boot: local settings, cached maintenance flag, analytics, 1.5s cap on waiting for the database ──
@@ -65,7 +67,13 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     const auth = getFirebaseAuth()
     if (!auth) return
-    return onAuthStateChanged(auth, (u) => { setUser(u); setAuthReady(true) }, () => setAuthReady(true))
+    return onAuthStateChanged(auth, (u) => {
+      // Signing out wipes the account's history from this browser so the next person on this device doesn't see it.
+      if (!u && wasSignedIn.current) clearLocalHistory()
+      wasSignedIn.current = !!u
+      setUser(u)
+      setAuthReady(true)
+    }, () => setAuthReady(true))
   }, [])
 
   // ── per-account settings sync: users/{uid}/settings ──
@@ -87,6 +95,52 @@ export default function AuthProvider({ children }) {
     }, () => {})
     return () => off()
   }, [user])
+
+  // ── per-account watch history sync: users/{uid}/history/{key} ──
+  useEffect(() => {
+    const db = getDb()
+    if (!user || !db) return
+    const base = ref(db, 'users/' + user.uid + '/history')
+    let first = true
+
+    // every local "watch" is mirrored to the account (and anything pushed out of the newest 20 is removed)
+    setHistoryHook((entry, list) => {
+      const patch = { [histKey(entry)]: entry }
+      for (const k of remoteKeys.current) if (!list.some((x) => histKey(x) === k)) patch[k] = null
+      update(base, patch).catch(() => {})
+    })
+
+    const off = onValue(base, (snap) => {
+      const v = snap.val() || {}
+      remoteKeys.current = Object.keys(v)
+      const remote = Object.values(v)
+      if (first) {
+        // first load after signing in: merge what this browser already had (signed-out history) with the account's
+        const byKey = new Map()
+        for (const x of [...remote, ...getHistory()]) {
+          const k = histKey(x), cur = byKey.get(k)
+          if (!cur || (x.at || 0) > (cur.at || 0)) byKey.set(k, x)
+        }
+        const merged = replaceHistory([...byKey.values()])
+        const patch = {}
+        for (const x of merged) { const r = v[histKey(x)]; if (!r || (r.at || 0) < (x.at || 0)) patch[histKey(x)] = x }
+        for (const k of Object.keys(v)) if (!merged.some((x) => histKey(x) === k)) patch[k] = null
+        if (Object.keys(patch).length) update(base, patch).catch(() => {})
+        first = false
+      } else {
+        replaceHistory(remote)
+      }
+    }, () => {})
+
+    return () => { off(); setHistoryHook(null) }
+  }, [user])
+
+  const clearWatchHistory = useCallback(async () => {
+    clearLocalHistory()
+    const u = userRef.current
+    const db = getDb()
+    if (u && db) await set(ref(db, 'users/' + u.uid + '/history'), null).catch(() => {})
+  }, [])
 
   const updateSettings = useCallback((patch) => {
     const next = sanitize({ ...readLocal(), ...patch })
@@ -128,8 +182,8 @@ export default function AuthProvider({ children }) {
   const isAdmin = !!(user && user.email && user.emailVerified !== false && ADMIN_EMAILS.includes(user.email.toLowerCase()))
 
   const value = useMemo(
-    () => ({ user, authReady, authError, clearAuthError: () => setAuthError(''), signIn, signOut, isAdmin, settings, updateSettings, maintenance, maintenanceReady }),
-    [user, authReady, authError, signIn, signOut, isAdmin, settings, updateSettings, maintenance, maintenanceReady],
+    () => ({ user, authReady, authError, clearAuthError: () => setAuthError(''), signIn, signOut, isAdmin, settings, updateSettings, clearWatchHistory, maintenance, maintenanceReady }),
+    [user, authReady, authError, signIn, signOut, isAdmin, settings, updateSettings, clearWatchHistory, maintenance, maintenanceReady],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

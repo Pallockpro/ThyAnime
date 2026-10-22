@@ -42,6 +42,8 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 - **Google sign-in** (Firebase Auth) — optional; the site works signed-out too.
 - **/settings/** — pick your default player server and default sub/dub. Saved on the device, and synced to your
   account (Realtime Database `users/<uid>/settings`) when signed in.
+- **Watch history** ("Continue watching") — saved on the device for everyone; when signed in it is also saved to the account
+  (`users/<uid>/history`), merged on first sign-in, and cleared from the browser on sign-out.
 - **Maintenance mode** — toggle `config/maintenance/enabled` in the Firebase console. Admin emails can bypass it.
 
 One-time Firebase setup steps are in **`firebase/README.md`** (enable Google provider, authorized domains, rules, maintenance node).

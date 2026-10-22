@@ -27,6 +27,12 @@ function AnimeInner() {
 
   useEffect(() => { setL(getLang()) }, [])
   useEffect(() => {
+    if (!a) return
+    const f = () => setLast(getHistory().find((x) => (x.id && x.id === a.id) || (x.mal && x.mal === a.malId)) || null)
+    window.addEventListener('thy-history', f)
+    return () => window.removeEventListener('thy-history', f)
+  }, [a])
+  useEffect(() => {
     const ac = new AbortController()
     setA(null); setEps(null); setErr(''); setChunk(0); setMore(false)
     api.anime({ id: idParam, mal: malParam }, ac.signal)
