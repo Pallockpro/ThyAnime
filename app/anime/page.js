@@ -32,10 +32,10 @@ function AnimeInner() {
     api.anime({ id: idParam, mal: malParam }, ac.signal)
       .then((d) => {
         setA(d)
-        const h = getHistory().find((x) => x.id === d.id)
+        const h = getHistory().find((x) => (x.id && x.id === d.id) || (x.mal && x.mal === d.malId))
         setLast(h || null)
         if (d.title) document.title = d.title + ' — ThyAnime'
-        return api.episodes(d.id, ac.signal).then(setEps).catch((e) => { if (e.name !== 'AbortError') setEps({ episodes: [], total: 0 }) })
+        return api.episodes(d, ac.signal).then(setEps).catch((e) => { if (e.name !== 'AbortError') setEps({ episodes: [], total: 0 }) })
       })
       .catch((e) => { if (e.name !== 'AbortError') setErr(e.message) })
     return () => ac.abort()
@@ -59,7 +59,7 @@ function AnimeInner() {
   )
 
   const startEp = last && last.ep ? last.ep : 1
-  const canWatch = !!a.id
+  const canWatch = !!(a.id || a.malId)
   const pickLang = (l) => { setL(l); setLang(l) }
   const trailer = a.trailer && a.trailer.site === 'youtube' && a.trailer.id ? 'https://www.youtube.com/watch?v=' + a.trailer.id : null
 
@@ -100,11 +100,11 @@ function AnimeInner() {
 
             <motion.div variants={{ h: { opacity: 0, y: 16 }, s: { opacity: 1, y: 0 } }} className="mt-6 flex flex-wrap items-center gap-3">
               {canWatch ? (
-                <Link href={watchHref(a.id, startEp, lang)}
+                <Link href={watchHref(a.id, startEp, lang, a.malId)}
                   className="flex items-center gap-2 rounded-full bg-blossom-500 px-7 py-3 font-semibold text-white shadow-[0_0_30px_rgba(255,111,168,.4)] transition hover:scale-105 hover:bg-blossom-600">
                   <Play size={18} className="fill-white" /> {last ? 'Continue EP ' + startEp : 'Watch EP 1'}
                 </Link>
-              ) : <span className="text-sm text-zinc-500">Streaming isn’t available for this title (no AniList id found).</span>}
+              ) : <span className="text-sm text-zinc-500">Streaming isn’t available for this title (no AniList or MAL id found).</span>}
               <div className="glass relative flex rounded-full p-1">
                 {['sub', 'dub'].map((l) => (
                   <button key={l} onClick={() => pickLang(l)} className={'relative rounded-full px-5 py-2 text-sm font-semibold uppercase transition ' + (lang === l ? 'text-white' : 'text-zinc-400')}>
@@ -142,7 +142,7 @@ function AnimeInner() {
                 <motion.div key={chunk} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {shown.map((e, i) => (
                     <motion.div key={e.number} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 12) * 0.03 }} whileHover={{ y: -4 }}>
-                      <Link href={watchHref(a.id, e.number, lang)} className="glass group flex gap-3 overflow-hidden rounded-xl p-2 transition hover:ring-1 hover:ring-blossom-500/60">
+                      <Link href={watchHref(a.id, e.number, lang, a.malId)} className="glass group flex gap-3 overflow-hidden rounded-xl p-2 transition hover:ring-1 hover:ring-blossom-500/60">
                         <div className="relative h-20 w-36 shrink-0 overflow-hidden rounded-lg bg-plum">
                           {e.thumbnail ? <img src={e.thumbnail} alt="" loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" /> : null}
                           <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100"><Play size={22} className="fill-white" /></span>

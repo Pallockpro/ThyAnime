@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 
 export const metadata = {
   title: 'ThyAnime — watch anime online',
-  description: 'Search and stream anime. Powered by AniList with Kitsu, YumeList and MyAnimeList backups.',
+  description: 'Search and stream anime. Powered by AniList with Kitsu, YumeList and Jikan (MyAnimeList) backups.',
   icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>" },
 }
 export const viewport = { themeColor: '#0b0710' }

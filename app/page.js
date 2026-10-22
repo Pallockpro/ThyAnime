@@ -57,7 +57,7 @@ export default function Home() {
           <div className="-mt-10 space-y-10 pt-6">
             {hist.length ? (
               <Row title="Continue watching" items={hist}
-                hrefFor={(h) => watchHref(h.id, h.ep, h.lang)}
+                hrefFor={(h) => watchHref(h.id, h.ep, h.lang, h.mal)}
                 subFor={(h) => 'Episode ' + h.ep + (h.lang === 'dub' ? ' · Dub' : '')} />
             ) : null}
             {RAILS.map(([k, title]) => <Row key={k} title={title} items={rails[k]} />)}

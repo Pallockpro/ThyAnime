@@ -18,13 +18,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Pick base path
+      - name: Configure build
         run: |
           # USER.github.io repos and custom domains live at "/", project sites at "/REPO"
           REPO="${GITHUB_REPOSITORY#*/}"
           if [[ "$REPO" == *.github.io || -f CNAME || -f public/CNAME ]]; then BP=""; else BP="/$REPO"; fi
           echo "NEXT_PUBLIC_BASE_PATH=$BP" >> "$GITHUB_ENV"
-          echo "NEXT_PUBLIC_API_BASE=${{ vars.API_BASE || 'https://api.thyanime.me' }}" >> "$GITHUB_ENV"
+          # Optional repo Variables (Settings → Secrets and variables → Actions → Variables). All have defaults.
+          echo "NEXT_PUBLIC_THY_SERVER=${{ vars.THY_SERVER || 'https://api.thyanime.me' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_FILMU_ANI=${{ vars.FILMU_ANI || 'https://embed.filmu.in/anime/{id}/{ep}/{lang}' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_FILMU_MAL=${{ vars.FILMU_MAL || '' }}" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_YUMELIST_API=${{ vars.YUMELIST_API || '' }}" >> "$GITHUB_ENV"
       - run: npm install --no-audit --no-fund
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
