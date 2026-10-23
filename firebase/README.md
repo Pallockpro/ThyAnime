@@ -30,15 +30,21 @@ If you skip this, sign-in shows "This domain isn't authorised".
 Flip `enabled` in the console and every open tab switches within a couple of seconds. No redeploy.
 
 ## 4. Site banner (announcement bar)
-Under `config`, add a `banner` node with two children (`banner.json` in this folder shows the same thing):
+Under `config`, add a `banner` node with these children (`banner.json` in this folder shows the same thing; **⋮ → Import JSON** works too):
 
 | key | value | meaning |
 | --- | --- | --- |
-| `Text` | `Testing` | the message shown across the top of the site |
-| `Visible` | `false` | **`true` = banner shown, `false` = hidden** |
+| `Text` | `Welcome to ThyAnime` | the message shown across the top of the site |
+| `Text2` … `Text5` | `` (blank) | extra messages, only used when `rotations` is `true` |
+| `Visible` | `true` | **`true` = banner shown, `false` = hidden** |
+| `rotations` | `false` | **`false` = only `Text` is shown. `true` = cycle through `Text`, `Text2`, `Text3`… every 10 seconds** |
 
-Flip `Visible` or edit `Text` and every open tab updates within a couple of seconds. No redeploy.
-The banner also hides if `Text` is empty. Visitors can close it (it stays closed for that browser session, and comes back if you change the `Text`).
+- With `rotations` on, any message that is blank is skipped, and after the last one it loops back to the first.
+  If only one message is filled in, it just stays up (nothing to rotate).
+- With `rotations` off, `Text2`–`Text5` are ignored: only `Text` (the one without a number) is shown.
+- You can add `Text6`, `Text7`… the same way if you ever need more.
+- Flip `Visible` / `rotations` or edit any text and every open tab updates within a couple of seconds. No redeploy.
+- The banner hides if there is nothing to show. Visitors can close it (it stays closed for that browser session, and comes back if you change any of the texts).
 The maintenance node keeps working as before (`config/maintenance`).
 
 ## Admin bypass

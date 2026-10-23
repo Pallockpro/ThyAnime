@@ -30,7 +30,7 @@ export default function AuthProvider({ children }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const [maintenance, setMaintenance] = useState(normalizeMaintenance(DEFAULT_MAINTENANCE))
   const [maintenanceReady, setMaintenanceReady] = useState(false)
-  const [banner, setBanner] = useState({ visible: false, text: '' })
+  const [banner, setBanner] = useState({ visible: false, rotations: false, items: [], text: '' })
   const userRef = useRef(null)
   const wasSignedIn = useRef(false)
   const remoteKeys = useRef([])
@@ -78,7 +78,7 @@ export default function AuthProvider({ children }) {
     return () => off()
   }, [])
 
-  // ── live site banner from Realtime Database (config/banner: Text + Visible) ──
+  // ── live site banner from Realtime Database (config/banner: Text, Text2…, Visible, rotations) ──
   useEffect(() => {
     const db = getDb()
     if (!db) return

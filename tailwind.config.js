@@ -17,11 +17,13 @@ module.exports = {
         },
         kenburns: { '0%': { transform: 'scale(1.12)' }, '100%': { transform: 'scale(1)' } },
         progress: { '0%': { width: '0%' }, '100%': { width: '100%' } },
+        bannerin: { '0%': { opacity: '0', transform: 'translateY(4px)' }, '100%': { opacity: '1', transform: 'none' } },
       },
       animation: {
         shimmer: 'shimmer 1.6s infinite',
         float: 'float 7s ease-in-out infinite',
         kenburns: 'kenburns 9s ease-out forwards',
+        bannerin: 'bannerin 0.45s ease-out both',
       },
     },
   },

@@ -47,7 +47,7 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 - **Live visitors counter** (Settings page) — real-time count of distinct browsers on the site right now, via Firebase presence
   (`presence/<visitor>/<tab>` + `onDisconnect`). Several tabs in one browser count once. Needs the updated database rules.
 - **Data source** (Settings) — Automatic (AniList → Kitsu → YumeList → Jikan) or pick one first; the rest stay as fallbacks. Synced to the account.
-- **Site banner** — `config/banner` in Firebase: set `Text` and `Visible` (true/false) to show or hide an announcement bar on every page.
+- **Site banner** — `config/banner` in Firebase: `Text` (+ `Text2`…`Text5`), `Visible` and `rotations` (true/false). Off = shows `Text` only; on = rotates through the non-blank texts every 10 s and loops.
 - **Maintenance mode** — toggle `config/maintenance/enabled` in the Firebase console. Admin emails can bypass it.
 
 One-time Firebase setup steps are in **`firebase/README.md`** (enable Google provider, authorized domains, rules, maintenance node).
