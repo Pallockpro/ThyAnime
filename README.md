@@ -41,6 +41,7 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 ## Accounts, settings & maintenance mode
 - **Google sign-in** (Firebase Auth) — optional; the site works signed-out too.
 - **Right-click menu** — custom context menu (navigation, link actions, copy/search selected text). Hold **Shift** + right-click for the browser's normal menu; inputs keep the native menu.
+- **/lockemup** — hidden meme page (not linked anywhere): custom video player + a Back button; going back shows a 6‑second "just a meme page" notice on the home page.
 - **/news/** — airing schedule (next 7 days, local time + countdown), upcoming new anime, and recently aired episodes. AniList only, no setup.
 - **/settings/** — pick your default player server and default sub/dub. Saved on the device, and synced to your
   account (Realtime Database `users/<uid>/settings`) when signed in.
