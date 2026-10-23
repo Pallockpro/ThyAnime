@@ -6,6 +6,7 @@ import Petals from './Petals'
 import Footer from './Footer'
 import Maintenance from './Maintenance'
 import Banner from './Banner'
+import ContextMenu from './ContextMenu'
 import { useAuth } from './AuthProvider'
 import { applyTheme, getTheme } from '../lib/theme'
 
@@ -33,6 +34,7 @@ export default function AppShell({ children }) {
       <Navbar />
       <main className="relative z-10 min-h-[70vh]" style={{ paddingTop: 'var(--banner-h, 0px)' }}>{children}</main>
       <Footer />
+      <ContextMenu />
       {maintenance.enabled ? (
         <div className="glass fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-amber-300 shadow-xl">
           <Wrench size={13} /> Maintenance mode is ON — only admins can see the site
