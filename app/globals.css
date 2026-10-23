@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────────────
+   THEMES — all site colours are variables (space-separated R G B so Tailwind's /alpha works).
+   :root            = Slime theme (cyan + blue)  ← default
+   [data-theme=og]  = OG site theme (the original pink + purple)
+   Switched in Settings → Theme (lib/theme.js).
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --ink: 6 14 26;          /* page background */
+  --plum: 12 26 44;        /* cards / panels */
+  --b300: 165 240 255;     /* main accent: light → dark */
+  --b400: 79 213 255;
+  --b500: 30 167 240;
+  --b600: 18 117 219;
+  --accent: 59 130 246;    /* second colour of gradients (blue) */
+  --accent2: 34 211 238;   /* banner gradient end (cyan) */
+  --aurora-2: 37 99 235;
+  --scroll-thumb: #17314d;
+  --text-grad: linear-gradient(90deg, #b8f4ff, #4fd5ff 45%, #5b8cff);
+  --petal: linear-gradient(135deg, #d4f7ff, #4fd5ff);
+  --petal-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;   /* slime droplets */
+}
+[data-theme='og'] {
+  --ink: 11 7 16;
+  --plum: 23 16 34;
+  --b300: 255 179 207;
+  --b400: 255 143 184;
+  --b500: 255 111 168;
+  --b600: 240 73 140;
+  --accent: 139 92 246;
+  --accent2: 217 70 239;
+  --aurora-2: 124 58 237;
+  --scroll-thumb: #2a1d3b;
+  --text-grad: linear-gradient(90deg, #ffb3cf, #ff6fa8 45%, #a78bfa);
+  --petal: linear-gradient(135deg, #ffd1e3, #ff8fb8);
+  --petal-radius: 150% 0 150% 0;                         /* sakura petals */
+}
+
+:root { color-scheme: dark; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: rgb(var(--ink));
+}
+::selection { background: rgb(var(--b500) / .35); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgb(var(--ink)); }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--b500)); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+.aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.aurora::before, .aurora::after {
+  content: ''; position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(110px); opacity: .22;
+}
+.aurora::before { background: rgb(var(--b500)); top: -25vmax; left: -15vmax; animation: float 14s ease-in-out infinite; }
+.aurora::after { background: rgb(var(--aurora-2)); bottom: -30vmax; right: -20vmax; animation: float 18s ease-in-out infinite reverse; }
+
+.glass { background: rgba(255,255,255,.045); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.08); }
+.menu-panel { background: rgb(var(--plum) / .97); border: 1px solid rgba(255,255,255,.1); }  /* dropdowns inside the navbar: solid, because a blur inside the (already blurred) header can't see the page behind it */
+.text-grad { background: var(--text-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.shimmer { position: relative; overflow: hidden; background: rgba(255,255,255,.05); }
+.shimmer::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); animation: shimmer 1.6s infinite; }
+.petal {
+  position: absolute; top: 0; background: var(--petal);
+  border-radius: var(--petal-radius); opacity: 0; animation: petal linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .petal, .aurora::before, .aurora::after { animation: none !important; }
+  .petal { display: none; }
+}

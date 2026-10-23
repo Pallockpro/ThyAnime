@@ -1,0 +1,75 @@
+{
+  "rules": {
+    "config": {
+      ".read": true,
+      ".write": false
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "settings": {
+          ".validate": "newData.hasChildren(['server', 'lang'])",
+          "server": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "lang": {
+            ".validate": "newData.val() === 'sub' || newData.val() === 'dub'"
+          },
+          "source": {
+            ".validate": "newData.val() === 'auto' || newData.val() === 'anilist' || newData.val() === 'kitsu' || newData.val() === 'yumelist' || newData.val() === 'jikan'"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "history": {
+          "$key": {
+            ".validate": "newData.hasChildren(['ep', 'lang', 'title', 'at'])",
+            "id": {
+              ".validate": "newData.isNumber()"
+            },
+            "mal": {
+              ".validate": "newData.isNumber()"
+            },
+            "ep": {
+              ".validate": "newData.isNumber()"
+            },
+            "lang": {
+              ".validate": "newData.val() === 'sub' || newData.val() === 'dub'"
+            },
+            "title": {
+              ".validate": "newData.isString() && newData.val().length <= 300"
+            },
+            "cover": {
+              ".validate": "newData.isString() && newData.val().length <= 600"
+            },
+            "at": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "presence": {
+      ".read": true,
+      "$vid": {
+        ".validate": "$vid.length <= 40",
+        "$tab": {
+          ".write": true,
+          ".validate": "newData.val() === true && $tab.length <= 40"
+        }
+      }
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
