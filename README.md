@@ -7,7 +7,7 @@ the browser talks straight to public APIs, so it runs on GitHub Pages and keeps 
 | --- | --- |
 | Home rails, search, details | **AniList** → **Kitsu** → *YumeList (slot, off by default)* → **Jikan** (MyAnimeList) |
 | Episode titles / thumbnails | **Kitsu** → **Jikan** → AniList `streamingEpisodes` → plain "Episode N" |
-| Video player | iframe servers: **MegaPlay** · **FilmU** · **VidHawk** · **Anixo** · **ThyAnime** (your server, optional) |
+| Video player | iframe servers: **MegaPlay** · **FilmU** · **MegaVid** · **Anixo** · **ThyAnime** (your server, optional) |
 
 Viewers pick a server under the player (choice is remembered). If your ThyAnime server is unreachable its
 button is greyed out automatically — nothing else depends on it.
@@ -31,7 +31,7 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 
 ## Things to know
 - **FilmU URL is unverified.** `embed.filmu.in` now redirects to `vidly.pro`. Open it, go to the *Anime* tab, copy the
-  example URL and put it in `lib/servers.js` (`{id}` `{ep}` `{lang}` placeholders). MegaPlay, VidHawk and Anixo URLs are verified against their docs.
+  example URL and put it in `lib/servers.js` (`{id}` `{ep}` `{lang}` placeholders). MegaPlay, MegaVid and Anixo URLs are verified against their docs.
 - **YumeList** has no public docs I could find; `lib/yumelist.js` is a clearly-marked stub.
 - Don't add `sandbox` to the player iframe — MegaPlay refuses sandboxed embeds.
 - Rate limits: AniList ~90 req/min, Jikan 3 req/s & 60/min. Results are cached in memory + sessionStorage and
