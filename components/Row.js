@@ -13,7 +13,7 @@ export default function Row({ title, items, hrefFor, subFor }) {
       <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
         className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-3 text-xl font-semibold sm:text-2xl">
-          <span className="h-6 w-1 rounded-full bg-gradient-to-b from-blossom-400 to-violet-500" />{title}
+          <span className="h-6 w-1 rounded-full bg-gradient-to-b from-blossom-400 to-accent" />{title}
         </h2>
         <div className="hidden gap-2 sm:flex">
           <button onClick={() => scroll(-1)} aria-label="Scroll left" className="glass rounded-full p-2 transition hover:bg-blossom-500/30"><ChevronLeft size={18} /></button>

@@ -108,7 +108,7 @@ function AnimeInner() {
             <motion.div variants={{ h: { opacity: 0, y: 16 }, s: { opacity: 1, y: 0 } }} className="mt-6 flex flex-wrap items-center gap-3">
               {canWatch ? (
                 <Link href={watchHref(a.id, startEp, lang, a.malId)}
-                  className="flex items-center gap-2 rounded-full bg-blossom-500 px-7 py-3 font-semibold text-white shadow-[0_0_30px_rgba(255,111,168,.4)] transition hover:scale-105 hover:bg-blossom-600">
+                  className="flex items-center gap-2 rounded-full bg-blossom-500 px-7 py-3 font-semibold text-white shadow-[0_0_30px_rgb(var(--b500)/.4)] transition hover:scale-105 hover:bg-blossom-600">
                   <Play size={18} className="fill-white" /> {single ? (last ? 'Continue watching' : a.format === 'MOVIE' ? 'Watch Movie' : 'Watch Now') : last ? 'Continue EP ' + startEp : 'Watch EP 1'}
                 </Link>
               ) : <span className="text-sm text-zinc-500">Streaming isn’t available for this title (no AniList or MAL id found).</span>}
@@ -129,7 +129,7 @@ function AnimeInner() {
         {canWatch && !single ? (
           <section className="mt-14">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="flex items-center gap-3 text-xl font-semibold sm:text-2xl"><span className="h-6 w-1 rounded-full bg-gradient-to-b from-blossom-400 to-violet-500" />Episodes {list.length ? <span className="text-sm font-normal text-zinc-500">({list.length})</span> : null}</h2>
+              <h2 className="flex items-center gap-3 text-xl font-semibold sm:text-2xl"><span className="h-6 w-1 rounded-full bg-gradient-to-b from-blossom-400 to-accent" />Episodes {list.length ? <span className="text-sm font-normal text-zinc-500">({list.length})</span> : null}</h2>
               {chunks > 1 ? (
                 <div className="no-scrollbar flex max-w-full gap-2 overflow-x-auto">
                   {Array.from({ length: chunks }).map((_, k) => (

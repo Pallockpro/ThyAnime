@@ -78,7 +78,7 @@ function WatchInner() {
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div>
           <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
-            className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-[0_0_60px_rgba(255,111,168,.15)] ring-1 ring-white/10">
+            className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black shadow-[0_0_60px_rgb(var(--b500)/.15)] ring-1 ring-white/10">
             {src ? (
               <>
                 {!loaded ? <div className="shimmer absolute inset-0 flex items-center justify-center"><span className="h-10 w-10 animate-spin rounded-full border-4 border-blossom-500 border-t-transparent" /></div> : null}

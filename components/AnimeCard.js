@@ -5,7 +5,7 @@ import { Play, Star } from 'lucide-react'
 import { animeHref, STATUS_LABEL } from '../lib/api'
 
 export default function AnimeCard({ a, i = 0, href, sub }) {
-  const glow = a.color || '#ff6fa8'
+  const glow = a.color || 'rgb(var(--b500))'
   return (
     <motion.div
       initial={{ opacity: 0, y: 26 }}

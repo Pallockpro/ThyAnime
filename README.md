@@ -47,6 +47,7 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 - **Live visitors counter** (Settings page) — real-time count of distinct browsers on the site right now, via Firebase presence
   (`presence/<visitor>/<tab>` + `onDisconnect`). Several tabs in one browser count once. Needs the updated database rules.
 - **Data source** (Settings) — Automatic (AniList → Kitsu → YumeList → Jikan) or pick one first; the rest stay as fallbacks. Synced to the account.
+- **Site theme** — Settings → Site theme: **Slime theme** (cyan & blue, the default) or **OG site theme** (the original pink & purple). All colours are CSS variables in `app/globals.css` (`:root` = Slime, `[data-theme='og']` = OG), chosen per device (`localStorage` `thy_theme`, see `lib/theme.js`).
 - **Site banner** — `config/banner` in Firebase: `Text` (+ `Text2`…`Text5`), `Visible` and `rotations` (true/false). Off = shows `Text` only; on = rotates through the non-blank texts every 10 s and loops. The X hides it for 1 hour (per browser).
 - **Maintenance mode** — toggle `config/maintenance/enabled` in the Firebase console. Admin emails can bypass it.
 

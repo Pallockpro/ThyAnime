@@ -1,13 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, LogOut, Server, Languages, User, History, Users, Database } from 'lucide-react'
+import { Check, LogOut, Server, Languages, User, History, Users, Database, Palette } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import { SERVERS, probe } from '../../lib/servers'
 import { SOURCES } from '../../lib/api'
 import { yume } from '../../lib/yumelist'
 import { getDb } from '../../lib/firebase'
 import { watchOnlineCount } from '../../lib/presence'
+import { THEMES, getTheme, setTheme } from '../../lib/theme'
 
 const GoogleG = () => (
   <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
@@ -35,8 +36,10 @@ export default function SettingsPage() {
   const [cleared, setCleared] = useState(false)
   const [up, setUp] = useState({})
   const [status, setStatus] = useState('') // '' | 'device' | 'synced' | 'failed'
+  const [theme, setThemeState] = useState('slime')
 
   useEffect(() => { document.title = 'Settings — ThyAnime' }, [])
+  useEffect(() => { setThemeState(getTheme()) }, [])
   useEffect(() => {
     const db = getDb()
     if (!db) return
@@ -114,6 +117,28 @@ export default function SettingsPage() {
           <p className="mt-3 text-xs text-zinc-500">Switching servers from the player only lasts for that viewing session — this setting is your permanent default.</p>
         </Section>
 
+
+        <Section icon={Palette} title="Site theme" hint="The colours of the whole site. Slime (cyan & blue) is the default; you can switch back to the original look any time.">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {THEMES.map((o) => {
+              const on = theme === o.key
+              return (
+                <button key={o.key} onClick={() => { setThemeState(setTheme(o.key)); setStatus('device') }}
+                  className={'flex items-start gap-3 rounded-xl p-4 text-left transition ' + (on ? 'bg-blossom-500/20 ring-1 ring-blossom-500/70' : 'glass hover:bg-white/10')}>
+                  <span className={'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ' + (on ? 'border-blossom-400 bg-blossom-500' : 'border-zinc-600')}>
+                    {on ? <Check size={12} strokeWidth={4} /> : null}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">{o.name}{o.key === 'slime' ? ' · default' : ''}</span>
+                    <span className="block text-xs text-zinc-400">{o.note}</span>
+                  </span>
+                  <span className="mt-0.5 h-6 w-12 shrink-0 rounded-full ring-1 ring-white/20" style={{ background: 'linear-gradient(90deg,' + o.swatch[0] + ',' + o.swatch[1] + ')' }} aria-hidden />
+                </button>
+              )
+            })}
+          </div>
+          <p className="mt-3 text-xs text-zinc-500">Applies instantly and is remembered on this device.</p>
+        </Section>
 
         <Section icon={Database} title="Data source" hint="Where anime info (posters, details, episode lists) comes from. Automatic uses them in order and is recommended.">
           <div className="grid gap-2 sm:grid-cols-2">

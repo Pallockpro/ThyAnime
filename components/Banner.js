@@ -82,7 +82,7 @@ export default function Banner() {
   }
 
   return (
-    <div ref={box} role="status" aria-live="polite" className="fixed inset-x-0 top-0 z-[60] border-b border-white/10 bg-gradient-to-r from-blossom-600/90 via-blossom-500/90 to-fuchsia-500/90 shadow-lg shadow-black/30 backdrop-blur-md">
+    <div ref={box} role="status" aria-live="polite" className="fixed inset-x-0 top-0 z-[60] border-b border-white/10 bg-gradient-to-r from-blossom-600/90 via-blossom-500/90 to-accent2/90 shadow-lg shadow-black/30 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2 text-sm font-medium text-white">
         <Megaphone size={16} className="shrink-0" aria-hidden />
         <p key={rotating ? idx : 'static'} className={'min-w-0 flex-1 whitespace-pre-line break-words text-center leading-snug' + (rotating ? ' animate-bannerin' : '')}>{current}</p>

@@ -9,7 +9,7 @@ export default function Maintenance() {
     <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
       <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="max-w-xl">
         <motion.div animate={{ rotate: [0, -14, 14, -8, 0] }} transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 1.5 }}
-          className="glass mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl text-blossom-400 shadow-[0_0_60px_rgba(255,111,168,.25)]">
+          className="glass mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl text-blossom-400 shadow-[0_0_60px_rgb(var(--b500)/.25)]">
           <Wrench size={44} />
         </motion.div>
         <p className="text-grad text-lg font-extrabold tracking-tight">👑 ThyAnime</p>

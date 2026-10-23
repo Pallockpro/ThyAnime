@@ -52,7 +52,7 @@ export default function Hero({ items }) {
             <motion.div variants={{ h: { opacity: 0, y: 24 }, s: { opacity: 1, y: 0 }, x: { opacity: 0 } }} className="mt-6 flex flex-wrap gap-3">
               {a.id || a.malId ? (
                 <Link href={watchHref(a.id, 1, getLang(), a.malId)}
-                  className="group flex items-center gap-2 rounded-full bg-blossom-500 px-6 py-3 font-semibold text-white shadow-[0_0_30px_rgba(255,111,168,.45)] transition hover:scale-105 hover:bg-blossom-600">
+                  className="group flex items-center gap-2 rounded-full bg-blossom-500 px-6 py-3 font-semibold text-white shadow-[0_0_30px_rgb(var(--b500)/.45)] transition hover:scale-105 hover:bg-blossom-600">
                   <Play size={18} className="fill-white transition-transform group-hover:translate-x-0.5" /> Watch now
                 </Link>
               ) : null}

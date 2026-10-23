@@ -3,9 +3,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: '#0b0710',
-        plum: '#171022',
-        blossom: { 300: '#ffb3cf', 400: '#ff8fb8', 500: '#ff6fa8', 600: '#f0498c' },
+        // every colour is a CSS variable (see app/globals.css) so the whole site can switch theme: Slime (default) / OG
+        ink: 'rgb(var(--ink) / <alpha-value>)',
+        plum: 'rgb(var(--plum) / <alpha-value>)',
+        blossom: {
+          300: 'rgb(var(--b300) / <alpha-value>)',
+          400: 'rgb(var(--b400) / <alpha-value>)',
+          500: 'rgb(var(--b500) / <alpha-value>)',
+          600: 'rgb(var(--b600) / <alpha-value>)',
+        },
+        accent: 'rgb(var(--accent) / <alpha-value>)',
+        accent2: 'rgb(var(--accent2) / <alpha-value>)',
       },
       keyframes: {
         shimmer: { '100%': { transform: 'translateX(100%)' } },
