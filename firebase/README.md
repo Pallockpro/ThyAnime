@@ -44,7 +44,7 @@ Under `config`, add a `banner` node with these children (`banner.json` in this f
 - With `rotations` off, `Text2`–`Text5` are ignored: only `Text` (the one without a number) is shown.
 - You can add `Text6`, `Text7`… the same way if you ever need more.
 - Flip `Visible` / `rotations` or edit any text and every open tab updates within a couple of seconds. No redeploy.
-- The banner hides if there is nothing to show. Visitors can close it (it stays closed for that browser session, and comes back if you change any of the texts).
+- The banner hides if there is nothing to show. Visitors can close it with the X: it stays closed for **1 hour** in that browser (even across tabs and reloads) and then comes back by itself. To change the length, edit `DISMISS_MS` in `components/Banner.js`.
 The maintenance node keeps working as before (`config/maintenance`).
 
 ## Admin bypass

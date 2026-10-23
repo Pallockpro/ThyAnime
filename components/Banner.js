@@ -4,28 +4,49 @@ import { Megaphone, X } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { BANNER_ROTATE_MS } from '../lib/config'
 
-const DISMISS_KEY = 'thy_banner_dismissed'
+const DISMISS_KEY = 'thy_banner_dismissed_at'   // localStorage: when the X was last clicked (ms since epoch)
+const DISMISS_MS = 60 * 60 * 1000               // a closed banner stays closed for 1 hour
 const useIso = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 // Announcement bar controlled from Firebase: config/banner → Text, Text2 … + Visible + rotations.
 //   rotations false → shows Text only.
 //   rotations true  → cycles Text, Text2, Text3 … every 10 s, skipping blank ones, and loops.
+// The X hides the banner for 1 hour (remembered in this browser, even across tabs / reloads), then it comes back.
 // Fixed to the top; it publishes its height as --banner-h so the navbar and page content sit right below it.
 export default function Banner() {
   const { banner } = useAuth()
-  const [dismissed, setDismissed] = useState('')
+  const [hiddenUntil, setHiddenUntil] = useState(0)   // ms timestamp the banner is hidden until (0 = not hidden)
+  const [checked, setChecked] = useState(false)        // have we read the saved "closed" time yet?
   const [idx, setIdx] = useState(0)
   const box = useRef(null)
 
+  // read when the X was last clicked; also follows a close / reopen done in another tab
   useEffect(() => {
-    try { setDismissed(sessionStorage.getItem(DISMISS_KEY) || '') } catch (e) {}
+    const read = () => {
+      let until = 0
+      try {
+        const at = parseInt(localStorage.getItem(DISMISS_KEY) || '0', 10)
+        if (at > 0 && at <= Date.now() + 1000) until = at + DISMISS_MS   // (a time in the future = clock was changed → ignore)
+      } catch (e) {}
+      setHiddenUntil(until)
+    }
+    read()
+    setChecked(true)
+    window.addEventListener('storage', read)
+    return () => window.removeEventListener('storage', read)
   }, [])
 
+  // when the hour is up, bring the banner back on its own (no reload needed)
+  useEffect(() => {
+    const left = hiddenUntil - Date.now()
+    if (left <= 0) return
+    const t = setTimeout(() => setHiddenUntil(0), left + 50)
+    return () => clearTimeout(t)
+  }, [hiddenUntil])
+
   const items = banner.items || []
-  // One signature for the whole set of messages: closing the banner closes it for the session,
-  // but changing any message (or adding / removing one) makes it show again.
-  const sig = items.join('\n')
-  const show = banner.visible && items.length > 0 && dismissed !== sig
+  const sig = items.join('\n')                        // changes whenever any message changes (restarts the rotation)
+  const show = checked && banner.visible && items.length > 0 && hiddenUntil <= Date.now()
   const rotating = banner.rotations && items.length > 1
 
   // start from the first message again whenever the messages change
@@ -55,8 +76,9 @@ export default function Banner() {
   if (!show) return null
 
   const close = () => {
-    setDismissed(sig)
-    try { sessionStorage.setItem(DISMISS_KEY, sig) } catch (e) {}
+    const now = Date.now()
+    setHiddenUntil(now + DISMISS_MS)
+    try { localStorage.setItem(DISMISS_KEY, String(now)) } catch (e) {}
   }
 
   return (
