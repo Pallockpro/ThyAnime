@@ -13,11 +13,13 @@ const LINKS = [
   ['Browse', '/search/'],
   ['Trending', '/search/?sort=TRENDING_DESC'],
   ['Movies', '/search/?format=MOVIE'],
+  ['News', '/news/'],
 ]
 
 // Which nav pill is highlighted. Trending/Movies/Browse all live on /search/, so the query string decides.
 function activeLink(pathname, sp) {
   if (pathname === '/') return 'Home'
+  if (pathname.startsWith('/news')) return 'News'
   if (!pathname.startsWith('/search')) return ''
   const format = (sp && sp.get('format')) || ''
   const sort = (sp && sp.get('sort')) || ''

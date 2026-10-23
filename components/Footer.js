@@ -10,6 +10,7 @@ export default function Footer() {
         <a className="hover:text-blossom-400 transition-colors" href="https://anilist.co" target="_blank" rel="noreferrer">AniList</a>
         <a className="hover:text-blossom-400 transition-colors" href="https://kitsu.app" target="_blank" rel="noreferrer">Kitsu</a>
         <a className="hover:text-blossom-400 transition-colors" href="https://jikan.moe" target="_blank" rel="noreferrer">Jikan</a>
+        <Link className="hover:text-blossom-400 transition-colors" href="/news/">News</Link>
         <Link className="hover:text-blossom-400 transition-colors" href="/settings/">Settings</Link>
       </p>
     </footer>

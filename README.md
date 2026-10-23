@@ -40,6 +40,7 @@ Settings → Secrets and variables → Actions → **Variables**: `THY_SERVER` (
 
 ## Accounts, settings & maintenance mode
 - **Google sign-in** (Firebase Auth) — optional; the site works signed-out too.
+- **/news/** — airing schedule (next 7 days, local time + countdown), upcoming new anime, and recently aired episodes. AniList only, no setup.
 - **/settings/** — pick your default player server and default sub/dub. Saved on the device, and synced to your
   account (Realtime Database `users/<uid>/settings`) when signed in.
 - **Watch history** ("Continue watching") — saved on the device for everyone; when signed in it is also saved to the account
