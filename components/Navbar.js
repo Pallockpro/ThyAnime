@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { api, animeHref } from '../lib/api'
 import UserMenu from './UserMenu'
+import Logo from './Logo'
 
 const LINKS = [
   ['Home', '/'],
@@ -103,7 +104,7 @@ export default function Navbar() {
     <header style={{ top: 'var(--banner-h, 0px)' }} className={'fixed inset-x-0 z-50 transition-all duration-300 ' + (scrolled ? 'bg-ink/80 shadow-lg shadow-black/30 backdrop-blur-xl' : 'bg-gradient-to-b from-black/70 to-transparent')}>
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-6 px-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2 text-xl font-extrabold tracking-tight">
-          <motion.span whileHover={{ rotate: -12, scale: 1.2 }} className="inline-block">👑</motion.span>
+          <motion.span whileHover={{ rotate: -8, scale: 1.12 }} className="inline-block drop-shadow-[0_0_10px_rgb(var(--b500)/.55)]"><Logo size={34} title="ThyAnime" /></motion.span>
           <span className="text-grad">ThyAnime</span>
         </Link>
         <Suspense fallback={<NavLinks pathname={pathname} />}>

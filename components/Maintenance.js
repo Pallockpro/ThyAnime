@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion'
 import { Wrench, LogIn, LogOut } from 'lucide-react'
 import { useAuth } from './AuthProvider'
+import Logo from './Logo'
 
 export default function Maintenance() {
   const { maintenance, user, signIn, signOut, authError, authReady } = useAuth()
@@ -12,7 +13,7 @@ export default function Maintenance() {
           className="glass mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl text-blossom-400 shadow-[0_0_60px_rgb(var(--b500)/.25)]">
           <Wrench size={44} />
         </motion.div>
-        <p className="text-grad text-lg font-extrabold tracking-tight">👑 ThyAnime</p>
+        <p className="flex items-center justify-center gap-2 text-lg font-extrabold tracking-tight"><Logo size={28} /><span className="text-grad">ThyAnime</span></p>
         <h1 className="mt-3 text-3xl font-extrabold sm:text-4xl">{maintenance.title}</h1>
         <p className="mt-4 text-base leading-relaxed text-zinc-300">{maintenance.message}</p>
         {maintenance.eta ? (

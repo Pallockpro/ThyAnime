@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import AnimeCard from '../../components/AnimeCard'
 import { GridSkeleton } from '../../components/Skeletons'
 import { api, GENRES, expectedProvider, SOURCE_LABEL } from '../../lib/api'
+import Logo from '../../components/Logo'
 
 const FORMATS = [['', 'All'], ['TV', 'TV'], ['MOVIE', 'Movie'], ['OVA', 'OVA'], ['ONA', 'ONA'], ['SPECIAL', 'Special']]
 const SORTS = [['', 'Best match'], ['POPULARITY_DESC', 'Popular'], ['TRENDING_DESC', 'Trending'], ['SCORE_DESC', 'Top rated'], ['START_DATE_DESC', 'Newest'], ['FAVOURITES_DESC', 'Most loved']]
@@ -90,7 +91,7 @@ function SearchInner() {
           <p className="py-20 text-center text-zinc-400">{err}</p>
         ) : items.length === 0 ? (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="py-24 text-center">
-            <p className="animate-float text-5xl">👑</p>
+            <div className="animate-float flex justify-center"><Logo size={64} /></div>
             <p className="mt-4 text-zinc-400">Nothing found. Try another spelling or fewer filters.</p>
           </motion.div>
         ) : (

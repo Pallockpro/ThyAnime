@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { Wrench } from 'lucide-react'
 import Navbar from './Navbar'
 import Petals from './Petals'
@@ -6,6 +7,7 @@ import Footer from './Footer'
 import Maintenance from './Maintenance'
 import Banner from './Banner'
 import { useAuth } from './AuthProvider'
+import { applyTheme, getTheme } from '../lib/theme'
 
 function Splash() {
   return (
@@ -17,6 +19,7 @@ function Splash() {
 
 export default function AppShell({ children }) {
   const { maintenance, maintenanceReady, authReady, isAdmin } = useAuth()
+  useEffect(() => { applyTheme(getTheme()) }, []) // colours + tab icon follow the saved theme
 
   // Wait (max ~1.5 s, usually instant thanks to the cache) so visitors never see the site flash before the maintenance page.
   if (!maintenanceReady) return <Splash />

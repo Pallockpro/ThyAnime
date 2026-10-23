@@ -2,11 +2,13 @@ import './globals.css'
 import AuthProvider from '../components/AuthProvider'
 import AppShell from '../components/AppShell'
 import { THEME_BOOT } from '../lib/theme'
+import { FAVICONS } from '../lib/logo-data'
 
 export const metadata = {
   title: 'ThyAnime — watch anime online',
   description: 'Search and stream anime. Powered by AniList with Kitsu, YumeList and Jikan (MyAnimeList) backups.',
-  icons: { icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>" },
+  // tab icon = the ThyAnime logo (Slime colours; lib/theme.js swaps it for the OG theme). The iPhone home-screen icon is app/apple-icon.png.
+  icons: { icon: [{ url: FAVICONS.slime.svg, type: 'image/svg+xml' }, { url: FAVICONS.slime.png, type: 'image/png', sizes: '64x64' }] },
 }
 export const viewport = { themeColor: '#060e1a' } // Slime theme; lib/theme.js swaps it for the OG theme
 
