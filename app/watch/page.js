@@ -37,7 +37,7 @@ function WatchInner() {
     return () => ac.abort()
   }, [id, malParam])
 
-  // which servers are reachable? (only matters for your own ThyAnime server; MegaPlay/FilmU are third-party)
+  // which servers are reachable? (only matters for your own ThyAnime server; the other servers are third-party)
   useEffect(() => {
     setSess(getSessionServer())
     SERVERS.filter((s) => s.probe).forEach((s) => probe(s.probe).then((ok) => setUp((u) => ({ ...u, [s.key]: ok }))))
@@ -82,7 +82,7 @@ function WatchInner() {
             {src ? (
               <>
                 {!loaded ? <div className="shimmer absolute inset-0 flex items-center justify-center"><span className="h-10 w-10 animate-spin rounded-full border-4 border-blossom-500 border-t-transparent" /></div> : null}
-                {/* No sandbox attribute on purpose: MegaPlay refuses sandboxed embeds. */}
+                {/* No sandbox attribute on purpose: MegaPlay (and most embed players) refuse sandboxed iframes. */}
                 <iframe key={(server ? server.key : '') + '-' + id + '-' + mal + '-' + ep + '-' + lang} src={src} onLoad={() => setLoaded(true)}
                   allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen
                   className="absolute inset-0 h-full w-full border-0" title="Player" />
