@@ -40,8 +40,9 @@ export default function Row({ title, items, hrefFor, subFor }) {
   const measure = useCallback(() => {
     const el = ref.current
     if (!el) return
-    setCanL(el.scrollLeft > 4)
-    setCanR(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+    // the strip has px-2 (8px) and snap-start, so its true "start" rests at scrollLeft ≈ 8 — threshold must be above that
+    setCanL(el.scrollLeft > 16)
+    setCanR(el.scrollLeft + el.clientWidth < el.scrollWidth - 16)
   }, [])
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function Row({ title, items, hrefFor, subFor }) {
       <div className="relative">
         <AnimatePresence>{canL ? <Edge key="l" side="left" onClick={() => scroll(-1)} /> : null}</AnimatePresence>
         <AnimatePresence>{canR ? <Edge key="r" side="right" onClick={() => scroll(1)} /> : null}</AnimatePresence>
-        <div ref={ref} className="no-scrollbar -mx-2 flex snap-x gap-4 overflow-x-auto px-2 pb-4 pt-2">
+        <div ref={ref} className="no-scrollbar -mx-2 flex snap-x scroll-px-2 gap-4 overflow-x-auto px-2 pb-4 pt-2">
           {items.map((a, i) => (
             <div key={(a.id || a.malId) + '-' + i} className="w-36 shrink-0 snap-start sm:w-44">
               <AnimeCard a={a} i={i} href={hrefFor ? hrefFor(a) : undefined} sub={subFor ? subFor(a) : undefined} />

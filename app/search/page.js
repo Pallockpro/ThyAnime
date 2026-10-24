@@ -6,8 +6,10 @@ import AnimeCard from '../../components/AnimeCard'
 import { GridSkeleton } from '../../components/Skeletons'
 import { api, GENRES, expectedProvider, SOURCE_LABEL } from '../../lib/api'
 import Logo from '../../components/Logo'
+import Dropdown from '../../components/Dropdown'
 
 const FORMATS = [['', 'All'], ['TV', 'TV'], ['MOVIE', 'Movie'], ['OVA', 'OVA'], ['ONA', 'ONA'], ['SPECIAL', 'Special']]
+const GENRE_OPTIONS = [['', 'All genres'], ...GENRES.map((g) => [g, g])]
 const SORTS = [['', 'Best match'], ['POPULARITY_DESC', 'Popular'], ['TRENDING_DESC', 'Trending'], ['SCORE_DESC', 'Top rated'], ['START_DATE_DESC', 'Newest'], ['FAVOURITES_DESC', 'Most loved']]
 
 function SearchInner() {
@@ -62,7 +64,7 @@ function SearchInner() {
         {q ? <>Results for <span className="text-grad">“{q}”</span></> : 'Browse anime'}
       </h1>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div className="relative z-30 mt-6 flex flex-wrap items-center gap-3">
         <div className="glass flex flex-wrap rounded-full p-1">
           {FORMATS.map(([v, label]) => (
             <button key={v} onClick={() => setParam('format', v)} className={chip(format === v)}>
@@ -71,15 +73,8 @@ function SearchInner() {
             </button>
           ))}
         </div>
-        <select value={genre} onChange={(e) => setParam('genre', e.target.value)}
-          className="glass rounded-full bg-plum px-4 py-2 text-sm outline-none focus:ring-1 focus:ring-blossom-500">
-          <option value="">All genres</option>
-          {GENRES.map((g) => <option key={g} value={g}>{g}</option>)}
-        </select>
-        <select value={sort} onChange={(e) => setParam('sort', e.target.value)}
-          className="glass rounded-full bg-plum px-4 py-2 text-sm outline-none focus:ring-1 focus:ring-blossom-500">
-          {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-        </select>
+        <Dropdown label="Genre" value={genre} onChange={(v) => setParam('genre', v)} options={GENRE_OPTIONS} />
+        <Dropdown label="Sort by" value={sort} onChange={(v) => setParam('sort', v)} options={SORTS} />
       </div>
 
       {provider && provider !== expectedProvider() ? (
