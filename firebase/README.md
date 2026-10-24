@@ -9,11 +9,20 @@ Then **Authentication → Settings → Authorized domains → Add domain** and a
 your custom domain (the one in your `CNAME` file) and `pallockpro.github.io`. (`localhost` is already there.)
 If you skip this, sign-in shows "This domain isn't authorised".
 
+## 1b. Turn on username sign-in (needed for Family accounts)
+**Build → Authentication → Sign-in method → Email/Password → Enable → Save** (leave “Email link” off).
+Family accounts sign in with a plain username + password. Behind the scenes the username becomes `username@family.thyanime.me`
+(it is never emailed — it only has to look like an email to Firebase). Change `FAMILY_DOMAIN` in `lib/profiles.js` if you want a different one.
+Because there is no real email, a forgotten family password can’t be reset by email — you can reset it from
+**Authentication → Users → ⋮ → Reset password / Delete account** in the console.
+
 ## 2. Paste the database rules
 **Build → Realtime Database → Rules** → replace everything with `firebase/database.rules.json` → **Publish**.
 - `config/*` is publicly readable (so visitors can see the maintenance flag) and only writable from the console.
 - `presence/*` powers the **Live visitors** counter in Settings: each open tab writes a tiny entry that the server deletes automatically when the tab closes.
-- `users/<uid>/settings` and `users/<uid>/history` (settings + "Continue watching") are readable/writable only by that signed-in user.
+- `users/<uid>/settings`, `users/<uid>/history` and `users/<uid>/name` (settings, "Continue watching", custom display name) are readable/writable only by that signed-in user.
+- `families/<familyUid>/profiles/<profileId>` holds each family profile (name, avatar, settings, history). The family login can read/write all of them; a Gmail that was linked to a profile can only read/write **its own** profile.
+- `googleLinks/<googleUid>` = `{ fam, pid }` is the "this Gmail belongs to that profile" index. Only the family that owns the link can create/remove it.
 
 ## 3. Create the maintenance switch
 **Realtime Database → Data →** click **+** next to the root, name it `config`, then **+** next to `config`, name it
@@ -55,3 +64,11 @@ and you'll see the real site (with an orange "Maintenance mode is ON" pill so yo
 ## Force maintenance without Firebase
 Repo Variable **MAINTENANCE = `true`** and re-run the deploy → maintenance is ON no matter what the database says.
 Remove/empty it to go back to the console toggle.
+
+## Family accounts (profiles)
+- **Create:** `/signup/` → *Create family account* (username + password + your profile name). **Sign in:** `/login/`.
+- After a family sign-in the site shows **“Who’s watching?”** every time a new browser session starts (and from the avatar menu → *Switch profile*). Up to **5 profiles**; the first one can’t be deleted.
+- **Manage profiles** (pencil): rename, change avatar, delete, and **link a Google account** to a profile. That person can then press *Continue with Google* on the Sign in page and land straight in their own profile — no password to share.
+- Each profile has its own watch history and settings (server / sub-dub / source) under `families/<familyUid>/profiles/<id>`.
+- Plain Google accounts (no family) work exactly like before, and can now rename themselves (avatar menu → *Edit name*).
+- If a profile list shows “database rules haven’t been updated”, re-paste `database.rules.json` (step 2) and **Publish**.

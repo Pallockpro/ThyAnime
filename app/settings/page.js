@@ -1,8 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Check, LogOut, Server, Languages, User, History, Users, Database, Palette } from 'lucide-react'
+import { Check, LogOut, Pencil, Server, Languages, User, History, Users, Database, Palette, UserRound } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
+import Avatar from '../../components/Avatar'
+import ProfileEditor from '../../components/ProfileEditor'
 import { SERVERS, probe } from '../../lib/servers'
 import { SOURCES } from '../../lib/api'
 import { yume } from '../../lib/yumelist'
@@ -30,7 +33,8 @@ function Section({ icon: Icon, title, hint, children }) {
 }
 
 export default function SettingsPage() {
-  const { user, authReady, signIn, signOut, authError, settings, updateSettings, clearWatchHistory } = useAuth()
+  const { user, me, isFamily, switchProfile, authReady, signIn, signOut, authError, settings, updateSettings, clearWatchHistory } = useAuth()
+  const [editingMe, setEditingMe] = useState(false)
   const [online, setOnline] = useState(null) // null = connecting, -1 = unavailable
   const [confirmClear, setConfirmClear] = useState(false)
   const [cleared, setCleared] = useState(false)
@@ -72,25 +76,32 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-5">
-        <Section icon={User} title="Account" hint="Sign in with Google to keep your settings on every device.">
+        <Section icon={User} title="Account" hint={user ? (isFamily ? 'You’re signed in to a family account. Each profile has its own history and settings.' : 'Your settings and history are saved to this account.') : 'Sign in to keep your settings on every device — or make a family account with up to 5 profiles.'}>
           {!authReady ? (
             <div className="shimmer h-12 rounded-xl" />
-          ) : user ? (
+          ) : user && me ? (
             <div className="flex flex-wrap items-center gap-4">
-              {user.photoURL
-                ? <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="h-12 w-12 rounded-full ring-2 ring-blossom-500/60" />
-                : <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blossom-500 text-lg font-bold">{(user.displayName || user.email || '?').charAt(0).toUpperCase()}</span>}
+              <Avatar avatar={me.avatar} photo={me.photo} name={me.name} size={48} />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{user.displayName || 'ThyAnime user'}</p>
-                <p className="truncate text-sm text-zinc-400">{user.email}</p>
+                <p className="truncate font-semibold">{me.name}</p>
+                <p className="truncate text-sm text-zinc-400">{me.sub}</p>
               </div>
-              <button onClick={signOut} className="glass flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-white/15"><LogOut size={15} /> Sign out</button>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setEditingMe(true)} className="glass flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-white/15"><Pencil size={15} /> {me.kind === 'google' ? 'Edit name' : 'Edit profile'}</button>
+                {isFamily ? <button onClick={() => switchProfile()} className="glass flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-white/15"><UserRound size={15} /> Switch profile</button> : null}
+                <button onClick={signOut} className="glass flex items-center gap-2 rounded-full px-4 py-2 text-sm transition hover:bg-white/15"><LogOut size={15} /> Sign out</button>
+              </div>
+              {editingMe ? <ProfileEditor mode="edit" self onClose={() => setEditingMe(false)} /> : null}
             </div>
           ) : (
             <div>
-              <button onClick={signIn} className="flex items-center gap-3 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition hover:scale-[1.03]">
-                <GoogleG /> Continue with Google
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <button onClick={signIn} className="flex items-center gap-3 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-800 transition hover:scale-[1.03]">
+                  <GoogleG /> Continue with Google
+                </button>
+                <Link href="/login/" className="glass flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition hover:bg-white/15"><Users size={15} /> Family sign in</Link>
+                <Link href="/signup/" className="text-sm text-zinc-400 underline-offset-2 transition hover:text-blossom-400 hover:underline">Create account</Link>
+              </div>
               {authError ? <p className="mt-3 text-sm text-amber-300/90">{authError}</p> : null}
             </div>
           )}

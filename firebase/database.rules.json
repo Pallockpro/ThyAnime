@@ -52,6 +52,9 @@
             }
           }
         },
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 20"
+        },
         "$other": {
           ".validate": false
         }
@@ -64,6 +67,120 @@
         "$tab": {
           ".write": true,
           ".validate": "newData.val() === true && $tab.length <= 40"
+        }
+      }
+    },
+    "families": {
+      "$fam": {
+        ".read": "auth != null && auth.uid === $fam",
+        ".write": "auth != null && auth.uid === $fam",
+        "profiles": {
+          ".validate": "newData.numChildren() <= 5",
+          "$pid": {
+            ".read": "(auth != null && auth.uid === $fam) || (auth != null && root.child('googleLinks').child(auth.uid).child('fam').val() === $fam && root.child('googleLinks').child(auth.uid).child('pid').val() === $pid)",
+            ".write": "auth != null && auth.uid === $fam",
+            ".validate": "newData.hasChildren(['name'])",
+            "name": {
+              ".write": "auth != null && root.child('googleLinks').child(auth.uid).child('fam').val() === $fam && root.child('googleLinks').child(auth.uid).child('pid').val() === $pid",
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 20"
+            },
+            "avatar": {
+              ".write": "auth != null && root.child('googleLinks').child(auth.uid).child('fam').val() === $fam && root.child('googleLinks').child(auth.uid).child('pid').val() === $pid",
+              ".validate": "newData.isString() && newData.val().length <= 12"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "primary": {
+              ".validate": "newData.isBoolean()"
+            },
+            "google": {
+              ".validate": "newData.hasChildren(['uid', 'email'])",
+              "uid": {
+                ".validate": "newData.isString() && newData.val().length <= 60"
+              },
+              "email": {
+                ".validate": "newData.isString() && newData.val().length <= 200"
+              },
+              "name": {
+                ".validate": "newData.isString() && newData.val().length <= 60"
+              },
+              "photo": {
+                ".validate": "newData.isString() && newData.val().length <= 500"
+              },
+              "$other": {
+                ".validate": false
+              }
+            },
+            "settings": {
+              ".validate": "newData.hasChildren(['server', 'lang'])",
+              "server": {
+                ".validate": "newData.isString() && newData.val().length <= 20"
+              },
+              "lang": {
+                ".validate": "newData.val() === 'sub' || newData.val() === 'dub'"
+              },
+              "source": {
+                ".validate": "newData.val() === 'auto' || newData.val() === 'anilist' || newData.val() === 'kitsu' || newData.val() === 'yumelist' || newData.val() === 'jikan'"
+              },
+              "$other": {
+                ".validate": false
+              },
+              ".write": "auth != null && root.child('googleLinks').child(auth.uid).child('fam').val() === $fam && root.child('googleLinks').child(auth.uid).child('pid').val() === $pid"
+            },
+            "history": {
+              "$key": {
+                ".validate": "newData.hasChildren(['ep', 'lang', 'title', 'at'])",
+                "id": {
+                  ".validate": "newData.isNumber()"
+                },
+                "mal": {
+                  ".validate": "newData.isNumber()"
+                },
+                "ep": {
+                  ".validate": "newData.isNumber()"
+                },
+                "lang": {
+                  ".validate": "newData.val() === 'sub' || newData.val() === 'dub'"
+                },
+                "title": {
+                  ".validate": "newData.isString() && newData.val().length <= 300"
+                },
+                "cover": {
+                  ".validate": "newData.isString() && newData.val().length <= 600"
+                },
+                "at": {
+                  ".validate": "newData.isNumber()"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              ".write": "auth != null && root.child('googleLinks').child(auth.uid).child('fam').val() === $fam && root.child('googleLinks').child(auth.uid).child('pid').val() === $pid"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "googleLinks": {
+      "$gid": {
+        ".read": "auth != null && (auth.uid === $gid || data.child('fam').val() === auth.uid)",
+        ".write": "auth != null && ((newData.exists() && newData.child('fam').val() === auth.uid && (!data.exists() || data.child('fam').val() === auth.uid)) || (!newData.exists() && data.child('fam').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['fam', 'pid'])",
+        "fam": {
+          ".validate": "newData.isString() && newData.val().length <= 60"
+        },
+        "pid": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "$other": {
+          ".validate": false
         }
       }
     },

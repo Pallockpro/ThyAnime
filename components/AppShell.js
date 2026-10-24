@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 import { Wrench } from 'lucide-react'
+import ProfilePicker from './ProfilePicker'
 import Navbar from './Navbar'
 import Petals from './Petals'
 import Footer from './Footer'
@@ -20,13 +21,18 @@ function Splash() {
 }
 
 export default function AppShell({ children }) {
-  const { maintenance, maintenanceReady, authReady, isAdmin } = useAuth()
+  const { maintenance, maintenanceReady, authReady, isAdmin, needsProfile, profileLoading, famHint } = useAuth()
   useEffect(() => { applyTheme(getTheme()) }, []) // colours + tab icon follow the saved theme
 
   // Wait (max ~1.5 s, usually instant thanks to the cache) so visitors never see the site flash before the maintenance page.
   if (!maintenanceReady) return <Splash />
   if (maintenance.enabled && !authReady) return <Splash />
   if (maintenance.enabled && !isAdmin) return (<><Petals /><Maintenance /></>)
+
+  // Family accounts: nobody sees the site until a profile is picked ("Who's watching?")
+  if (!authReady && famHint) return <Splash />
+  if (profileLoading) return <Splash />
+  if (needsProfile) return (<><Petals /><ProfilePicker /></>)
 
   return (
     <>
