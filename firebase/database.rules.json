@@ -75,7 +75,6 @@
         ".read": "auth != null && auth.uid === $fam",
         ".write": "auth != null && auth.uid === $fam",
         "profiles": {
-          ".validate": "newData.numChildren() <= 5",
           "$pid": {
             ".read": "(auth != null && auth.uid === $fam) || (auth != null && root.child('googleLinks').child(auth.uid).child('fam').val() === $fam && root.child('googleLinks').child(auth.uid).child('pid').val() === $pid)",
             ".write": "auth != null && auth.uid === $fam",

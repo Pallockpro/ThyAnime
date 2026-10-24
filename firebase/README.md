@@ -67,7 +67,7 @@ Remove/empty it to go back to the console toggle.
 
 ## Family accounts (profiles)
 - **Create:** `/signup/` → *Create family account* (username + password + your profile name). **Sign in:** `/login/`.
-- After a family sign-in the site shows **“Who’s watching?”** every time a new browser session starts (and from the avatar menu → *Switch profile*). Up to **5 profiles**; the first one can’t be deleted.
+- After a family sign-in the site shows **“Who’s watching?”** every time a new browser session starts (and from the avatar menu → *Switch profile*). Up to **5 profiles** (enforced by the site, not the database rules); the first one can’t be deleted.
 - **Manage profiles** (pencil): rename, change avatar, delete, and **link a Google account** to a profile. That person can then press *Continue with Google* on the Sign in page and land straight in their own profile — no password to share.
 - Each profile has its own watch history and settings (server / sub-dub / source) under `families/<familyUid>/profiles/<id>`.
 - Plain Google accounts (no family) work exactly like before, and can now rename themselves (avatar menu → *Edit name*).
