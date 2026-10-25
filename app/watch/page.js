@@ -3,10 +3,11 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ArrowLeft, Server } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ArrowLeft, Server, AlertTriangle } from 'lucide-react'
 import { api, animeHref, isSingleEpisode, pushHistory, setLang, singleLabel, watchHref } from '../../lib/api'
-import { SERVERS, buildEmbed, probe, getSessionServer, setSessionServer } from '../../lib/servers'
+import { SERVERS, buildEmbed, getSessionServer, setSessionServer } from '../../lib/servers'
 import { useAuth } from '../../components/AuthProvider'
+import { useServerStatus } from '../../lib/useServerStatus'
 
 function WatchInner() {
   const router = useRouter()
@@ -21,7 +22,7 @@ function WatchInner() {
   const [loaded, setLoaded] = useState(false)
   const { settings } = useAuth()
   const [sess, setSess] = useState('') // server picked in the player this session (does not change the saved default)
-  const [up, setUp] = useState({}) // liveness of servers that can be probed (your own server)
+  const up = useServerStatus() // liveness of servers that can be probed (your own server)
   const cur = useRef(null)
   const mal = malParam || (a && a.malId) || 0 // MAL id may only become known once metadata loads
 
@@ -40,7 +41,6 @@ function WatchInner() {
   // which servers are reachable? (only matters for your own ThyAnime server; the other servers are third-party)
   useEffect(() => {
     setSess(getSessionServer())
-    SERVERS.filter((s) => s.probe).forEach((s) => probe(s.probe).then((ok) => setUp((u) => ({ ...u, [s.key]: ok }))))
   }, [])
 
   const params = { id, mal, ep, lang }
@@ -99,13 +99,20 @@ function WatchInner() {
                 const down = up[s.key] === false
                 const on = server && server.key === s.key
                 return (
-                  <button key={s.key} disabled={down} onClick={() => pick(s.key)}
-                    className={'rounded-full px-3.5 py-1.5 font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ' + (on ? 'bg-blossom-500 text-white' : 'glass text-zinc-300 hover:bg-white/10')}>
-                    {s.name}{down ? ' · offline' : ''}
+                  <button key={s.key} aria-disabled={down} onClick={() => { if (!down) pick(s.key) }}
+                    title={down ? s.name + ' is down right now — try another server.' : undefined}
+                    className={'flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-medium transition ' + (down ? 'cursor-not-allowed bg-red-500/15 text-red-300 ring-1 ring-red-500/60' : on ? 'bg-blossom-500 text-white' : 'glass text-zinc-300 hover:bg-white/10')}>
+                    {down ? <AlertTriangle size={14} className="shrink-0" /> : null}
+                    {s.name}{down ? ' · server down' : ''}
                   </button>
                 )
               })}
               <span className="text-xs text-zinc-500">Video not loading? Try another server.</span>
+              {avail.some((s) => up[s.key] === false) ? (
+                <p role="alert" className="flex w-full items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+                  <AlertTriangle size={14} className="shrink-0" /> The ThyAnime server isn’t responding right now. We switched you to another server — it will come back automatically when it’s up.
+                </p>
+              ) : null}
             </div>
           ) : null}
 

@@ -2,11 +2,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Check, LogOut, Pencil, Server, Languages, User, History, Users, Database, Palette, UserRound } from 'lucide-react'
+import { Check, LogOut, Pencil, Server, Languages, User, History, Users, Database, Palette, UserRound, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
 import Avatar from '../../components/Avatar'
 import ProfileEditor from '../../components/ProfileEditor'
-import { SERVERS, probe } from '../../lib/servers'
+import { SERVERS } from '../../lib/servers'
+import { useServerStatus } from '../../lib/useServerStatus'
 import { SOURCES } from '../../lib/api'
 import { yume } from '../../lib/yumelist'
 import { getDb } from '../../lib/firebase'
@@ -38,7 +39,7 @@ export default function SettingsPage() {
   const [online, setOnline] = useState(null) // null = connecting, -1 = unavailable
   const [confirmClear, setConfirmClear] = useState(false)
   const [cleared, setCleared] = useState(false)
-  const [up, setUp] = useState({})
+  const up = useServerStatus()
   const [status, setStatus] = useState('') // '' | 'device' | 'synced' | 'failed'
   const [theme, setThemeState] = useState('slime')
 
@@ -48,9 +49,6 @@ export default function SettingsPage() {
     const db = getDb()
     if (!db) return
     return watchOnlineCount(db, setOnline, () => setOnline(-1))
-  }, [])
-  useEffect(() => {
-    SERVERS.filter((s) => s.probe).forEach((s) => probe(s.probe).then((ok) => setUp((u) => ({ ...u, [s.key]: ok }))))
   }, [])
   useEffect(() => {
     if (!status) return
@@ -112,14 +110,15 @@ export default function SettingsPage() {
             {options.map((o) => {
               const on = settings.server === o.key
               return (
-                <button key={o.key || 'auto'} onClick={() => save({ server: o.key })} disabled={o.down}
-                  className={'flex items-start gap-3 rounded-xl p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ' + (on ? 'bg-blossom-500/20 ring-1 ring-blossom-500/70' : 'glass hover:bg-white/10')}>
+                <button key={o.key || 'auto'} onClick={() => { if (!o.down) save({ server: o.key }) }} aria-disabled={o.down}
+                  title={o.down ? o.name + ' is down right now' : undefined}
+                  className={'flex items-start gap-3 rounded-xl p-4 text-left transition ' + (o.down ? 'cursor-not-allowed bg-red-500/10 ring-1 ring-red-500/60' : on ? 'bg-blossom-500/20 ring-1 ring-blossom-500/70' : 'glass hover:bg-white/10')}>
                   <span className={'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ' + (on ? 'border-blossom-400 bg-blossom-500' : 'border-zinc-600')}>
                     {on ? <Check size={12} strokeWidth={4} /> : null}
                   </span>
                   <span className="min-w-0">
-                    <span className="block font-semibold">{o.name}{o.down ? ' · offline' : ''}</span>
-                    <span className="block text-xs text-zinc-400">{o.note}</span>
+                    <span className={'flex items-center gap-1.5 font-semibold ' + (o.down ? 'text-red-300' : '')}>{o.down ? <AlertTriangle size={14} /> : null}{o.name}{o.down ? ' · server down' : ''}</span>
+                    <span className={'block text-xs ' + (o.down ? 'text-red-300/80' : 'text-zinc-400')}>{o.down ? 'Not responding — check back soon.' : o.note}</span>
                   </span>
                 </button>
               )
