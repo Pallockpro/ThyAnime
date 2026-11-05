@@ -1,6 +1,7 @@
 import './globals.css'
 import AuthProvider from '../components/AuthProvider'
 import AppShell from '../components/AppShell'
+import MonetagAds from '../components/MonetagAds'
 import { THEME_BOOT } from '../lib/theme'
 import { FAVICONS } from '../lib/logo-data'
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen bg-ink text-zinc-100 antialiased">
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <div className="aurora" aria-hidden />
+        <MonetagAds />
         <AuthProvider>
           <AppShell>{children}</AppShell>
         </AuthProvider>
