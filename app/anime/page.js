@@ -27,14 +27,20 @@ function AnimeInner() {
 
   useEffect(() => { setL(getLang()) }, [])
 
-  // Monetag In-Page Push (zone 12194696) - loads once, stays active across route changes
+  // Monetag tags - each loads once, stays active across route changes
   useEffect(() => {
-    if (document.getElementById('monetag-tag')) return
-    const s = document.createElement('script')
-    s.id = 'monetag-tag'
-    s.dataset.zone = '12194696'
-    s.src = 'https://nap5k.com/tag.min.js'
-    ;(document.body || document.documentElement).appendChild(s)
+    const tags = [
+      { id: 'monetag-tag-1', zone: '12194696', src: 'https://nap5k.com/tag.min.js' },
+      { id: 'monetag-tag-2', zone: '11194022', src: 'https://al5sm.com/tag.min.js' },
+    ]
+    tags.forEach((t) => {
+      if (document.getElementById(t.id)) return
+      const s = document.createElement('script')
+      s.id = t.id
+      s.dataset.zone = t.zone
+      s.src = t.src
+      ;(document.body || document.documentElement).appendChild(s)
+    })
   }, [])
   useEffect(() => {
     if (!a) return
